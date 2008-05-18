@@ -1,0 +1,65 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+login:
+  email: login_test@wayground.ca
+  activated_at: <%= 1.day.ago.strftime("%Y-%m-%d 00:00:00") %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Login
+  fullname: Login User
+  subpath: login
+  admin: false
+  staff: false
+
+admin:
+  email: admin_test@wayground.ca
+  activated_at: <%= 1.day.ago.strftime("%Y-%m-%d 00:00:00") %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Administrator
+  fullname: Admin User
+  subpath: admin
+  admin: true
+  staff: true
+
+staff:
+  email: staff_test@wayground.ca
+  activated_at: <%= 1.day.ago.strftime("%Y-%m-%d 00:00:00") %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Staffer
+  fullname: Staff User
+  subpath: staff
+  admin: false
+  staff: true
+
+activate_this:
+  email: activatethis@wayground.ca
+  activation_code: abc
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Activate This
+  fullname: Activate This
+  admin: false
+  staff: false
+
+activate_this_fail:
+  email: activatethisfail@wayground.ca
+  activation_code: abc
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Activate This Fail
+  fullname: Activate This Fail
+  admin: false
+  staff: false
+
+change_pass:
+  email: changepass@wayground.ca
+  activated_at: <%= 1.day.ago.strftime("%Y-%m-%d 00:00:00") %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Change Pass
+  fullname: Change Password
+  admin: false
+  staff: false
+

@@ -1,0 +1,55 @@
+<%
+# SEARCH
+render_sidebar do
+	%><h2><img src="/icon/search_24.png" width="24" height="24" alt=" " class="icon" />Search Documents</h2>
+<%	form_tag documents_path, :method=>:get do
+		%><p><%= text_field_tag 'key', @key, :id=>'search_key', :size=>16,
+			:title=>'Enter part of a filename to search for' %>
+<%= 	submit_tag 'Search', :name=>nil %><%
+		#<br /><%= select_tag 'max',
+		#options_for_select(
+		#	[['10 per page',10],['20 per page',20],['50 per page',50]], @max),
+		#:id=>'search_max'
+		%></p><%
+	end
+end
+
+# ADMIN - UPLOAD
+render_sidebar do
+	%><h2><img src="/icon/upload.png" width="16" height="16" alt=" " class="icon" />Upload a Document</h2>
+<%
+	if current_user && current_user.activated?
+	#remote_form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :action=>documents_path}, :loading=>"Element.hide('flash'); Element.show('upload_progress'); Element.hide('upload_submit');", :loaded=>"Element.show('upload_submit'); Element.hide('upload_progress');") do |f|
+		form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :onsubmit=>"Element.show('upload_progress'); return true;"}) do |f|
+			%><p><img src="/icon/warning.png" width="16" height="16" alt=" " class="icon" />Please keep file sizes small. Extremely large files (>20MB) will cause errors. Also, my bandwidth isn’t free, so very large files could cost me money to share on the web.</p>
+<p><label for="document_filename">Primary Site:</label><%= f.select :subfolder,
+Wayground::SITES.sort.collect {|site| [site[1][:name], site[1][:abbrev]]}, #[['Arusha','arusha'], ['Action Films','actionfilms'], ['Calgary Dollars','caldol']],
+{}, {:title=>'Select the folder that will contain the document'} %>
+<br /><%= f.file_field :uploaded_data, :size=>16, :title=>'Specify a document on your local computer to upload' %>
+<br /><span title="Check this if you want to restrict access for this document. Leave it unchecked if you want anyone to be able to access it."><input type="checkbox" name="private" id="upload_private" value="1" /><label for="upload_private">Private</label></span></p>
+<p><%= submit_tag 'Upload Now', :id=>'upload_submit' %>
+<span id="upload_progress" style="display:none" onclick="Element.show('upload_submit'); Element.hide('upload_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Uploading…</span></p>
+<%		end #form_for
+	elsif current_user
+		%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must confirm your registration to be able to upload documents.</p>
+<%	else
+		%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must <%= link_to 'login', login_path, {:title=>'Registered users can sign-in to the website to access additional functions'} %> to be able to upload documents.</p>
+<%	end
+end
+
+# LEGEND
+render_sidebar do
+	%><h2><img src="/icon/legend_24.png" width="24" height="24" alt=" " class="icon" />Legend</h2>
+<p class="legend">
+<img src="/icon/image.png" width="16" height="16" alt="Image" class="diricon" title="Image" /> <b>Image/Picture</b> document.
+<br /><img src="/icon/document.png" width="16" height="16" alt="Document" class="diricon" title="Document" /> <b>Downloadable</b> document.
+<% #<br /><img src="/icon/public.png" width="16" height="16" alt="Public" class="diricon" title="Public" /> <b>Public</b> - anyone can access it.
+%><br /><img src="/icon/private.png" width="16" height="16" alt="Private" class="diricon" title="Private" /> <b>Private</b> - admin access only.
+<br /><img src="/icon/info.png" width="16" height="16" alt="Info" class="diricon" /> <b>Details</b> for the document.
+<%	if current_user
+		#<br /><img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> <b>Edit</b> the document.
+		%><br /><img src="/icon/delete.png" width="16" height="16" alt="Delete" class="diricon" /> <b>Delete</b> the document.
+<%	end
+	%></p><%
+end
+%>

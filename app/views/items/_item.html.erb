@@ -1,0 +1,8 @@
+<%
+item ||= @item
+items ||= {}
+%><li class="<%= item.sitepath == '/' ? 'dir-root' : 'dir-page' %>"><%= link_to item.title, item_path(item) %><%
+if items.size > 0
+	%><ul><%= render :partial=>'item', :collection=>items %></ul><%
+end
+%></li>

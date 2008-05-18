@@ -1,0 +1,192 @@
+REQUIRED GEMS, PLUGINS & TOOLS
+
+Plug-ins are probably already installed. However, if they are missing, or if you want to update to a newer version, or if you just want to know where they came from, the install instructions are listed here.
+
+
+CONFIGURATION
+-------------
+
+Copy the amazon_s3-default.yml file to amazon_s3.yml, and edit accordingly.
+Copy the database-default.yml file to database.yml, and edit accordingly.
+
+Edit the following to match your site’s configuration:
+config/config.yml
+config/emvironment.rb
+config/environments/*.rb
+
+
+QUICK GEM INSTALL
+-----------------
+
+For your convenience, this is a one-line install of all the gems. For more detailed explanations of each gem, see the sections that follow. You will still need to do the individual configurations and installation of non-gem tools detailed in the sections that follow.
+
+ sudo gem install passenger ruby-debug mocha ZenTest assert2 ruby-prof \
+ 	ruby-openid ar_mailer ar_mailer_generator tzinfo chronic will_paginate \
+ 	image_science
+
+(Note that image_science may not install properly if you don’t have FreeImage http://freeimage.sourceforge.net/ installed.)
+
+
+ICONS (public/icon/)
+--------------------
+
+I’m looking into freely redistributable multi-size icon options to replace the copyright-restricted icons I’ve been using. Currently, the code (some views and the public/stylesheets/wg.css file) references icons that are not included with the distribution of this code. Sorry about that.
+
+
+OTHER INSTALLATION & SETUP (Developers Only)
+--------------------------------------------
+
+*** The rest of the installation info here is for developers only.
+
+
+Version Control (git)
+---------------------
+
+(You can probably skip this section since you most likely downloaded the source through git, anyway.)
+
+Download latest from http://git.or.cz/
+ make configure
+ ./configure --prefix=/usr/local
+ make all doc
+(^ may produce an error if asciidoc not present. That’s survivable.)
+ sudo make install
+
+To create a git repository for a new Rails project, in the Rails App root:
+ git init
+
+Create the file .gitignore in your rails root with the following contents:
+.DS_Store
+config/database.yml
+config/amazon_s3.yml
+db/*.sqlite3
+log/*.log
+public/cache/**/*
+public/file/*
+public/file/**/*
+public/icon/*.png
+public/icon/*.zip
+public/pic/*
+public/pic/**/*
+tmp/*
+tmp/**/*
+wg.tmproj
+
+Add your files to the new git repository and commit them.
+ git add .
+ git commit -a -m "initial import"
+
+
+Server
+------
+
+There are all sorts of ways to run Rails apps. Here’s what I’m currently using:
+
+Apache Rails Support (aka mod_rails):
+ sudo gem install passenger
+If you have two or more Apache installs, make sure you install for the correct one by setting the APXS2 environment variable:
+ export APXS2=/Library/Apache2/bin/apxs
+Install the module for Apache:
+ sudo passenger-install-apache2-module
+
+
+Testing & Debugging
+-------------------
+
+You will probably only need these on your development/testing system - unless you're doing testing on your production system.
+
+ sudo gem install ruby-debug mocha ZenTest assert2 ruby-prof
+
+ ./script/plugin install memory_test_fix
+ ./script/plugin install svn://rubyforge.org/var/svn/efficient-sql
+ ./script/plugin install http://topfunky.net/svn/plugins/vic_tests/
+ git clone git://github.com/drnic/rails-footnotes.git vendor/plugins/footnotes
+
+# spider_test:
+ ./script/plugin install svn://caboo.se/plugins/court3nay/spider_test
+The following has already been done for the Wayground code:
+ ./script/generate integration_test spider_test
+Edit the test/integration/spider_test.rb file.
+
+# edit ~/.autotest to include:
+require 'autotest/redgreen'
+require 'autotest/timestamp'
+require 'ruby-debug'
+
+
+Users & Sessions
+----------------
+
+These are used for supporting users on the site.
+
+ sudo gem install ruby-openid
+(brings in ruby-yadis)
+
+ ./script/plugin install restful_authentication
+ 	./script/generate authenticated user sessions --include-activation
+ ./script/plugin install openid_authentication
+ 	rake open_id_authentication:db:create
+
+
+ActiveRecord Mailer
+-------------------
+
+ar_mailer (ActiveRecord Mailer) provides a database-driven version of ActionMailer.
+http://seattlerb.rubyforge.org/ar_mailer/
+
+ sudo gem install ar_mailer ar_mailer_generator
+
+This has already been done for the Wayground code:
+ ./script/generate ar_mailer
+
+
+Graphics
+--------
+
+Install FreeImage http://freeimage.sourceforge.net/ (required before installing image_science)
+
+ sudo gem install image_science
+
+
+Time & Date
+-----------
+
+ sudo gem install tzinfo chronic
+
+Miscellaneous
+-------------
+
+Pagination:
+OLD: ./script/plugin install svn://errtheblog.com/svn/plugins/will_paginate
+ sudo gem install will_paginate
+# --no-ri
+Add the following line to config/environment.rb:
+require 'will_paginate'
+
+Markdown support:
+ sudo gem install BlueCloth
+
+ActiveRecord#find_each support
+ ./script/plugin install svn://rubyforge.org/var/svn/pseudocursors
+
+Visual/wysiwyg editor for forms:
+ ./script/plugin install svn://zuurstof.openminds.be/home/kaizer/svn/rails_stuff/plugins/wym_editor_helper
+
+File Upload:
+ ./script/plugin install http://svn.techno-weenie.net/projects/plugins/attachment_fu/
+
+Misc. Add-ons (testing & rake tasks):
+ ./script/plugin install http://topfunky.net/svn/plugins/topfunky_power_tools/
+
+
+Unused
+------
+
+This is stuff to look at and maybe eventually add.
+
+# TODO: ./script/plugin install white_list
+
+## sudo gem install rapt
+#./script/plugin install calendar_helper
+#./script/plugin install meta_tags
+
+

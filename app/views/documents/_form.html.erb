@@ -1,0 +1,20 @@
+<table cellspacing="0"><tbody>
+<%
+is_update ||= false
+
+fields_for :document do |f|
+	%><tr><th><label for="document_subfolder">Site:</label></th>
+<td><%= f.select :subfolder,
+	[['Arusha','arusha'], ['Action Films','actionfilms'],
+		['Calgary Dollars','caldol']],
+	{:title=>'Set the sub-folder for the document'} %></td></tr>
+<%	if is_update
+		%><tr><th><label for="document_filename">Filename:</label></th>
+<td><%= f.text_field :filename, :title=>'Set the filename for the document' %></td></tr>
+<%	else
+	%><tr><th><label for="document_uploaded_data">File to Upload:</label></th>
+<td><%= f.file_field :uploaded_data %></td></tr>
+<% end %>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag 'Save' %></td></tr></tfoot>
+<% end -%></table>

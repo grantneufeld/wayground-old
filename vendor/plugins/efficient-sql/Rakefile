@@ -1,0 +1,42 @@
+require 'rake'
+require 'rake/testtask'
+require 'rake/rdoctask'
+
+desc 'Default: run unit tests.'
+task :default => :test
+
+desc 'Test the assert_efficient_sql plugin.'
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
+# ERGO rdoc-style.css via allison?
+
+desc 'Generate documentation for the assert_efficient_sql plugin.'
+Rake::RDocTask.new(:rdoc) do |rdoc|
+  require 'doc/rdoc_patch'
+  require 'pathname'
+  
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = 'AssertEfficientSql'
+  rdoc.options << '--main=README' << '--inline-source'
+  allison = Pathname.new('~/tools/allison-2.3/allison.rb').expand_path
+  my_aim_is_true = allison.exist?
+  rdoc.template = allison.to_s  if my_aim_is_true
+  rdoc.rdoc_files.include('test/*_test.rb')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include('README')
+end
+
+desc 'send rdocs to rubyforge.org'
+task :publish => :style do
+  system 'scp -r rdoc/* phlip@efficient-sql.rubyforge.org:/var/www/gforge-projects/efficient-sql/'
+end
+
+desc 'upgrade and inspect the rdoc folder'
+task :style => :rdoc do 
+  system 'grep ERGO rdoc -r'
+  system 'grep TODO rdoc -r'
+end

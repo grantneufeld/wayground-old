@@ -1,0 +1,11 @@
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Document: <%= link_to @document.filename, document_path(@document) %></h1>
+<%= error_messages_for :document %>
+<div class="step_form">
+<% form_for(:document, :url=>document_path(@document), :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form', :locals=>{:is_update=>true} %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

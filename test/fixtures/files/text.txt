@@ -1,0 +1,3 @@
+This is a text file.
+
+It is used by the documents(:text) object from test/fixtures/documents.yml

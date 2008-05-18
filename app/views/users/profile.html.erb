@@ -1,0 +1,21 @@
+<%
+# Expects:
+# @user
+
+# figure out a good way to indicate admin & staff status
+-%>
+<h1><%= h @user.display_name %></h1>
+<% if false #••• current_user and @user.id == current_user.id
+	# TODO: support the user editing their information
+	%><p><%= link_to "Edit Your Account", edit_user_url(@user) %></p>
+<% end
+unless @user.location.blank?
+	-%><p>Location: <%= h @user.location %></p>
+<% end 
+unless @user.about.blank? %>
+<h3>About</h3>
+<%=
+# TODO: allow formatting/processing of user about info instead of just raw text
+#••• process_and_format @user.about, 'text/plain', (not admin?)
+ 	"<p>#{h @user.about}</p>" %>
+<% end %>

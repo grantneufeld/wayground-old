@@ -1,0 +1,60 @@
+<h1>Register</h1>
+<p>Registered users are able to access additional features and functions of this website, including posting information. Registration is free.</p>
+<h2>Important Notice:</h2>
+<p><img src="/icon/warning_32.png" width="32" height="32" alt=" " class="icon" align="left" />
+By registering on the <%= WAYGROUND['TITLE'] %> website, you agree that any data you post to the website (other than information identified as “Private Info”, such as in the form below) will be placed under a <a href="http://creativecommons.org/licenses/by/2.5/ca/">Creative Commons Attribution license</a> and made freely available for anyone to use in perpetuity. If you do not agree to those terms, do not post information here.</p>
+
+<div class="steps">
+<h1>Registration Form</h1>
+<p><strong>All fields must be filled in.</strong></p>
+
+<%= error_messages_for :user, :header_message=>'Your registration could not be completed as submitted.<br />Please try again.' %>
+<% form_for(@user) do |f| -%>
+
+<h2>Private Info</h2>
+<p>This personal information is only shown to the website administrators.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="email">Email</label><br/></th>
+<td><%= f.text_field :email %>
+<br />You will use your email address to sign-in to the website.
+It will also be used to confirm your registration.</td></tr>
+<tr class="alternate"><th><label for="user_name">Full name</label><br/></th>
+<td><%= f.text_field :fullname %>
+<br />Your actual first and last name.</td></tr>
+</tbody></table></div>
+
+<h2>Public Info</h2>
+<p>This information is shown publicly on the website.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="screen_name">Screen Name<br/>(nickname)</label><br/></th>
+<td><%= f.text_field :nickname %>
+<br />This is the name that will be shown when you post on our message boards or elsewhere on this website. We recommend using your actual name, but you can choose another if you have privacy or confidentiality concerns.</td></tr>
+</tbody></table></div>
+
+<h2>Signing-In to the Website</h2>
+<p>In addition to your email address, you have to create a password to be able to sign-in to the website.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="password">Password</label><br/></th>
+<td><%= f.password_field :password %>
+<br />Create a password that you will use to login to this website.</td></tr>
+<tr class="alternate"><th><label for="password_confirmation">Confirm Password</label><br/></th>
+<td><%= f.password_field :password_confirmation %>
+<br />Let’s make sure you typed in excatly what you think you typed in since you can’t actually see what’s in the password here.</td></tr>
+</tbody></table></div>
+
+<h2>Submit Your Registration</h2>
+<p><%= submit_tag 'Sign up', :disable_with=>"Signing up…" %></p>
+<% end -%>
+
+<% if false %>
+<% form_for :user, :url => users_path do |f| -%>
+<p>…or use:</p>
+<p><label for="openid_url">OpenID:</label>
+<%= text_field_tag "openid_url", {}, {:size=>'32'} %></p>
+<p><%= submit_tag 'Sign up', :disable_with=>"Signing up…" %></p>
+<p><%= check_box_tag 'use_openid_data' %><label for="use_openid_data">Retrieve my name and email from my OpenID (if available).</label>
+	<br />This is used to speed up the registration process for you.
+	If you uncheck this, you will have to manually enter a name and email address for your account.</p>
+<% end -%>
+<% end -%>
+</div>

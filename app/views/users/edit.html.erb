@@ -1,0 +1,29 @@
+<div class="steps">
+<h1>Edit User Settings</h1>
+
+<%= error_messages_for :user, :header_message=>'Your registration update could not be completed as submitted.<br />Please try again.' %>
+<% form_for(@user) do |f| -%>
+
+<h2>Public Info</h2>
+<p>This information is shown publicly on the website.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="screen_name">Screen Name<br/>(nickname)</label><br/></th>
+<td>You cannot change your screen name.</td></tr>
+</tbody></table></div>
+
+<h2>Signing-In to the Website</h2>
+<p>In addition to your email address, you have to create a password to be able to sign-in to the website.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="password">Password</label><br/></th>
+<td><%= f.password_field :password %>
+<br />Create a password that you will use to login to this website.</td></tr>
+<tr class="alternate"><th><label for="password_confirmation">Confirm Password</label><br/></th>
+<td><%= f.password_field :password_confirmation %>
+<br />Let’s make sure you typed in excatly what you think you typed in since you can’t actually see what’s in the password here.</td></tr>
+</tbody></table></div>
+
+<h2>Save Changes</h2>
+<p><%= submit_tag 'Update User Settings', :disable_with=>"Updating…" %></p>
+<% end -%>
+
+</div>

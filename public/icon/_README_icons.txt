@@ -1,0 +1,9 @@
+I use three sizes of icons (all in .png format): 16x16, 24x24 and 32x32 (pixels).
+
+Each icon should have three versions, e.g.: icon.png (16x16), icon_24.png (24x24) and icon_32.png (32x32).
+
+
+Unfortunately, the icons I use for my sites come primarily from the free sets at IconBuffet, who retain the copyright on them — so I’m not able to redistribute them.
+http://www.iconbuffet.com/freedelivery/packages?ref=grantneufeld
+
+I’m looking into freely redistributable multi-size icon options to replace those icons. Currently, the code (some views and the public/stylesheets/wg.css file) references icons that are not included with the distribution of this code. Sorry about that.

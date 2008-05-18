@@ -1,0 +1,10 @@
+<div class="steps">
+<h1>Upload New Document</h1>
+<%= error_messages_for :document %>
+<div class="step_form">
+<% form_for(:document, :url=>documents_path, :html=>{:multipart=>true}) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

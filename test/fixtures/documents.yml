@@ -1,0 +1,80 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+text:
+  user: login
+  content_type: text/plain
+  filename: text.txt
+  size: 96
+  type: DocFile
+
+subtext:
+  user: login
+  content_type: text/plain
+  filename: subtext.txt
+  size: 96
+  type: DocFile
+  subfolder: arusha
+
+pdf:
+  user: login
+  content_type: application/pdf
+  filename: test.pdf
+  size: 28616
+  type: DocFile
+
+pic:
+  user: login
+  content_type: image/gif
+  filename: pic.gif
+  thumbnail: 
+  size: 987
+  width: 256
+  height: 128
+  type: DocImage
+
+pic_thumb:
+  user: login
+  parent: pic
+  content_type: image/gif
+  filename: pic_t.gif
+  thumbnail: thumb
+  size: 311
+  width: 100
+  height: 50
+  type: DocImage
+
+tiff:
+  user: login
+  content_type: image/tiff
+  filename: pic.tif
+  thumbnail: 
+  size: 25664
+  width: 256
+  height: 128
+  type: DocImage
+
+private_text:
+  db_file_id: 1
+  user: login
+  content_type: text/plain
+  filename: private_text.txt
+  size: 18
+  type: DocPrivate
+
+private_subtext:
+  db_file_id: 2
+  user: login
+  content_type: text/plain
+  filename: private_subtext.txt
+  size: 21
+  type: DocPrivate
+  subfolder: arusha
+
+private_pdf:
+  db_file_id: 3
+  user: login
+  content_type: application/pdf
+  filename: private.pdf
+  size: 14
+  type: DocPrivate
+

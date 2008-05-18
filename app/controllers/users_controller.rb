@@ -1,0 +1,126 @@
+class UsersController < ApplicationController
+	before_filter :login_required, :only=>[:edit, :activate, :account]
+		#, :change_password]
+	before_filter :admin_required, :only=>[:index, :show]
+	
+	# list users, but only for admins
+	def index
+		@users = User.paginate :per_page=>10, :page=>params[:page],
+			:order=>'users.nickname'
+		@page_title = 'User List'
+	end
+	
+	# show a user, but only for admins
+	def show
+		@user = User.find(params[:id])
+		if @user
+			@page_title = "User: #{@user.display_name}"
+		end
+	rescue ActiveRecord::RecordNotFound
+		flash[:notice] =
+			"Could not find a user matching the requested id (‘#{params[:id]}’)."
+		redirect_to :action=>'index'
+	end
+	
+	# user’s public profile
+	def profile
+		if params[:id].match /\A[0-9]+\z/
+			@user = User.find(params[:id])
+		else
+			@user = User.find_by_subpath(params[:id])
+		end
+		raise ActiveRecord::RecordNotFound if @user.nil?
+		@page_title = "User: #{@user.display_name}"
+	rescue ActiveRecord::RecordNotFound
+		flash[:notice] =
+			"Could not find a user matching the requested id (‘#{params[:id]}’)."
+		redirect_to '/'
+#••		redirect_to home_url
+	end
+	
+	# new user registration form
+	def new
+		@user = User.new(params[:user])
+		@user.valid? if params[:user]
+		@page_title = 'New User Registration'
+	end
+	
+	# new user registration submission
+	def create
+		#••• cookies.delete :auth_token
+		
+		self.new
+		# User model doesn’t require email, but web login does
+		@user.email_required = true
+		@user.login_at = Time.now
+		@user.save!
+		self.current_user = @user
+		
+		# send email confirmation
+		if Notifier.deliver_signup_confirmation(@user)
+			flash[:notice] = "Thanks for signing up! A confirmation email has been sent to you at #{@user.email}. Please look for a message from #{(WAYGROUND['SENDER'].gsub(/[><]/){|x|{'>'=>'&gt;','<'=>'&lt;'}[x]})}."
+		else
+			flash[:error] = "Your new user account has been created, but there was an error when trying to send an email confirmation. Please contact the website administrator about this problem. #{WAYGROUND['EMAIL']}"
+		end
+		
+		redirect_to '/users/account'
+	rescue ActiveRecord::RecordInvalid
+		render :action=>'new'
+	end
+	
+	# user registration confirmation
+	def activate
+		@user = current_user
+		if @user
+			if params[:activation_code].blank?
+				flash[:notice] = 'No activation code was supplied. Please confirm that you are using the complete activation link you were given.'
+			elsif @user.activated?
+				flash[:notice] = 'Your account has already been activated.'
+			elsif @user.activate(params[:activation_code])
+				flash[:notice] = 'Your user account has now been activated. Thank-you for confirming it.'
+				unless Notifier.deliver_activated(@user)
+					# don't bother notifying of email failure since it's not critical
+				end
+			else
+				flash[:notice] = 'The supplied activation code did not match the one in your user account. Please ensure you are logged in as the correct user, and that you used the complete activation web link.'
+			end
+			redirect_to '/users/account'
+		else
+			flash[:notice] = 'You must login first to activate your account.'
+			redirect_to '/login'
+		end
+	end
+	
+	# user account information
+	def account
+		@user = current_user
+		if @user
+			@page_title = 'User Account'
+		else
+			flash[:notice] = 'You must be logged-in to access your user account.'
+			redirect_to '/login'
+		end
+	end
+	
+	# user edit form
+	def edit
+		if current_user && (current_user.admin || (current_user.id == params[:id].to_i))
+			@user = User.find(params[:id])
+			@page_title = "Edit User: #{@user.display_name}"
+		else
+			#flash[:notice] = 'You do not have permission to access the requested action. Please login as a user with sufficient permission.'
+			#redirect_to '/login'
+			access_denied
+		end
+	rescue ActiveRecord::RecordNotFound
+		flash[:notice] =
+			"Could not find a user matching the requested id (‘#{params[:id]}’)."
+		redirect_to :action=>'index'
+	end
+	
+	# TODO: update (user edit submit)
+	# TODO: user password change
+	# TODO: user email change request
+	# TODO: user email change confirm
+	
+end

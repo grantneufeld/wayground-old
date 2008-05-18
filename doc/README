@@ -1,0 +1,34 @@
+Wayground is a Ruby on Rails based web content management system.
+http://wayground.ca/
+
+Notable functions this is intended to serve:
+• Content Management (CMS - administering website content)
+• Contact Relation Management (CRM)
+• Democracy tools
+	Candidate tracking
+	Party tracking
+	Policy tracking and development
+	Public participation (consultation, voting, etc.)
+• Advocacy tools
+	Petitions
+	Group organizing
+	Etc.
+• Calendaring & events
+	Scheduling (including identifying available times)
+	RSVPs
+	Event promotion
+• Etc.
+
+
+VERSION HISTORY
+===============
+
+0.1 - May 16, 2008, Grant Neufeld
+
+This version is the beginning of a from-the-ground-up rebuilding of the Wayground system, and is currently notably incomplete.
+
+Basic functionality that seems to be somewhat working includes:
+- User registration and login,
+- Document (file) upload,
+- Basic web-page (item) management.
+

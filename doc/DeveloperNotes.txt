@@ -1,0 +1,32 @@
+Notes for developers (coders) working on the Wayground code.
+
+These are things to do while working on the code.
+
+
+GENERAL EDITING
+
+• All files should be saved in utf-8 format.
+• Please use tabs, not spaces, to indent lines in the code.
+
+• Use the standard tags at the beginning when adding working comments: TODO, FIXME, OPTIMIZE. These allow use of the `rake notes` tasks (`rake notes:fixme`, etc.). E.g., “# TODO need to make an example comment here”
+
+
+TESTING
+
+For unit tests:
+• Use the check_associations method (found in test/test_helper.rb). See existing unit tests for examples.
+
+For functional tests:
+• Test routing for the controller with the assert_routing_for_resource method (test/test_helper.rb), and the assert_generates and assert_recognizes methods. See the existing controller tests for examples.
+
+• use *_test@wayground.ca for email addresses in test cases (where ‘*’ is some phrase relevant to the tests you are using the address in).
+
+
+DATE & TIME HANDLING
+
+• Handle local timezone conversions wherever dates are presented (stored in UTC). See lib/tz_helper.rb for methods. Based on Peepcode Code Review chapter 4. http://peepcode.com/products/draft-rails-code-review-pdf
+
+
+EMAIL
+
+• Mailer classes inherit from ActionMailer::ARMailer (not ActionMailer::Base).

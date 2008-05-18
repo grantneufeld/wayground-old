@@ -1,0 +1,19 @@
+= Topfunky Tasks
+
+Rake tasks for automating Rails development and maintenance.
+
+Experimental.
+
+A generator is also available for copying a stock application template and css file to your app.
+
+  ./script/generate application_layout
+
+== Resources
+
+Blog
+
+* http://nubyonrails.com
+
+Author
+
+* Geoffrey Grosenbach boss [at] topfunky [dot] com

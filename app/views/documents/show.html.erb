@@ -1,0 +1,61 @@
+<h1><%
+if @document.is_image?
+	%><img src="/icon/image_32.png" width="32" height="32" alt="Image: " class="diricon" align="top" title="Image" /><%
+else
+	%><img src="/icon/document_32.png" width="32" height="32" alt="Document: " class="diricon" align="top" title="Document" /><%
+end %><%= h @document.fileurl %><%
+if @document.is_private? %>
+<img src="/icon/private.png" width="16" height="16" alt="[Private]" class="diricon" align="top" title="This document is private" /><%
+end %></h1>
+<h2>URL:</h2>
+<p><textarea style="width:100%"><%= h @document.siteurl %></textarea></p>
+<h2>HTML Code:</h2>
+<p><textarea style="width:100%"><%=
+if @document.is_image?
+	h("<img src=\"#{h @document.siteurl}\" alt=\"#{h @document.filename}\"" +
+		((@document.width && @document.height) && (@document.width > 0 && @document.height > 0) ?
+			" width=\"#{@document.width}\" height=\"#{@document.height}\"" :
+			'') +
+		" />")
+else
+	h "<a href=\"#{h @document.siteurl}\" type=\"#{h @document.content_type}\">#{h @document.filename}</a>"
+end
+%></textarea></p>
+<%
+
+render_sidebar do
+	%><h2><img src="/icon/info_24.png" width="24" height="24" alt=" " class="icon" />Document Information</h2>
+<%=		render :partial=>'meta',
+		:locals=>{:document=>@document, :constrain_width=>210} %><%
+end
+if @document.renderable?
+	if @document.is_image?	
+		img_attrs = {:alt=>"View image “/#{h @document.filename}”"}
+		if @document.is_private?
+			img_attrs[:class] = 'overflow'
+		else
+			w, h = @document.scale_to_proportional 500, 500
+			if w > 0 and h > 0
+				img_attrs[:width] = w
+				img_attrs[:height] = h
+			end
+		end
+		%><h2>Image:</h2>
+	<p><%= link_to(
+			image_tag(@document.siteurl, img_attrs),
+			@document.siteurl
+				) %></p><%
+	else
+		%><h2>Document Content:</h2>
+	<div class="embedded"><%= format_content @document.content, @document.content_type %></div>
+	<%
+	end
+else
+	%><h2>Document Content</h2>
+<p>The document cannot be displayed within this page. Please <%= link_to 'download', @document.siteurl, :title=>"Download document “#{@document.filename}”" %> to view.</p>
+<%
+end
+
+
+
+%><%= render :partial=>'standard'%>

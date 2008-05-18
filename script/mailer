@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# TODO
+#
+# this is intended to be a script that can run to 
+#
+# Example from script/server:
+#require File.dirname(__FILE__) + '/../config/boot'
+#require 'commands/server'
+#
+# ActiveRecord Mailer commands:
+#ar_mailer -c /Users/grant/Sites/rails/wg -e 'PRODUCTION' -t 'notifications'
+#ar_sendmail -t Notification -c /Users/grant/Sites/rails/wg -e production

@@ -1,0 +1,10 @@
+<% if @documents.size == 0
+	%><p>No documents available.</p>
+<% end %>
+<table cellspacing="0">
+<thead><tr><th>Filename</th> <th>Width/Height</th> <th>Size</th> <th>URL</th></tr></thead>
+<tbody>
+<%= render :partial=>'document', :collection=>@documents %></tbody></table>
+
+<%= will_paginate @documents %>
+<%= render :partial=>'standard' %>

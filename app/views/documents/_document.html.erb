@@ -1,0 +1,17 @@
+<tr<%= cycle '', ' class="alternate"' %>><td><%
+if document.is_image?
+	%><img src="/icon/image.png" alt="[image]" width="16" height="16" class="diricon" align="top" /><%
+else
+	%><img src="/icon/document.png" alt="[document]" width="16" height="16" class="diricon" align="top" /><%
+end %> <%= link_to document.filename, document_path(document) %><%
+if document.is_private? %>
+<img src="icon/private.png" width="16" height="16" alt="[Private]" class="diricon" align="top" title="This document is private" /><%
+end %></td>
+<td><%
+if document.is_image?
+	%><%= document.width %> x <%= document.height %><%
+else
+	%><%
+end
+%></td><td><%= document.size_str %></td>
+<td><input type="text" value="<%= h document.siteurl %>" /></td></tr>

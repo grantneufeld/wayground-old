@@ -1,0 +1,15 @@
+.DS_Store
+config/database.yml
+config/amazon_s3.yml
+db/*.sqlite3
+log/*.log
+public/cache/**/*
+public/file/*
+public/file/**/*
+public/icon/*.png
+public/icon/*.zip
+public/pic/*
+public/pic/**/*
+tmp/*
+tmp/**/*
+wg.tmproj

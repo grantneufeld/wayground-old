@@ -1,0 +1,163 @@
+To ensure your test cases call efficient MySQL[http://mysql.com/]...
+
+ def test_my_case
+   assert_efficient_sql do
+
+     # just wrap them in this block!
+
+   end
+ end
+
+The assertion intercepts and copies out your MySQL SELECT statements, then 
+calls <code>EXPLAIN[http://dev.mysql.com/doc/refman/5.0/en/explain.html]</code>
+on each one, and inspects the results for common problems.
+
+The goal is test cases that resist database pessimization, even as you change
+your data relations, to add new features. If you run your tests after
+every few changes, you can easily detect which change broke your database's
+indices and relations.
+
+Credits to {Jay Pipe}[http://lists.mysql.com/internals/35254] for
+his excellent little survey of ways to detect pessimizations!
+
+=== Install
+
+piston[http://piston.rubyforge.org/index.html] is the best way to 
+install this assertion:
+
+  piston import svn://rubyforge.org/var/svn/efficient-sql/ \
+                     vendor/plugins/efficient-sql
+
+The documented Rails way is the worst:
+
+  script/plugin install -x svn://rubyforge.org/var/svn/efficient-sql
+
+The <code>-x</code> option bonds your 
+Subversion[http://subversion.tigris.org/] repository to 
+http://rubyforge.org. Each time you +svn+ +update+ your own code, 
+you will also automatically get the latest version of the plugin, 
+whether you need it or not. <code>piston</code> avoids these
+fun issues. You can update on command, with <code>piston 
+update</code>...
+
+=== Diagnose
+
+If your SQL is already efficient, use <b><code>:verbose</code></b>
+to diagnose <i>why</i> it's efficient. See 
+AssertEfficientSqlTest#test_verbose
+
+It prints a table like this to STDOUT:
+
+ query for SELECT * FROM foos WHERE (foos.`id` = 42)  LIMIT 1
+
+ Foo Load
+    select_type | key_len | type  | id | Extra | possible_keys | table | rows | ref   | key
+    -------------------------------------------------------------------------------------------
+    SIMPLE      | 4       | const | 1  |       | PRIMARY       | foos  | 1    | const | PRIMARY
+
+Reading a table's primary key is naturally efficient, so the 
+<b>type</b> field is a healthy <b>const</b>.
+
+See the MySQL[http://mysql.com/] document
+{Optimizing Queries with EXPLAIN}[http://dev.mysql.com/doc/refman/5.0/en/explain.html] 
+to learn what those results mean.
+
+=== Optimize
+
+AssertEfficientSqlTest#test_assert_inefficient_sql shows 
+<code>assert_efficient_sql</code> failing:
+
+Its failure would look like this:
+
+    1) Failure:
+  test_assert_inefficient_sql(AssertEfficientSqlTest)
+      [./lib/assert_efficient_sql.rb:220:in `analyze_efficiency'
+       ./test/assert_efficient_sql_test.rb:67:in `test_assert_inefficient_sql']:
+  Pessimistic
+  query for select * from foos a
+  full table scan
+  Foo Load
+     select_type | key_len | type | id | Extra | possible_keys | table | rows | ref | key
+     ------------------------------------------------------------------------------------
+     SIMPLE      |         | ALL  | 1  |       |               | a     | 43   |     |    .
+
+  7 tests, 9 assertions, 1 failures, 0 errors
+
+Most queries should not blindly read +ALL+ rows in a database table.
+
+If that query used a +WHERE+ condition that selects fewer records,
+but if +EXPLAIN+ produced a query +type+ of +ALL+, this would 
+indicate MySQL might read the entire database table just to apply
+the +WHERE+. The best fix, in that situation, is to add an index
+(a MySQL "+KEY+") to the table, and put the fields from that +WHERE+
+condition into it.
+
+That technique allows MySQL to read the index first, then chop 
+directly thru the table to the records you need.
+
+=== Pessimize
+
+Sometimes you need an +ALL+, even while other <code>assert_efficient_sql</code>
+checks must pass. To positively declare we like +ALL+, pass in
+<b><code>:ALL => true</code></b>.
+
+See AssertEfficientSqlTest#test_assert_all
+
+Assertions use positive reinforcement; they state conditions we like. 
+They don't try to deny conditions we don't like. If :ALL => false meant 
+"false to warn about +ALL+", the assertion would confuse developers. 
+So we use <code>:ALL => true</code> to allow queries to scan all rows.
+
+
+=== Options 
+
+If +assert_efficient_sql+ (generally) dislikes your arguments, 
+it will print out its default options, each with an explanation.
+
+See AssertEfficientSqlTest#test_help
+
+=== Nesting 
+
+You can also nest the assertion, to provide different 
+options for different blocks. The assertion allows 
+this because your test might also have some other
+reason to use blocks.
+
+See AssertEfficientSqlTest#test_nest
+
+=== Using filesort
+
+If your +WHERE+ and +ORDER+ clauses are too complex, 
+MySQL might need to write a file (or worse), just to
+satisfy a query. +assert_efficient_sql+ detects this
+pernicious situation:
+
+See AssertEfficientSqlTest#test_prevent_filesorts
+
+If you want to use the assertion without faulting
+on filesorts, pass the option
+<b><code>:Using_filesort => true</code></b>.
+
+=== Throttle
+
+One common pessimization is a query that reads thousands
+of rows just to return a few. +assert_efficient_sql+ 
+counts the rows hit in each phase of an SQL +SELECT+,
+and faults if any row count exceeds <b>1,000</b>.
+
+Adjust this count with <b><code>:throttle => 42</code></b>.
+
+See AssertEfficientSqlTest#test_throttle
+
+=== SHOW SESSION STATUS
+
+<code>assert_efficient_sql</code> calls 
+<code>SHOW SESSION STATUS</code> before and after
+its sampled block. If you are seeking an advanced
+pessimization, such as <code>Created_tmp_disk_tables</code>,
+pass <code>:Created_tmp_disk_tables => 0</code>. The
+assertion will compare difference in STATUS before
+and after calling its block. A difference greater
+than the allowed difference will trigger a fault.
+
+See AssertEfficientSqlTest#test_declare_futile_war_on_Innodb_rows_read

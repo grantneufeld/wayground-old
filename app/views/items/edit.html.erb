@@ -1,0 +1,10 @@
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Document: <%= link_to (@item.title || @item.id), item_path(@item) %></h1>
+<%= error_messages_for :item %>
+<div class="step_form">
+<% form_for(:item, :url=>item_path(@item), :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>

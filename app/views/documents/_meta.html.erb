@@ -1,0 +1,58 @@
+<%
+document ||= @document || Document.new
+constrain_width ||= nil
+-%>
+<table cellspacing="0"<%=
+	constrain_width ? " style=\"max-width:#{constrain_width.to_i}px\"" : nil
+%>><thead><tr><th colspan="2"><%
+if document.is_image?
+	%><img src="/icon/image.png" width="16" height="16" alt="Image" class="diricon" align="top" title="Image: " /><%
+else
+	%><img src="/icon/document.png" width="16" height="16" alt="Document" class="diricon" align="top" title="Document: " /><%
+end %><%= link_to document.filename, document.siteurl, :title=>"Load the document “#{document.filename}”" %></th></tr></thead>
+<tbody>
+<tr><th align="right">URL:</th>
+	<td><input value="<%= h(document.siteurl) %>" style="width:95%" /></td></tr>
+<tr class="alternate"><th align="right">Content:</th>
+	<td><%=h document.content_type %></td></tr>
+<tr><th align="right">Size:</th>
+	<td><%=h document.size %> bytes</td></tr>
+<% if document.is_image? -%>
+<tr class="alternate"><th align="right">Width:</th>
+	<td><%=h document.width %></td></tr>
+<tr><th align="right">Height:</th>
+	<td><%=h document.height %></td></tr>
+<% end
+%><tr class="alternate"><th align="right">Site:</th>
+	<td><%= h document.subfolder %></td></tr>
+<tr><th align="right">Privacy:</th>
+	<td><%
+		if @document.is_private?
+			%><img src="/icon/private.png" width="16" height="16" alt=" " class="diricon" align="top" /> Private<%
+		else
+			%>Public<%
+		end %></td></tr>
+<tr class="alternate"><th align="right">Uploaded by:</th>
+	<td><%= h document.user.nickname %></td></tr>
+<tr><th align="right">Created:</th>
+	<td><%=h format_utc_datetime(document.created_at, :tight) %></td></tr>
+<%	if document.updated_at.is_a? Time and document.updated_at > document.created_at
+		%><tr class="alternate"><th align="right">Updated:</th>
+	<td><%=h format_utc_datetime(document.updated_at, :tight) %></td></tr>
+<%	end
+%></tbody>
+<tfoot><tr><th align="right">Actions:</th>
+		<td><%
+#= link_to '<img src="/icon/edit.png" width="16" height="16" ' +
+#	'alt=" " class="diricon" />Edit', edit_document_path(document),
+#	:title=>"Edit details for ‘#{h document.filename}’", :class=>'menuitem'
+%>
+<%= 
+link_to_destroy('<img src="/icon/delete.png" width="16" height="16" alt=" " class="diricon" align="top" />Delete', document_path(document), nil, "Are you sure you want to permanently delete ‘#{h document.filename}’?", {:class=>'menuitem', :title=>"Permanently delete ‘#{h document.filename}’"})
+#link_to '<img src="/icon/delete.png" width="16" height="16" alt=" " ' +
+#	'class="diricon" />Delete', document_path(document),
+#	:confirm=>'Are you sure?', :method=>:delete, :class=>'menuitem',
+#	:title=>"Permanently delete ‘#{h document.filename}’"
+	%></td>
+</tr></tfoot>
+</table>

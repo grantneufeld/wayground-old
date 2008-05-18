@@ -1,0 +1,34 @@
+production: &production_settings
+  SITE: :wayground
+  # Wayground site id is sum of all site ids
+  ID: 1
+  SITE_IDS: [1,2,4,8,16,32,64,128,256,512]
+  ROOT: 'http://wayground.ca'
+  FILE_ROOT: '/file/'
+  IMAGE_ROOT: '/pic/'
+  LAYOUT: 'wayground'
+  TITLE: 'Wayground'
+  TITLE_PREFIX: 'Wayground'
+  TITLE_SHORT: 'WG'
+  TITLE_LIBRARY: TITLE + ' Library'
+  SENDER: 'Wayground <wayground@wayground.ca>'
+  EMAIL: 'wayground@wayground.ca'
+  # displayed in the registration form:
+  REGISTER_EXTRA: ''
+  # displayed after registration is complete
+  SIGNUP_EXTRA: ''
+  EMAIL_WELCOME_EXTRA: 'http://wayground.ca/'
+  # STANDARD ITEMS (items.id)
+  # The site home page. Normally 1, except on shared dbs.
+  HOME_ID: 1
+  # New users are automatically added to this group
+  WEBSITE_USER_GROUP: 0
+  # The Forum for library resource discussions
+  LIBRARY_FORUM: 0
+  DEFAULT_TIMEZONE: 'Canada/Mountain'
+
+development:
+  <<: *production_settings
+
+test:
+  <<: *production_settings

@@ -1,0 +1,7 @@
+author: topfunky
+summary: Generates better default test cases for Integration tests and also View and Controller tests for use with Test::Rails.
+homepage: http://nubyonrails.com
+plugin: http://topfunky.net/svn/plugins/vic_tests
+license: MIT
+version: 0.1
+rails_version: 1.1+

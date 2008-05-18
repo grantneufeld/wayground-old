@@ -1,0 +1,11 @@
+private_text:
+  id: 1
+  data: 'Private text data.'
+
+private_subtext:
+  id: 2
+  data: 'Private subtext data.'
+
+private_pdf:
+  id: 3
+  data: "%PDF-1.5\n%%EOF"

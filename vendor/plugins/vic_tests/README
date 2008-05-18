@@ -1,0 +1,17 @@
+= View, Integration, Controller Test Generators
+
+Makes templates for tests.
+
+Gives you more useful starter code than the built-in Integration test generator. Also makes files for Test::Rails view and controller tests.
+
+= Usage
+
+  ./script/generate integration_test JournalStories
+  ./script/generate view_test Journals index edit new
+  ./script/generate controller_test Journals index edit new
+
+= Authors
+
+* Some Integration code copied from articles by Jamis Buck.
+* View and Controller code from examples in the Test::Rails docs.
+* Generator plugin by Geoffrey Grosenbach http://nubyonrails.com

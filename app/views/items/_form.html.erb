@@ -1,0 +1,47 @@
+<%
+fields_for :item do |f|
+%><table cellspacing="0">
+<%
+if @item.parent
+	%><thead><tr><th>Parent Item:</th> <td><%= h(@item.parent.title)
+	%></td></tr></thead>
+<%
+end
+%><tbody>
+<tr><th><label for="item_subpath">Subpath:</label></th>
+	<td><%= h(@item.parent.sitepath) if @item.parent
+	%><%= (@item.parent && @item.parent.sitepath == '/') ? nil : '/'
+	%><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
+	<br />Setting the subpath will set the web-link url for this item
+	(e.g., “http://website/<b>subpath</b>”).
+	<br />If this item has a parent item, the subpath will be relative to the parent item’s subpath (e.g., “http://website/parent-subpath/<b>subpath</b>”).
+	<br />Only the following characters may be used, no spaces: <b>A-Z a-z 0-9 - _</b></td></tr>
+<tr class="alternate"><th><label for="item_title">Title:</label></th>
+	<td><%= f.text_field :title %></td></tr>
+<tr><th><label for="item_description">Description:</label></th>
+	<td><%= f.text_field :description %>
+	<br />The description is used when listing pages, and by some search engines.</td></tr>
+<tr class="alternate"><th><label for="item_content">Content:</label></th>
+	<td><%= f.text_area :content, :rows=>20, :cols=>68 %>
+	<br /><label for="item_content_type">Content Type:</label>
+	<% #= f.text_field :content_type %>
+	<%
+	content_types = [
+		#['Auto-formatted text (Markdown)','text/markdown'],
+		#['Message Board text (BBCode)','text/bbcode'],
+		['Plain text','text/plain'],
+		['HTML formatted text','text/html']
+		# ['Textilize','text/textilize']
+		]
+	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
+	%><%= f.select :content_type, content_types %>
+<%	#	<br />Auto-formatted text allows you to use the formatting described above.
+%>		<br />Plain text is just plain paragraphs, no special formatting.
+		<br />HTML is for text formatted using standard HTML markup.</td></tr>
+<tr><th><label for="item_keywords">Keywords:</label></th>
+	<td><%= f.text_field :keywords %>
+		<br />Comma-separated.</td></tr>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
+</table>
+<% end %>
