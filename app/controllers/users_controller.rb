@@ -34,8 +34,7 @@ class UsersController < ApplicationController
 	rescue ActiveRecord::RecordNotFound
 		flash[:notice] =
 			"Could not find a user matching the requested id (‘#{params[:id]}’)."
-		redirect_to '/'
-#••		redirect_to home_url
+		redirect_to home_path
 	end
 	
 	# new user registration form
@@ -47,7 +46,8 @@ class UsersController < ApplicationController
 	
 	# new user registration submission
 	def create
-		#••• cookies.delete :auth_token
+		cookies.delete 'auth_token'
+		reset_session
 		
 		self.new
 		# User model doesn’t require email, but web login does

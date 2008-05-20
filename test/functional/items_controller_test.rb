@@ -209,7 +209,7 @@ class ItemsControllerTest < ActionController::TestCase
 				assert_select 'input#item_title'
 				assert_select 'input#item_description'
 				assert_select 'textarea#item_content'
-				# • content_type
+				assert_select 'select#item_content_type'
 				assert_select 'input#item_keywords'
 			end
 		end
@@ -263,13 +263,13 @@ class ItemsControllerTest < ActionController::TestCase
 		assert_template 'new'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			# ••• ERRORS LIST
+			# TODO: Check for ERRORS LIST
 			assert_select "form[action=#{items_path}]" do
 				assert_select 'input#item_subpath'
 				assert_select 'input#item_title'
 				assert_select 'input#item_description'
 				assert_select 'textarea#item_content'
-				# • content_type
+				assert_select 'select#item_content_type'
 				assert_select 'input#item_keywords'
 			end
 		end
@@ -319,7 +319,7 @@ class ItemsControllerTest < ActionController::TestCase
 				assert_select 'input#item_title'
 				assert_select 'input#item_description'
 				assert_select 'textarea#item_content'
-				# • content_type
+				assert_select 'select#item_content_type'
 				assert_select 'input#item_keywords'
 			end
 		end
@@ -339,7 +339,7 @@ class ItemsControllerTest < ActionController::TestCase
 				assert_select 'input#item_title'
 				assert_select 'input#item_description'
 				assert_select 'textarea#item_content'
-				# • content_type
+				assert_select 'select#item_content_type'
 				assert_select 'input#item_keywords'
 			end
 		end
@@ -390,22 +390,110 @@ class ItemsControllerTest < ActionController::TestCase
 		assert flash[:notice]
 		assert_redirected_to item_path(items(:update_this))
 	end
-	# TODO: add tests for various items update actions
-	#def test_update_admin
-	#	
-	#end
-	#def test_update_invalid_user
-	#	
-	#end
-	#def test_update_no_user
-	#	
-	#end
-	#def test_update_invalid_params
-	#	
-	#end
-	#def test_update_no_params
-	#	
-	#end
+	def test_update_admin
+		put :update, {:id=>items(:update_this).id,
+			:item=>{:subpath=>'test_update_admin', :title=>'test_update_admin',
+				:description=>'test_update_admin',
+				:content=>'test_update_admin', :keywords=>'test_update_admin'}},
+			{:user=>users(:admin).id}
+		assert_response :redirect
+		assert_equal items(:update_this), assigns(:item)
+		assert_equal users(:staff), assigns(:item).user
+		assert_equal users(:admin), assigns(:item).editor
+		assert_equal 'test_update_admin', assigns(:item).subpath
+		assert_equal '/test_update_admin', assigns(:item).sitepath
+		assert_equal 'test_update_admin', assigns(:item).title
+		assert_equal 'test_update_admin', assigns(:item).description
+		assert_equal 'test_update_admin', assigns(:item).content
+		assert_equal 'test_update_admin', assigns(:item).keywords
+		assert flash[:notice]
+		assert_redirected_to item_path(items(:update_this))
+	end
+	def test_update_non_staff_or_admin_user
+		original_title = items(:update_this).title
+		put :update, {:id=>items(:update_this).id,
+			:item=>{:subpath=>'test_update_not_staff',
+				:title=>'test_update_not_staff',
+				:description=>'test_update_not_staff',
+				:content=>'test_update_not_staff',
+				:keywords=>'test_update_not_staff'}},
+			{:user=>users(:login).id}
+		assert_response :redirect
+		assert_nil assigns(:item)
+		# item was not updated
+		assert_equal original_title, items(:update_this).title
+		assert flash[:warning]
+		assert_redirected_to account_users_path
+	end
+	def test_update_no_user
+		original_title = items(:update_this).title
+		put :update, {:id=>items(:update_this).id,
+			:item=>{:subpath=>'test_update_no_user',
+				:title=>'test_update_no_user',
+				:description=>'test_update_no_user',
+				:content=>'test_update_no_user',
+				:keywords=>'test_update_no_user'}},
+			{}
+		assert_response :redirect
+		assert_nil assigns(:item)
+		# item was not updated
+		assert_equal original_title, items(:update_this).title
+		assert flash[:warning]
+		assert_redirected_to login_path
+	end
+	def test_update_invalid_params
+		original_title = items(:update_this).title
+		put :update, {:id=>items(:update_this).id,
+			:item=>{:subpath=>'not valid subpath!',
+				:title=>'test_update_invalid',
+				:description=>'test_update_invalid',
+				:content=>'test_update_invalid',
+				:keywords=>'test_update_invalid'}},
+			{:user=>users(:staff).id}
+		assert_response :success
+		assert_equal items(:update_this), assigns(:item)
+		# item was not updated
+		assert_equal original_title, items(:update_this).title
+		assert_nil flash[:notice]
+		assert_equal "Edit ‘#{items(:update_this).title}’", assigns(:page_title)
+		# view result
+		assert_template 'edit'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			assert_select "form[action=#{item_path(items(:update_this))}]" do
+				assert_select 'input#item_subpath'
+				assert_select 'input#item_title'
+				assert_select 'input#item_description'
+				assert_select 'textarea#item_content'
+				assert_select 'select#item_content_type'
+				assert_select 'input#item_keywords'
+			end
+		end
+	end
+	def test_update_no_params
+		original_title = items(:update_this).title
+		put :update, {:id=>items(:update_this).id, :item=>{}},
+			{:user=>users(:staff).id}
+		assert_response :success
+		assert_equal items(:update_this), assigns(:item)
+		# item was not updated
+		assert_equal original_title, items(:update_this).title
+		assert_nil flash[:notice]
+		assert_equal "Edit ‘#{items(:update_this).title}’", assigns(:page_title)
+		# view result
+		assert_template 'edit'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			assert_select "form[action=#{item_path(items(:update_this))}]" do
+				assert_select 'input#item_subpath'
+				assert_select 'input#item_title'
+				assert_select 'input#item_description'
+				assert_select 'textarea#item_content'
+				assert_select 'select#item_content_type'
+				assert_select 'input#item_keywords'
+			end
+		end
+	end
 
 	# DELETE
 	def test_destroy

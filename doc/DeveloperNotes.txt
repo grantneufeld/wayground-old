@@ -13,6 +13,9 @@ GENERAL EDITING
 
 TESTING
 
+Please follow test-driven development (TDD) — write your tests before you write your code!
+See the Peepcode Screencast for a tutorial on this approach: http://peepcode.com/products/test-first-development
+
 For unit tests:
 • Use the check_associations method (found in test/test_helper.rb). See existing unit tests for examples.
 
@@ -30,3 +33,9 @@ DATE & TIME HANDLING
 EMAIL
 
 • Mailer classes inherit from ActionMailer::ARMailer (not ActionMailer::Base).
+
+
+VERSION CONTROL
+
+To update the GitHub repository (if you’ve setup the correct access for this):
+ git push origin master

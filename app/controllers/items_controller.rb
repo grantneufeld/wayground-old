@@ -125,7 +125,7 @@ class ItemsController < ApplicationController
 			# can’t update - was caught in edit
 		else
 			@item.editor = current_user
-			if @item.update_attributes(params[:item])
+			if params[:item] && params[:item].size > 0 && @item.update_attributes(params[:item])
 				flash[:notice] = "Updated information for ‘#{@item.title}’."
 				redirect_to item_path(@item)
 			else

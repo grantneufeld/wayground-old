@@ -69,7 +69,7 @@ public/pic/*
 public/pic/**/*
 tmp/*
 tmp/**/*
-wg.tmproj
+*.tmproj
 
 Add your files to the new git repository and commit them.
  git add .
@@ -87,6 +87,10 @@ If you have two or more Apache installs, make sure you install for the correct o
  export APXS2=/Library/Apache2/bin/apxs
 Install the module for Apache:
  sudo passenger-install-apache2-module
+
+For monitoring the server and restarting processes that crash:
+ sudo gem install god
+(info: http://god.rubyforge.org/)
 
 
 Testing & Debugging

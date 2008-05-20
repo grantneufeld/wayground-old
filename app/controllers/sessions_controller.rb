@@ -15,10 +15,11 @@ class SessionsController < ApplicationController
 		if current_user
 			if params[:remember_me] == '1'
 				self.current_user.remember_me
-				cookies['auth_token'] = {:value=>self.current_user.remember_token,
+				cookies['auth_token'] = {
+					:value=>self.current_user.remember_token,
 					:expires=>self.current_user.remember_token_expires_at}
 			end
-			current_user.update_attributes :login_at=>Time.now
+			current_user.update_attribute(:login_at, Time.now)
 			if current_user.activated?
 				flash[:notice] = 'Logged in successfully'
 			else

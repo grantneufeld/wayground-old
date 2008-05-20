@@ -61,7 +61,7 @@ Rails::Initializer.run do |config|
 	
 	# Make Active Record use UTC-base instead of local time
 	config.active_record.default_timezone = :utc
-	# • should I use this here, too?:
+	# TODO: should I use this here, too?:
 	#ENV['TZ'] = 'UTC'
 	
 	config.action_view.cache_template_loading = false

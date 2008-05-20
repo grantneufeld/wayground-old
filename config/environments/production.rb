@@ -33,5 +33,5 @@ config.action_mailer.smtp_settings = {
     #:authentication => :login
 }
 
-# ••• ??? Not sure why I put this here.
+# TODO: ??? Not sure why I put this here.
 ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS[:session_key] = 'wayground_key'

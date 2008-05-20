@@ -327,8 +327,8 @@ module ApplicationHelper
 				# TODO: constrain to past events in item lists
 			#when 'current'
 			else
-				if false # •••
-					# Constrain to items that haven't ended/expired yet
+				if false
+					# TODO: Constrain to items that haven't ended/expired yet
 					condition_strs <<
 						'(items.expires_at IS NULL OR items.expires_at >= NOW())' +
 						' AND (items.end_on IS NULL' +

@@ -52,8 +52,9 @@ class UsersControllerTest < ActionController::TestCase
 		assert_equal 'New User Registration', assigns(:page_title)
 		# view result
 		assert_template 'new'
-#••		assert_select 'title', :text=>"#{WAYGROUND['TITLE_PREFIX']}: Groups",
-#••			:count=>1
+		assert_select 'title',
+			:text=>"#{WAYGROUND['TITLE_PREFIX']}: New User Registration",
+			:count=>1
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select "form[action=#{users_path}]" do
@@ -333,7 +334,7 @@ class UsersControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select "form[action=#{user_path(users(:login))}]"
-			#•••
+			# TODO: check for user edit form fields
 		end
 	end
 	def test_edit_user_admin
@@ -348,7 +349,7 @@ class UsersControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select "form[action=#{user_path(users(:login))}]"
-			#•••
+			# TODO: check for user edit form fields
 		end
 	end
 	def test_edit_user_not_self

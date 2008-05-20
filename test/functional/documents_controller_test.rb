@@ -278,7 +278,7 @@ class DocumentsControllerTest < ActionController::TestCase
 		assert_template 'new'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			# ••• ERRORS LIST
+			# TODO: Check for ERRORS LIST
 			assert_select "form[action=#{documents_path}]" do
 				assert_select 'select#document_subfolder'
 				assert_select 'input[type=file]'

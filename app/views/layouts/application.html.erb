@@ -75,6 +75,21 @@ if request.request_uri == "/"
 		@page_title = website_title
 	end
 else
+	if @page_title.blank?
+		if @item and !(@item.title.blank?)
+			@page_title = h @item.title
+			unless @content_for_title.blank?
+				@page_title += ": #{h @content_for_title}"
+			end
+		elsif !(@content_for_title.blank?)
+			@page_title = h @content_for_title
+		else
+			@page_title = controller.controller_name()
+			unless controller.action_name.blank?
+				@page_title = ": #{controller.action_name}"
+			end
+		end
+	end
 	website_root_title_link = '<a href="/">' + website_title + '</a>'
 end
 
@@ -86,27 +101,11 @@ end
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title><%
-#if @page_title.blank?
-#	% ><%= website_prefix % >: <%
-#	if @item and !(@item.title.blank?)
-#		% ><%=h @item.title % ><%
-#		unless @content_for_title.blank?
-#			% >: <%=h @content_for_title % ><%
-#		end
-#	elsif !(@content_for_title.blank?)
-#		% ><%=h @content_for_title % ><%
-#	else
-#		% ><%= controller.controller_name() % ><%
-#		action = controller.action_name
-#		unless action.blank?
-#			% >: <%= action % ><%
-#		end
-#	end
-#elsif @page_title == website_title or @page_title == website_prefix
+if @page_title == website_title or @page_title == website_prefix
 	%><%= @page_title %><%
-#else
-#	% ><%= website_prefix % >: <%= @page_title % >< %
-#end
+else
+	%><%= website_prefix %>: <%= @page_title %><%
+end
 %></title>
 <%= stylesheet_link_tag 'wg', :cache=>true %>
 <% #= stylesheet_link_tag 'print', :media=>'print'
@@ -122,8 +121,8 @@ end
 	# You can include content for the head (meta) by wrapping it in
 	# a call to: content_for("head") do ... end
 -%>
-<% if false #• @item and logged_in? and current_user.admin?
-	# ••• @item.can_edit?
+<% if false
+	# TODO: if @item and logged_in? and (current_user.admin? || @item.can_edit?)
 	%><link rel="edit" href="/items/<%= @item.id
 		%>/edit/" title="Edit item <%= @item.id %>" />
 <% end

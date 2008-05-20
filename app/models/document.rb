@@ -55,7 +55,7 @@ class Document < ActiveRecord::Base
 	
 	# A wrapper for find that takes a User as the first param.
 	# Enforces security restrictions on document access.
-	# • WARNING: Doesn’t handle a hash for condition args:
+	# TODO: • WARNING: Doesn’t handle a hash for condition args:
 	#	:conditions=>['string',{args}]
 	def self.find_for_user(u=nil, *args)
 		condition_strs = []
