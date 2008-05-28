@@ -31,9 +31,8 @@ end
 if @document.renderable?
 	if @document.is_image?	
 		img_attrs = {:alt=>"View image “/#{h @document.filename}”"}
-		if @document.is_private?
-			img_attrs[:class] = 'overflow'
-		else
+		img_attrs[:class] = 'overflow'
+		unless @document.is_private?
 			w, h = @document.scale_to_proportional 500, 500
 			if w > 0 and h > 0
 				img_attrs[:width] = w
@@ -41,7 +40,7 @@ if @document.renderable?
 			end
 		end
 		%><h2>Image:</h2>
-	<p><%= link_to(
+<p><%= link_to(
 			image_tag(@document.siteurl, img_attrs),
 			@document.siteurl
 				) %></p><%
