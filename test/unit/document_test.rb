@@ -196,7 +196,7 @@ class DocumentTest < ActiveSupport::TestCase
 		doc = Document.new_doc(params, users(:login))
 		doc.save!
 		# test that the file was saved to the expected directory
-		assert File.exist? 'public/file/arusha/upload.jpg'
+		assert File.exist?('public/file/arusha/upload.jpg')
 		# ‘delete’ (destroy) the document
 		doc.destroy
 		# test that the file was removed from the directory

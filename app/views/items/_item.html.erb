@@ -1,7 +1,7 @@
 <%
 item ||= @item
 items ||= {}
-row_id ||= "item_row_#{item.id}"
+row_id ||= "item_#{item.id}"
 
 %><li id="<%= row_id %>" class="<%= item.css_class('dir-') %><%= cycle '', ' alternate' %>"><%
 

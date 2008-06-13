@@ -17,11 +17,11 @@ class ItemsControllerTest < ActionController::TestCase
 	end
 	
 	def test_routing
-		#map.home '', :controller=>'items', :action=>'show', :url=>nil, :id=>nil
+		#map.root :controller=>'items', :action=>'show'
 		assert_generates('/', {:controller=>'items', :action=>'show'})
 		assert_recognizes({:controller=>'items', :action=>'show'}, '/')
-		#assert_equal '/', home_url
-		#assert_equal '/', home_path
+		#assert_equal '/', root_url
+		#assert_equal '/', root_path
 		
 		#map.page '*url', :controller=>'items', :action=>'show',
 		#	:conditions=>{:method=>:get}

@@ -45,8 +45,9 @@ ActionController::Routing::Routes.draw do |map|
 	map.resources :users, :collection=>{:activate=>:get, :account=>:get}
 	
 	# special item: the home page
-	map.home '', :controller=>'items', :action=>'show',
-		:conditions=>{:method=>:get} #, :url=>nil, :id=>nil
+	#map.home '', :controller=>'items', :action=>'show',
+	#	:conditions=>{:method=>:get} #, :url=>nil, :id=>nil
+	map.root :controller=>'items', :action=>'show'
 	map.resources :items
 	
 	map.private_doc '/private/*filename', :controller=>'documents',

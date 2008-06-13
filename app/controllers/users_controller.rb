@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 	rescue ActiveRecord::RecordNotFound
 		flash[:notice] =
 			"Could not find a user matching the requested id (‘#{params[:id]}’)."
-		redirect_to home_path
+		redirect_to root_path
 	end
 	
 	# new user registration form

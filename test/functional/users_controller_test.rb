@@ -317,7 +317,7 @@ class UsersControllerTest < ActionController::TestCase
 		assert_response :redirect
 		assert_nil assigns(:user)
 		assert flash[:notice]
-		assert_redirected_to home_path
+		assert_redirected_to root_path
 	end
 	
 	# EDIT
