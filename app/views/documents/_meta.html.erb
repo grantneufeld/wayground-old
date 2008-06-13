@@ -35,10 +35,10 @@ end %><%= link_to document.filename, document.siteurl, :title=>"Load the documen
 <tr class="alternate"><th align="right">Uploaded by:</th>
 	<td><%= h document.user.nickname %></td></tr>
 <tr><th align="right">Created:</th>
-	<td><%=h format_datetime(document.created_at, :tight) %></td></tr>
+	<td><%=h document.created_at.to_s(:tight) %></td></tr>
 <%	if document.updated_at.is_a? Time and document.updated_at > document.created_at
 		%><tr class="alternate"><th align="right">Updated:</th>
-	<td><%=h format_datetime(document.updated_at, :tight) %></td></tr>
+	<td><%=h document.updated_at.to_s(:tight) %></td></tr>
 <%	end
 %></tbody>
 <tfoot><tr><th align="right">Actions:</th>

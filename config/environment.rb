@@ -109,10 +109,3 @@ ActionMailer::ARMailer::email_class = Notification
 
 # cool AR logging hack
 #require 'ar_extensions'
-
-# since we’re in Canada, and Rails is annoyingly U.S.-centric in it’s timezone functions:
-class TimeZone
-	def self.ca_zones
-		all.find_all { |z| z.name =~ /Canada|Saskatchewan|Newfoundland/ }
-	end
-end
