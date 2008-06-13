@@ -119,6 +119,18 @@ class UserTest < ActiveSupport::TestCase
 		assert users(:change_pass).password_matches?(new_pass)
 	end
 	
+	def test_set_remember_me
+		assert !(users(:login).remember_token?)
+		assert_nil users(:login).remember_token_expires_at
+		assert_nil users(:login).remember_token
+		users(:login).remember_me
+		assert users(:login).remember_token?
+		users(:login).forget_me
+		assert !(users(:login).remember_token?)
+		assert_nil users(:login).remember_token_expires_at
+		assert_nil users(:login).remember_token
+		# TODO: test remember_token_expires_at values for remember_me, remember_me_for(time) and remember_me_until(time)
+	end
 	
 	# •••••••••••  TESTS TO BE WRITTEN  •••••••••••••••••••••••••••••
 	

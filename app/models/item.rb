@@ -93,4 +93,7 @@ class Item < ActiveRecord::Base
 		parent.nil? ? [] : parent.parent_chain << parent
 	end
 	
+	def css_class(prefix='')
+		"#{prefix}#{sitepath == '/' ? 'root' : self.class.name.downcase}"
+	end
 end

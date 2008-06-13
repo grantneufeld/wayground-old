@@ -135,6 +135,7 @@ class SessionsControllerTest < ActionController::TestCase
 		assert_redirected_to new_session_path
 	end
 	
+	# TODO: test use of remember_me token
 	
 	protected
 	

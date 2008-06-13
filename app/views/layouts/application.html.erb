@@ -143,6 +143,10 @@ unless @content_for_keywords.blank?
 <div id="header">
 <h1 id="title"><%= website_root_title_link %></h1>
 <map title="Navigation Bar" name="NavigationBar" id="navigation"><p id="menu">
+<%= link_to 'Pages', items_path, {
+	:class=>(@section == 'items' ? 'current-tab' : nil),
+	:title=>'Page/item management for this site'
+	} %><span class="separator">,</span>
 <%= link_to 'Documents', documents_path, {
 	:class=>(@section == 'documents' ? 'current-tab' : nil),
 	:title=>'Document/file management for this site'

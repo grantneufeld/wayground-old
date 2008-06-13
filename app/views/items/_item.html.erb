@@ -1,8 +1,75 @@
 <%
 item ||= @item
 items ||= {}
-%><li class="<%= item.sitepath == '/' ? 'dir-root' : 'dir-page' %>"><%= link_to item.title, item_path(item) %><%
-if items.size > 0
-	%><ul><%= render :partial=>'item', :collection=>items %></ul><%
+row_id ||= "item_row_#{item.id}"
+
+%><li id="<%= row_id %>" class="<%= item.css_class('dir-') %><%= cycle '', ' alternate' %>"><%
+
+if item.children.size > 0 #or item.is_container?
+	if item.children.size < 1
+		%><img src="/icon/expand-off.png" width="16" height="16" alt="Empty" class="diricon" /><%
+	elsif false #items
+		%><img src="/icon/expanded.png" width="16" height="16" alt="Expanded" class="diricon" /><%
+	else
+		%><%=
+		link_to_remote('<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
+			{:url=>{:controller=>'items', :action=>'index', :id=>item},
+			:loading=>"Element.update('#{row_id}_expand','<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\" alt=\"Loading…\" class=\"diricon\" />');",
+			:loaded=>"Element.replace('#{row_id}_expand','<img src=\"/icon/expanded.png\" width=\"16\" height=\"16\" alt=\"Expanded\" class=\"diricon\" />');"},
+			{:href=>url_for({:controller=>'items',:action=>'index', :id=>item}),
+				:title => "Show the children of this #{item.class}",
+				:id=>"#{row_id}_expand"}) %><%
+	end %><span class="separator">.</span>
+<%
 end
-%></li>
+
+%><%= link_to item.title, item.sitepath, {:title=>item.description} %><%
+
+if item.children.size > 0 %>
+<span class="meta">(<%= item.children.size %> item<%= item.children.size != 1 ? 's' : '' %>)</span>
+<%
+end
+
+if current_user && current_user.admin
+	#if item.is_container?
+		%>
+<%=
+		link_to('<img src="/icon/new.png" width="16" height="16" alt="New" ' +
+				'class="diricon" />',
+			{:controller=>'items', :action=>'new', :id=>item},
+			{:title=>"Add a new sub-item for this #{item.class}"})
+			%><span class="separator">.</span><%
+	#end
+	%><%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
+			'class="diricon" />',
+		edit_item_path(item),
+		{:title=>"Edit this item"})
+		%><span class="separator">.</span><%=
+	link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="diricon" />',
+		{:url=>{:controller=>'items', :action=>'destroy', :id=>item},
+		:method=>'delete',
+		:loading=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+			" alt=\"Processing…\" class=\"diricon\" />');",
+		:loaded=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+			" alt=\"Delete\" class=\"diricon\" />');",
+		#:success=>"Element.replace('#{row_id}_delete','');",
+		:confirm=>
+			"Are you sure you want to permanently delete the item “#{item.title}”?"
+		},
+		{:href=>url_for({:controller=>'items', :action=>'destroy', :id=>item}),
+		:title=>"Permanently delete this item", :method=>'delete',
+		:id=>"#{row_id}_delete"
+		} %>
+<%
+end
+
+%><ul id="<%= row_id %>_items"><%
+#item_path(item)
+if items.size > 0
+	%><%= render :partial=>'item', :collection=>items %><%
+end
+%></ul></li>

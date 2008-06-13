@@ -3,8 +3,8 @@ fields_for :item do |f|
 %><table cellspacing="0">
 <%
 if @item.parent
-	%><thead><tr><th>Parent Item:</th> <td><%= h(@item.parent.title)
-	%></td></tr></thead>
+	%><thead><tr><th>Parent Item:</th> <td><strong><%= link_to(@item.parent.title, @item.parent.sitepath, {:class=>@item.parent.css_class('dir-')}) %></strong>
+	<item type="hidden" name="id" value="<%= @item.parent.id %>" /></td></tr></thead>
 <%
 end
 %><tbody>

@@ -577,4 +577,9 @@ class ItemsControllerTest < ActionController::TestCase
 			delete :destroy, {}, {:user=>users(:staff).id}
 		end
 	end
+	
+	# TODO: write test cases for missing
+	# TODO: write test cases for error
+	# TODO: write test cases for get_path
+	
 end

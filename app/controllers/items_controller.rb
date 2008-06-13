@@ -5,6 +5,7 @@ class ItemsController < ApplicationController
 	
 	# site page index (page tree?)
 	def index
+		@section = 'items'
 		if params[:id] and params[:id].to_i > 0
 			@item = Item.find(params[:id], :include=>:children)
 			@items = @item.children
@@ -83,6 +84,7 @@ class ItemsController < ApplicationController
 		@parent = Item.find(params[:id]) rescue nil
 		@item.parent = @parent
 		@page_title = 'New Item'
+		@section = 'items'
 	end
 	
 	# create a new item
@@ -96,10 +98,12 @@ class ItemsController < ApplicationController
 	#	render :action=>:new
 	rescue ActiveRecord::RecordInvalid
 		#self.new
+		@section = 'items'
 		render :action=>:new
 	rescue
 		flash.now[:error] = 'An error occurred while trying to save your new Item.'
 		#self.new
+		@section = 'items'
 		render :action=>:new
 	end
 	
@@ -108,6 +112,7 @@ class ItemsController < ApplicationController
 		@item = Item.find(params[:id])
 		if current_user.admin? or @item.user == current_user
 			@page_title = "Edit ‘#{@item.title}’"
+			@section = 'items'
 		else
 			flash[:error] = "You do not have permission to edit the requested item (‘#{params[:id]}’)."
 			redirect_to item_path(@item)
@@ -130,6 +135,7 @@ class ItemsController < ApplicationController
 				redirect_to item_path(@item)
 			else
 				# failed to save, back to edit form
+				@section = 'items'
 				render :action=>:edit
 			end
 		end
@@ -152,7 +158,6 @@ class ItemsController < ApplicationController
 		redirect_to :action=>'index'
 	end
 	
-	# TODO: write test cases for missing
 	# report that the requested url does not exist (missing - 404 error)
 	def missing
 		@page_title = '404 Missing'
@@ -161,7 +166,6 @@ class ItemsController < ApplicationController
 		render :action=>'missing', :status=>'404 Missing'
 	end
 	
-	# TODO: write test cases for error
 	# report an error result
 	def error
 		@page_title = '500 Error'
@@ -173,7 +177,6 @@ class ItemsController < ApplicationController
 	
 	protected
 	
-	# TODO: write test cases for get_path
 	# determine the request path
 	def get_path
 		# TODO: need to get the cgi request path if params[:url] is nil

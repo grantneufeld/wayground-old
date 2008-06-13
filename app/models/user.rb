@@ -129,8 +129,6 @@ class User < ActiveRecord::Base
 	
 	# ########################################################
 	# Remember Me Token
-	#
-	# TODO: Add unit tests for use of the remember me token
 	
 	def remember_token?
 		remember_token_expires_at && Time.now.utc < remember_token_expires_at

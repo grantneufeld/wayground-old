@@ -187,7 +187,20 @@ class DocumentTest < ActiveSupport::TestCase
 		assert !(documents(:private_text).can_view?(users(:staff)))
 	end
 	
-	# TODO: test new
-	# TODO: test delete
+	def test_new_and_delete_document
+		# test that there isn’t already a file of the test name in the directory
+		assert !(File.exist? 'public/file/arusha/upload.jpg')
+		# ‘upload’ (create) a new document
+		file_data = fixture_file_upload('/files/upload.jpg','image/jpeg')
+		params = {:uploaded_data=>file_data, :subfolder=>'arusha'}
+		doc = Document.new_doc(params, users(:login))
+		doc.save!
+		# test that the file was saved to the expected directory
+		assert File.exist? 'public/file/arusha/upload.jpg'
+		# ‘delete’ (destroy) the document
+		doc.destroy
+		# test that the file was removed from the directory
+		assert !(File.exist? 'public/file/arusha/upload.jpg')
+	end
 	
 end
