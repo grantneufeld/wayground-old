@@ -1,3 +1,5 @@
+// This file is automatically included by javascript_include_tag :defaults
+
 // based on http://railscasts.com/episodes/77
 // Should be called from ruby views like:
 // link_to_function "confirm_destroy(this, '#{url}', 'msg')", :href=>'noscript url'

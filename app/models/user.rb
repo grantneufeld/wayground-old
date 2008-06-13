@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	# prevents a user from submitting a crafted form that bypasses activation
 	# anything else you want your user to be able to set should be added here.
 	attr_accessible :password, :password_confirmation, :email,
-		:nickname, :fullname, :subpath, :location, :about
+		:nickname, :fullname, :subpath, :time_zone, :location, :about
 	
 	attr_accessor :password, :password_confirmation
 	
@@ -87,7 +87,7 @@ class User < ActiveRecord::Base
 	# Activates the user in the database.
 	def activate(code)
 		if code == activation_code
-			self.activated_at = Time.now.utc
+			self.activated_at = Time.now # .utc
 			self.activation_code = nil
 			save!
 			@activated = true
@@ -131,7 +131,8 @@ class User < ActiveRecord::Base
 	# Remember Me Token
 	
 	def remember_token?
-		remember_token_expires_at && Time.now.utc < remember_token_expires_at
+#		remember_token_expires_at && Time.now.utc < remember_token_expires_at
+		remember_token_expires_at && Time.now < remember_token_expires_at
 	end
 
 	# These create and unset the fields required for remembering users between browser closes
@@ -140,7 +141,7 @@ class User < ActiveRecord::Base
 	end
 
 	def remember_me_for(time)
-		remember_me_until time.from_now.utc
+		remember_me_until time.from_now # .utc
 	end
 
 	def remember_me_until(time)

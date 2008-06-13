@@ -27,6 +27,7 @@ class CreateUsers < ActiveRecord::Migration
 			
 			t.string :subpath, :limit=>31
 				# user subpath for non-numeric urls
+			t.string :time_zone
 			t.string :location
 				# the user's community/city/province/country
 			t.text :about
@@ -99,6 +100,7 @@ class CreateUsers < ActiveRecord::Migration
 
 	def self.down
 		drop_table :contacts
+		drop_table :email_changes
 		drop_table :users
 	end
 end

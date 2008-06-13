@@ -36,5 +36,6 @@ class CreateDocuments < ActiveRecord::Migration
 
 	def self.down
 		drop_table :documents
+		drop_table :db_files
 	end
 end

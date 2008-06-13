@@ -10,10 +10,11 @@ class DocImage < Document
 		)
 	validates_as_attachment
 	
-	before_thumbnail_saved do |record, thumbnail|
+	before_thumbnail_saved do |thumbnail|
+		record = thumbnail.parent
 		thumbnail.user = record.user
 		thumbnail.subfolder = record.subfolder
-    end
+	end
 	
 	def destroy
 		FileUtils.rm full_filename

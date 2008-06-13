@@ -401,4 +401,6 @@ class UsersControllerTest < ActionController::TestCase
 	# TODO test user deletion/removal
 	
 	
+	# TODO: tests for time_zone handling
+	
 end

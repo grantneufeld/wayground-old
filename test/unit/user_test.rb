@@ -134,6 +134,8 @@ class UserTest < ActiveSupport::TestCase
 	
 	# •••••••••••  TESTS TO BE WRITTEN  •••••••••••••••••••••••••••••
 	
+	# TODO: tests for time_zone handling
+	
 	# TODO: test for user not being able to willy-nilly update an email address that has been activated
 	#def test_change_email
 	#	# •••

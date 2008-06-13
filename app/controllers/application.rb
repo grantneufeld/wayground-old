@@ -9,10 +9,15 @@ class ApplicationController < ActionController::Base
 	# Uncomment the :secret if you're not using the cookie session store
 	protect_from_forgery :secret=>'44231f4cfece88f5120e19b6be4974f9'
 	
-	# timezone handling used throughout the application
-	include TzHelper
+	# See ActionController::Base for details 
+	# Uncomment this to filter the contents of submitted sensitive data parameters
+	# from your application log (in this case, all fields with names like "password"). 
+	filter_parameter_logging :password, :password_confirm
 	
-	
+	# Timezone code based on:
+	# http://mad.ly/2008/04/09/rails-21-time-zone-support-an-overview/
+	before_filter :set_time_zone
+
 	# TODO: TESTS HAVE NOT BEEN WRITTEN FOR ANY OF THE FOLLOWING CODE!
 	
 	
@@ -133,4 +138,8 @@ class ApplicationController < ActionController::Base
 		end
 	end
 
+	def set_time_zone
+		Time.zone = current_user.time_zone if current_user
+	end
+	
 end

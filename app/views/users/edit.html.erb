@@ -4,6 +4,13 @@
 <%= error_messages_for :user, :header_message=>'Your registration update could not be completed as submitted.<br />Please try again.' %>
 <% form_for(@user) do |f| -%>
 
+<h2>Private Info</h2>
+<p>This personal information is only shown to the website administrators.</p>
+<div class="step_form"><table cellspacing="0"><tbody>
+<tr><th><label for="user_time_zone">Time zone</label><br/></th>
+<td><%= f.time_zone_select :time_zone, TimeZone.ca_zones %></td></tr>
+</tbody></table></div>
+
 <h2>Public Info</h2>
 <p>This information is shown publicly on the website.</p>
 <div class="step_form"><table cellspacing="0"><tbody>

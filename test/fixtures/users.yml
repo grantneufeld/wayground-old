@@ -8,6 +8,7 @@ login:
   nickname: Login
   fullname: Login User
   subpath: login
+  time_zone: Central Time (US & Canada)
   admin: false
   staff: false
 
@@ -19,6 +20,7 @@ admin:
   nickname: Administrator
   fullname: Admin User
   subpath: admin
+  time_zone: Mountain Time (US & Canada)
   admin: true
   staff: true
 
@@ -30,6 +32,7 @@ staff:
   nickname: Staffer
   fullname: Staff User
   subpath: staff
+  time_zone: Saskatchewan
   admin: false
   staff: true
 
@@ -40,6 +43,7 @@ activate_this:
   salt: salt
   nickname: Activate This
   fullname: Activate This
+  time_zone: Newfoundland
   admin: false
   staff: false
 
@@ -50,6 +54,7 @@ activate_this_fail:
   salt: salt
   nickname: Activate This Fail
   fullname: Activate This Fail
+  time_zone: Mountain Time (US & Canada)
   admin: false
   staff: false
 
@@ -60,6 +65,7 @@ change_pass:
   salt: salt
   nickname: Change Pass
   fullname: Change Password
+  time_zone: Atlantic Time (US & Canada)
   admin: false
   staff: false
 

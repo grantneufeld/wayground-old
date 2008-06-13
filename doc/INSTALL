@@ -20,7 +20,7 @@ QUICK GEM INSTALL
 
 For your convenience, this is a one-line install of all the gems. For more detailed explanations of each gem, see the sections that follow. You will still need to do the individual configurations and installation of non-gem tools detailed in the sections that follow.
 
- sudo gem install passenger ruby-debug mocha ZenTest assert2 ruby-prof \
+ sudo gem install rails passenger ruby-debug mocha ZenTest assert2 ruby-prof \
  	ruby-openid ar_mailer ar_mailer_generator tzinfo chronic will_paginate \
  	image_science
 
@@ -74,6 +74,12 @@ tmp/**/*
 Add your files to the new git repository and commit them.
  git add .
  git commit -a -m "initial import"
+
+
+Ruby on Rails
+-------------
+
+Wayground has dependencies requiring at least version 2.1.0 of Rails. You can determine the version being used by running `rails --version` from your project directory.
 
 
 Server
