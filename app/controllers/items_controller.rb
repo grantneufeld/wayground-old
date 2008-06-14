@@ -58,20 +58,22 @@ class ItemsController < ApplicationController
 				if path.length > 0 and path[0].chr != '/'
 					path = "/#{path}"
 				end
-				@item = Item.find(:first,
-					:conditions=>
-						['(sitepath = ? OR sitepath = ?)', path, "#{path}/"])
+				path = Path.find(:first, :conditions=>
+					['(sitepath = ? OR sitepath = ?)', path, "#{path}/"])
+				@item = path.show if path
 			end
 		else
 			@item = Item.find(params[:id])
 		end
-		if @item
+		if @item.is_a? Item
 			@page_title = @item.title
 			@content_for_description = @item.description
 			respond_to do |format|
 				format.html # show.rhtml
 				format.xml  { render :xml => @item.to_xml }
 			end
+		elsif @item
+			# FIXME: render the show action for @item.class controller
 		else
 			missing
 		end

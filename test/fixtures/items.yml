@@ -3,7 +3,6 @@
 one:
   user: admin
   subpath: '/'
-  sitepath: '/'
   title: Home Page
   content: Login as an administrative user to be able to edit this page.
   content_type: text/plain
@@ -13,7 +12,6 @@ two:
   editor: admin
   parent: one
   subpath: two
-  sitepath: '/two'
   title: Page Two
   description: The second page.
   content: This is just the second page.
@@ -25,7 +23,6 @@ three:
   editor: staff
   parent: two
   subpath: three
-  sitepath: '/two/three'
   title: Page Three
   description: The third page.
   content: This is just the third page.
@@ -36,7 +33,6 @@ update_this:
   user: staff
   parent: one
   subpath: update
-  sitepath: '/update'
   title: Item To Update
   description: An item that should be updated.
   content: This is an item that should be updated.
@@ -48,7 +44,6 @@ delete_this:
   editor: admin
   parent: one
   subpath: delete_this
-  sitepath: '/delete_this'
   title: Item To Be Deleted
   description: An item to be deleted.
   content: Just delete this item.

@@ -1,4 +1,4 @@
-# Items (such as web pages) for display on the website
+# Items (such as web pages) for display on the website.
 class Item < ActiveRecord::Base
 	# restrict which attributes users can set directly
 	attr_accessible :subpath, :title, :description, :content, :content_type,
@@ -12,7 +12,6 @@ class Item < ActiveRecord::Base
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
 	validates_format_of :content_type, :allow_nil=>true, :with=> /\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,
 		:message=>'is not a valid mimetype'
-	validates_uniqueness_of :sitepath, :allow_nil=>true
 	
 	belongs_to :user
 	belongs_to :editor, :class_name=>"User", :foreign_key=>"editor_id"
@@ -22,13 +21,15 @@ class Item < ActiveRecord::Base
 	has_many :children, :class_name=>"Item", :foreign_key=>"parent_id",
 		:order=>'title'
 	
+	has_one :path, :as=>:show
+	
 	
 	# ########################################################
 	# Class Methods
 	
 	# the home page is a special item
 	def self.find_home
-		find(:first, :conditions=>'sitepath = "/"')
+		Path.find_home.show
 	end
 	
 	# keyword search
@@ -47,7 +48,23 @@ class Item < ActiveRecord::Base
 		set_sitepath!
 	end
 	
-	# the sitepath is set based on the item’s subpath,
+	# access the path.sitepath as if it were an attribute on item
+	def sitepath
+		unless path
+			set_sitepath!
+		end
+		path.sitepath
+	end
+	def	sitepath=(p)
+		if path
+			path.sitepath = p
+		else
+			self.path = Path.new(:sitepath=>p)
+		end
+		p
+	end
+	
+	# the path.sitepath is set based on the item’s subpath,
 	# and the sitepath of its parent item (if any).
 	def set_sitepath!
 		old_subpath = self.subpath || self.read_attribute('subpath') || ''
