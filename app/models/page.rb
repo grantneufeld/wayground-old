@@ -21,7 +21,7 @@ class Page < ActiveRecord::Base
 	has_many :children, :class_name=>"Page", :foreign_key=>"parent_id",
 		:order=>'title'
 	
-	has_one :path, :as=>:show
+	has_one :path, :as=>:item
 	
 	
 	# ########################################################
@@ -29,7 +29,7 @@ class Page < ActiveRecord::Base
 	
 	# the home page is a special page
 	def self.find_home
-		Path.find_home.show
+		Path.find_home.item
 	end
 	
 	# keyword search

@@ -60,7 +60,7 @@ class PagesController < ApplicationController
 				end
 				path = Path.find(:first, :conditions=>
 					['(sitepath = ? OR sitepath = ?)', path, "#{path}/"])
-				@page = path.show if path
+				@page = path.item if path
 			end
 		else
 			@page = Page.find(params[:id])

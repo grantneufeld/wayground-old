@@ -1,9 +1,9 @@
 # Paths define arbitrary URL paths that can be used to access
-# displayable (showable) model objects.
+# displayable model objects (items).
 # Paths have a polymorphic relation to models that can be displayed
 # (such as Pages, Events, etc.).
 class Path < ActiveRecord::Base
-	belongs_to :show, :polymorphic=>true
+	belongs_to :item, :polymorphic=>true
 	
 	validates_uniqueness_of :sitepath
 	
