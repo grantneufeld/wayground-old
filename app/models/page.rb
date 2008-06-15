@@ -1,5 +1,5 @@
-# Items (such as web pages) for display on the website.
-class Item < ActiveRecord::Base
+# Pages for display on the website.
+class Page < ActiveRecord::Base
 	# restrict which attributes users can set directly
 	attr_accessible :subpath, :title, :description, :content, :content_type,
 		:keywords
@@ -16,9 +16,9 @@ class Item < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :editor, :class_name=>"User", :foreign_key=>"editor_id"
 	
-	# item containment hierarchy
-	belongs_to :parent, :class_name=>"Item", :foreign_key=>"parent_id"
-	has_many :children, :class_name=>"Item", :foreign_key=>"parent_id",
+	# page containment hierarchy
+	belongs_to :parent, :class_name=>"Page", :foreign_key=>"parent_id"
+	has_many :children, :class_name=>"Page", :foreign_key=>"parent_id",
 		:order=>'title'
 	
 	has_one :path, :as=>:show
@@ -27,7 +27,7 @@ class Item < ActiveRecord::Base
 	# ########################################################
 	# Class Methods
 	
-	# the home page is a special item
+	# the home page is a special page
 	def self.find_home
 		Path.find_home.show
 	end
@@ -36,8 +36,8 @@ class Item < ActiveRecord::Base
 	def self.find_by_key(key) #, parent=nil)
 		key_arg = "%#{key}%"
 		find(:all, :conditions=>[
-			'items.title like ? OR items.description like ? OR items.content like ? OR items.keywords like ?',
-			key_arg, key_arg, key_arg, key_arg], :order=>'items.title')
+			'pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?',
+			key_arg, key_arg, key_arg, key_arg], :order=>'pages.title')
 	end
 	
 	
@@ -48,7 +48,7 @@ class Item < ActiveRecord::Base
 		set_sitepath!
 	end
 	
-	# access the path.sitepath as if it were an attribute on item
+	# access the path.sitepath as if it were an attribute on page
 	def sitepath
 		unless path
 			set_sitepath!
@@ -64,8 +64,8 @@ class Item < ActiveRecord::Base
 		p
 	end
 	
-	# the path.sitepath is set based on the item’s subpath,
-	# and the sitepath of its parent item (if any).
+	# the path.sitepath is set based on the page’s subpath,
+	# and the sitepath of its parent page (if any).
 	def set_sitepath!
 		old_subpath = self.subpath || self.read_attribute('subpath') || ''
 		workpath = old_subpath
@@ -92,7 +92,7 @@ class Item < ActiveRecord::Base
 					parent_path = self.parent.sitepath + '/'
 				end
 			else
-				# item has no parent
+				# page has no parent
 				parent_path = '/'
 			end
 			self.sitepath = parent_path + workpath.to_s
@@ -104,8 +104,8 @@ class Item < ActiveRecord::Base
 		self
 	end
 	
-	# return an array of the parents of this item, starting with the topmost,
-	# and ending with the direct parent of this item
+	# return an array of the parents of this page, starting with the topmost,
+	# and ending with the direct parent of this page
 	def parent_chain
 		parent.nil? ? [] : parent.parent_chain << parent
 	end

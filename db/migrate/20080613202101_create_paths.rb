@@ -10,25 +10,25 @@ class CreatePaths < ActiveRecord::Migration
 		# can’t add regular indexes for text fields in MySQL,
 		# must truncate to max 255 bytes
 		execute "ALTER TABLE paths ADD INDEX sitepath (sitepath(255))"
-		# create path objects for every existing item
-		say "Migrating sitepaths from items table to new paths table"
+		# create path objects for every existing page
+		say "Migrating sitepaths from pages table to new paths table"
 		execute "INSERT INTO paths (show_id, show_type, sitepath)
-			SELECT items.id, 'Item', items.sitepath FROM items ORDER BY items.id"
-		# remove the sitepath column from the items table
-		execute "ALTER TABLE items DROP INDEX sitepath"
-		remove_column :items, :sitepath
+			SELECT pages.id, 'Page', pages.sitepath FROM pages ORDER BY pages.id"
+		# remove the sitepath column from the pages table
+		execute "ALTER TABLE pages DROP INDEX sitepath"
+		remove_column :pages, :sitepath
 	end
 
 	def self.down
-		# Restore the sitepath column for items
-		say "Restoring sitepaths from paths table to items.sitepath"
-		#add_column :items, :sitepath, :text
-		execute "ALTER TABLE items ADD COLUMN sitepath TEXT AFTER subpath"
-		execute "ALTER TABLE items ADD INDEX sitepath (sitepath(255))"
-		# copy the path data back into the items table’s sitepath column
-		paths = Path.find(:all, :conditions=>'paths.show_type = "Item" AND paths.sitepath != "" AND paths.sitepath IS NOT NULL')
+		# Restore the sitepath column for pages
+		say "Restoring sitepaths from paths table to pages.sitepath"
+		#add_column :pages, :sitepath, :text
+		execute "ALTER TABLE pages ADD COLUMN sitepath TEXT AFTER subpath"
+		execute "ALTER TABLE pages ADD INDEX sitepath (sitepath(255))"
+		# copy the path data back into the pages table’s sitepath column
+		paths = Path.find(:all, :conditions=>'paths.show_type = "Page" AND paths.sitepath != "" AND paths.sitepath IS NOT NULL')
 		paths.each do |path|
-			execute "UPDATE items SET items.sitepath='#{path.sitepath}' WHERE items.id = #{path.show_id}"
+			execute "UPDATE pages SET pages.sitepath='#{path.sitepath}' WHERE pages.id = #{path.show_id}"
 		end
 		
 		drop_table :paths

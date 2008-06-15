@@ -18,7 +18,7 @@ production: &production_settings
   # displayed after registration is complete
   SIGNUP_EXTRA: ''
   EMAIL_WELCOME_EXTRA: 'http://wayground.ca/'
-  # STANDARD ITEMS (items.id)
+  # STANDARD ITEMS (pages.id)
   # The site home page. Normally 1, except on shared dbs.
   HOME_ID: 1
   # New users are automatically added to this group

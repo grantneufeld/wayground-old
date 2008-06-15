@@ -145,26 +145,26 @@ module ApplicationHelper
 	
 	# Return an array of content_type values that can be processed for
 	# formatting
-	# (such as pulling out sidebar chunks and rendering item lists).
+	# (such as pulling out sidebar chunks and rendering page lists).
 	def processable_content_types
 		["text/html", "text/plain", "text/markdown", "text/bbcode",
 			"text/textilize"]
 	end
 	
-	# Format any item lists and pull out any sidebar chunks,
+	# Format any page lists and pull out any sidebar chunks,
 	# if it is a processable content_type.
 	def process_content(content, content_type='text/plain')
 		if processable_content_types.include? content_type
 			# format 
 			content = pull_out_sidebars(substitute_form_authenticity_tokens(
-				substitute_item_lists(substitute_document_links(content))
+				substitute_page_lists(substitute_document_links(content))
 				))
 			if false
 				content = format_content(
 					split_columns(
 						pull_out_sidebars(
 							substitute_form_authenticity_tokens(
-								substitute_item_lists(
+								substitute_page_lists(
 									substitute_document_links(
 										validate_require_tags(content)
 									)
@@ -211,7 +211,7 @@ module ApplicationHelper
 	end
 	
 	def attrs_scan(tag)
-		# parse out the attributes in the items element
+		# parse out the attributes in the pages element
 		attrs = {}
 		tag.scan(/[ \t\r\n]*([a-z0-9\-]+)=\"([^\"]+)\"/) { |attribute|
 			attrs[attribute[0]] = attribute[1]
@@ -279,21 +279,21 @@ module ApplicationHelper
 		}
 	end
 	
-	# Finds all occurrence of the items tag in the content,
-	# and replaces them with lists of items.
+	# Finds all occurrence of the pages tag in the content,
+	# and replaces them with lists of pages.
 	# Tag Format:
-	# {{items parent="item_id" type="Item" category="category_id" range="current|past|all" sort="desc" on="title|new|date|edit" max="0" info="prefix" pagelinks="after" }}
-	def substitute_item_lists(content) #, &block)
+	# {{pages parent="page_id" type="Page" category="category_id" range="current|past|all" sort="desc" on="title|new|date|edit" max="0" info="prefix" pagelinks="after" }}
+	def substitute_page_lists(content) #, &block)
 		# global page and max values for the entire content
 		page = params[:page].to_i
 		page = 1 if page < 1
 		default_max = params[:max].to_i
 		default_max = (default_max.nil? or default_max < 1) ? 10 : default_max
-		# process the items tags, returning the revised content
-		content.gsub(/\{\{items([^\}]*)\/?\}\}/) { |items_tag|
-			# parse out the attributes in the items element
+		# process the pages tags, returning the revised content
+		content.gsub(/\{\{pages([^\}]*)\/?\}\}/) { |pages_tag|
+			# parse out the attributes in the pages element
 			attrs = {}
-			items_tag.scan(/[ \t\r\n]+([a-z]+)=\"([^\"]+)\"/) { |attribute|
+			pages_tag.scan(/[ \t\r\n]+([a-z]+)=\"([^\"]+)\"/) { |attribute|
 				attrs[attribute[0]] = attribute[1]
 			}
 			
@@ -301,41 +301,41 @@ module ApplicationHelper
 			condition_strs = []
 			conditions = ['']
 			if attrs['parent'] and attrs['parent'].to_i > 0
-				condition_strs << 'items.parent_id = ?'
+				condition_strs << 'pages.parent_id = ?'
 				conditions << attrs['parent'].to_i
 			end
 			unless attrs['type'].blank?
-				#condition_strs << 'items.type = ?'
+				#condition_strs << 'pages.type = ?'
 				#conditions << attrs['type']
 			end
 			unless attrs['category'].blank? or attrs['category'].to_i <= 0
-				condition_strs << 'items.category_id = ?'
+				condition_strs << 'pages.category_id = ?'
 				conditions << attrs['category'].to_i
 			end
-			if condition_strs.length == 0 and @item and attrs['type'].blank?
-				# if no find constraint, default to the current @item as parent
-				condition_strs << 'items.parent_id = ?'
-				conditions << @item.id
+			if condition_strs.length == 0 and @page and attrs['type'].blank?
+				# if no find constraint, default to the current @page as parent
+				condition_strs << 'pages.parent_id = ?'
+				conditions << @page.id
 			end
 			# range defaults to "current"
 			case attrs['range']
 			when 'all'
 				# No constraints to add.
 			when 'past'
-				# TODO: constrain to past events in item lists
+				# TODO: constrain to past events in page lists
 			#when 'current'
 			else
 				if false
-					# TODO: Constrain to items that haven't ended/expired yet
+					# TODO: Constrain to pages that haven't ended/expired yet
 					condition_strs <<
-						'(items.expires_at IS NULL OR items.expires_at >= NOW())' +
-						' AND (items.end_on IS NULL' +
-							' OR items.end_on >= CURDATE())' +
-						' AND (items.type != "Event"' +
-							' OR items.start_on >= CURDATE()' +
-							' OR items.sent_at >= CURDATE()' +
-							' OR (items.end_on IS NOT NULL' +
-								' AND items.end_on >= CURDATE()))'
+						'(pages.expires_at IS NULL OR pages.expires_at >= NOW())' +
+						' AND (pages.end_on IS NULL' +
+							' OR pages.end_on >= CURDATE())' +
+						' AND (pages.type != "Event"' +
+							' OR pages.start_on >= CURDATE()' +
+							' OR pages.sent_at >= CURDATE()' +
+							' OR (pages.end_on IS NOT NULL' +
+								' AND pages.end_on >= CURDATE()))'
 				end
 			end
 			# format condition str for find
@@ -351,18 +351,18 @@ module ApplicationHelper
 				sort_direction = attrs['sort'] == 'desc' ? ' desc' : ''
 				case attrs['on']
 				when 'title' :
-					order = "items.title#{sort_direction}, items.id'"
+					order = "pages.title#{sort_direction}, pages.id'"
 				when 'new' :
-					order = "items.created_at#{sort_direction}, items.title, items.id"
+					order = "pages.created_at#{sort_direction}, pages.title, pages.id"
 					show_date = :new
 				when 'date' :
-					order = 'items.' + Event.next_at_label.to_s +
+					order = 'pages.' + Event.next_at_label.to_s +
 						sort_direction +
-						', items.start_on' + sort_direction +
-						', items.title, items.id'
+						', pages.start_on' + sort_direction +
+						', pages.title, pages.id'
 					show_date = :date
 				when 'edit' :
-					order = "items.updated_at#{sort_direction}, items.title, items.id"
+					order = "pages.updated_at#{sort_direction}, pages.title, pages.id"
 					show_date = :edit
 				end
 			end
@@ -370,27 +370,27 @@ module ApplicationHelper
 			max = attrs['max'].blank? ? max = default_max : attrs['max'].to_i
 			max = max < 1 ? default_max : max
 			offset = (page - 1) * max
-			total = Item.count(:conditions=>conditions)
+			total = Page.count(:conditions=>conditions)
 			
 			# get the list
-			items = Item.find(:all, :conditions=>conditions, :order=>order,
+			pages = Page.find(:all, :conditions=>conditions, :order=>order,
 				:limit=>max, :offset=>offset)#, :readonly=>true)
-			###raise Exception.new('items count:' + items.size.to_s + "\nconditions:" + conditions.join(', ') + "\norder:" + order.to_s + "\nmax:" + max.to_s + "\noffset:" + offset.to_s + "\npage:" + page.to_s)
+			###raise Exception.new('pages count:' + pages.size.to_s + "\nconditions:" + conditions.join(', ') + "\norder:" + order.to_s + "\nmax:" + max.to_s + "\noffset:" + offset.to_s + "\npage:" + page.to_s)
 			
-			# render the item list
+			# render the page list
 			list_text = ''
 			if attrs['info'] == 'prefix'
 				# render the info prefix
-				list_text += "<p class=\"itemscount\">Showing #{offset + 1} " +
-					"through #{items.size + offset} out of #{total} in total.</p>"
+				list_text += "<p class=\"pagescount\">Showing #{offset + 1} " +
+					"through #{pages.size + offset} out of #{total} in total.</p>"
 			end
-			@listitem_previous_heading = nil
-			items.each do |item|
+			@listpage_previous_heading = nil
+			pages.each do |page|
 				#render_to_string :partial=>
-					#	item.controller + '/listitem', :locals=>{:item=>item}
+					#	page.controller + '/listpage', :locals=>{:page=>page}
 				list_text += @controller.get_partial_as_string(
-					item.controller + '/listitem',
-					{:item=>item, :show_standard_commands=>true,
+					page.controller + '/listpage',
+					{:page=>page, :show_standard_commands=>true,
 						:show_date=>show_date})
 			end
 			if attrs['pagelinks'] == 'after'

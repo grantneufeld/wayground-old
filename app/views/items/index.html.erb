@@ -1,8 +1,0 @@
-<ul class="dir">
-<%
-if @item
-	%><%= render :partial=>'item', :locals=>{:item=>@item, :items=>@items} %><%
-else
-	%><%= render :partial=>'item', :collection=>@items %><%
-end
-%></ul>

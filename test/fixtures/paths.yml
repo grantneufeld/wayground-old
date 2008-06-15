@@ -1,25 +1,25 @@
 one:
   show: one
-  show_type: Item
+  show_type: Page
   sitepath: '/'
 
 two:
   show: two
-  show_type: Item
+  show_type: Page
   sitepath: '/two'
 
 three:
   show: three
-  show_type: Item
+  show_type: Page
   sitepath: '/two/three'
 
 update_this:
   show: update_this
-  show_type: Item
+  show_type: Page
   sitepath: '/update'
 
 delete_this:
   show: delete_this
-  show_type: Item
+  show_type: Page
   sitepath: '/delete_this'
 

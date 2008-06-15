@@ -26,7 +26,7 @@ class DocumentsController < ApplicationController
 			@path = "#{params[:root]}#{@filename}"
 			flash.now[:error] =
 				"Could not find the requested file ‘#{@filename}’"
-			render :template=>'items/missing', :status=>404
+			render :template=>'pages/missing', :status=>404
 		end
 	end
 	

@@ -44,11 +44,11 @@ ActionController::Routing::Routes.draw do |map|
 	map.profile '/people/:id', :controller=>'users', :action=>'profile'
 	map.resources :users, :collection=>{:activate=>:get, :account=>:get}
 	
-	# special item: the home page
-	#map.home '', :controller=>'items', :action=>'show',
+	# special page: the home page
+	#map.home '', :controller=>'pages', :action=>'show',
 	#	:conditions=>{:method=>:get} #, :url=>nil, :id=>nil
-	map.root :controller=>'items', :action=>'show'
-	map.resources :items
+	map.root :controller=>'pages', :action=>'show'
+	map.resources :pages
 	
 	map.private_doc '/private/*filename', :controller=>'documents',
 		:action=>'data', :root=>'/private/', :conditions=>{:method=>:get}
@@ -59,6 +59,6 @@ ActionController::Routing::Routes.draw do |map|
 	#map.connect ':controller/:action/:id.:format'
 	
 	# catch any arbitrary paths not matched above
-	map.page '*url', :controller=>'items', :action=>'show',
+	map.page '*url', :controller=>'pages', :action=>'show',
 		:conditions=>{:method=>:get}
 end

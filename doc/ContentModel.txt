@@ -5,7 +5,7 @@ COMMON
 user (owner)
 editor (last user to edit)
 subpath
-sitepath (auto-gen based on subpath & item parentage)
+[sitepath] (auto-gen based on subpath & item parentage)
 title
 description
 keywords
@@ -127,3 +127,10 @@ date_expires
 status (expired, request, blocked, member, moderator, admin)
 
 RESOURCE
+
+LEVEL (of government)
+OFFICE
+CANDIDATE
+ELECTION
+CAMPAIGN
+PARTY (political)

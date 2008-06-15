@@ -4,7 +4,7 @@ WAYGROUND = YAML.load(raw_config)[RAILS_ENV]
 # might be able to do the same with just one line:
 #WAYGROUND = YAML.load("#{RAILS_ROOT}/config/config.yml")[RAILS_ENV]
 
-# TODO: Need a better way to support multiple sites with shared items off the same db
+# TODO: Need a better way to support multiple sites with shared pages off the same db
 # In the meantime, using bit flags as defined in the Wayground::SITES constant.
 
 #module Wayground

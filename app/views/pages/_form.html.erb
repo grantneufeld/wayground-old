@@ -1,29 +1,29 @@
 <%
-fields_for :item do |f|
+fields_for :page do |f|
 %><table cellspacing="0">
 <%
-if @item.parent
-	%><thead><tr><th>Parent Item:</th> <td><strong><%= link_to(@item.parent.title, @item.parent.sitepath, {:class=>@item.parent.css_class('dir-')}) %></strong>
-	<item type="hidden" name="id" value="<%= @item.parent.id %>" /></td></tr></thead>
+if @page.parent
+	%><thead><tr><th>Parent Page:</th> <td><strong><%= link_to(@page.parent.title, @page.parent.sitepath, {:class=>@page.parent.css_class('dir-')}) %></strong>
+	<input type="hidden" name="id" value="<%= @page.parent.id %>" /></td></tr></thead>
 <%
 end
 %><tbody>
-<tr><th><label for="item_subpath">Subpath:</label></th>
-	<td><%= h(@item.parent.sitepath) if @item.parent
-	%><%= (@item.parent && @item.parent.sitepath == '/') ? nil : '/'
+<tr><th><label for="page_subpath">Subpath:</label></th>
+	<td><%= h(@page.parent.sitepath) if @page.parent
+	%><%= (@page.parent && @page.parent.sitepath == '/') ? nil : '/'
 	%><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
-	<br />Setting the subpath will set the web-link url for this item
+	<br />Setting the subpath will set the web-link url for this page
 	(e.g., “http://website/<b>subpath</b>”).
-	<br />If this item has a parent item, the subpath will be relative to the parent item’s subpath (e.g., “http://website/parent-subpath/<b>subpath</b>”).
+	<br />If this page has a parent page, the subpath will be relative to the parent page’s subpath (e.g., “http://website/parent-subpath/<b>subpath</b>”).
 	<br />Only the following characters may be used, no spaces: <b>A-Z a-z 0-9 - _</b></td></tr>
-<tr class="alternate"><th><label for="item_title">Title:</label></th>
+<tr class="alternate"><th><label for="page_title">Title:</label></th>
 	<td><%= f.text_field :title %></td></tr>
-<tr><th><label for="item_description">Description:</label></th>
+<tr><th><label for="page_description">Description:</label></th>
 	<td><%= f.text_field :description %>
 	<br />The description is used when listing pages, and by some search engines.</td></tr>
-<tr class="alternate"><th><label for="item_content">Content:</label></th>
+<tr class="alternate"><th><label for="page_content">Content:</label></th>
 	<td><%= f.text_area :content, :rows=>20, :cols=>68 %>
-	<br /><label for="item_content_type">Content Type:</label>
+	<br /><label for="page_content_type">Content Type:</label>
 	<% #= f.text_field :content_type %>
 	<%
 	content_types = [
@@ -38,7 +38,7 @@ end
 <%	#	<br />Auto-formatted text allows you to use the formatting described above.
 %>		<br />Plain text is just plain paragraphs, no special formatting.
 		<br />HTML is for text formatted using standard HTML markup.</td></tr>
-<tr><th><label for="item_keywords">Keywords:</label></th>
+<tr><th><label for="page_keywords">Keywords:</label></th>
 	<td><%= f.text_field :keywords %>
 		<br />Comma-separated.</td></tr>
 </tbody>

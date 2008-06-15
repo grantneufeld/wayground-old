@@ -65,7 +65,7 @@ class DocumentsControllerTest < ActionController::TestCase
 		assert assigns(:path)
 		# flash gets eaten by render :-(
 		#assert flash[:error]
-		assert_template 'items/missing'
+		assert_template 'pages/missing'
 	end
 	def test_data_private_wrong_user
 		assert_efficient_sql do
@@ -77,7 +77,7 @@ class DocumentsControllerTest < ActionController::TestCase
 		assert assigns(:path)
 		# flash gets eaten by render :-(
 		#assert flash[:error]
-		assert_template 'items/missing'
+		assert_template 'pages/missing'
 	end
 	def test_data_private_invalid_filename
 		assert_efficient_sql do
@@ -89,7 +89,7 @@ class DocumentsControllerTest < ActionController::TestCase
 		assert assigns(:path)
 		# flash gets eaten by render :-(
 		#assert flash[:error]
-		assert_template 'items/missing'
+		assert_template 'pages/missing'
 	end
 	
 	# INDEX (LIST)

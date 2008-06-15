@@ -1,11 +1,11 @@
 require 'test_helper'
 
 class PathTest < ActiveSupport::TestCase
-	fixtures :items, :users, :paths
+	fixtures :pages, :users, :paths
 	
 	def test_associations
 		assert check_associations
-		#assert_equal users(:admin), items(:front_page).user
+		#assert_equal users(:admin), pages(:front_page).user
 	end
 	
 	

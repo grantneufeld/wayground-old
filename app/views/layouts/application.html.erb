@@ -8,7 +8,7 @@
 # @body_attrs: attributes for the body element
 # @content_for_sidebar: will add as the page sidebar if not empty
 # @content_columns: an array of content columns (strings)
-# @item: will use to determine title and other metadata if set
+# @page: will use to determine title and other metadata if set
 #
 # Generate the content_for_ variables using the content_for function.
 # E.g.:
@@ -45,10 +45,10 @@ website_prefix = WAYGROUND['TITLE_PREFIX']
 #end
 
 @section ||= nil
-#if !@section and @item
-#	@section = section_from_subpath @item.subpath
+#if !@section and @page
+#	@section = section_from_subpath @page.subpath
 #	unless @section
-#		parent_chain = @item.parent_chain
+#		parent_chain = @page.parent_chain
 #		while !@section and (parent = parent_chain.shift)
 #			@section = section_from_subpath parent.subpath
 #		end
@@ -62,7 +62,7 @@ website_prefix = WAYGROUND['TITLE_PREFIX']
 #	end
 #elsif !@section and @controller.class == SessionsController and @controller.action_name == 'new'	
 #	@section = 'login'
-#elsif !@section and @controller.class == ItemsController and @controller.action_name == 'index'	
+#elsif !@section and @controller.class == PagesController and @controller.action_name == 'index'	
 #	@section = 'sitemap'
 #end
 
@@ -76,8 +76,8 @@ if request.request_uri == "/"
 	end
 else
 	if @page_title.blank?
-		if @item and !(@item.title.blank?)
-			@page_title = h @item.title
+		if @page and !(@page.title.blank?)
+			@page_title = h @page.title
 			unless @content_for_title.blank?
 				@page_title += ": #{h @content_for_title}"
 			end
@@ -122,9 +122,9 @@ end
 	# a call to: content_for("head") do ... end
 -%>
 <% if false
-	# TODO: if @item and logged_in? and (current_user.admin? || @item.can_edit?)
-	%><link rel="edit" href="/items/<%= @item.id
-		%>/edit/" title="Edit item <%= @item.id %>" />
+	# TODO: if @page and logged_in? and (current_user.admin? || @page.can_edit?)
+	%><link rel="edit" href="/pages/<%= @page.id
+		%>/edit/" title="Edit page <%= @page.id %>" />
 <% end
 unless @content_for_description.blank?
 	%><meta name="description" content="<%=h @content_for_description %>" />
@@ -143,9 +143,9 @@ unless @content_for_keywords.blank?
 <div id="header">
 <h1 id="title"><%= website_root_title_link %></h1>
 <map title="Navigation Bar" name="NavigationBar" id="navigation"><p id="menu">
-<%= link_to 'Pages', items_path, {
-	:class=>(@section == 'items' ? 'current-tab' : nil),
-	:title=>'Page/item management for this site'
+<%= link_to 'Pages', pages_path, {
+	:class=>(@section == 'pages' ? 'current-tab' : nil),
+	:title=>'Page management for this site'
 	} %><span class="separator">,</span>
 <%= link_to 'Documents', documents_path, {
 	:class=>(@section == 'documents' ? 'current-tab' : nil),
@@ -215,7 +215,7 @@ yield
 
 #if logged_in? and current_user.admin
 #	content_for("footermenu") do
-#		% ><%= link_to 'Site Map', {:controller=>'items', :action=>'index'} % ><%
+#		% ><%= link_to 'Site Map', {:controller=>'pages', :action=>'index'} % ><%
 #	end
 #end
 

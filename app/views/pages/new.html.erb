@@ -1,8 +1,8 @@
 <div class="steps">
-<h1>New Item</h1>
-<%= error_messages_for :item %>
+<h1>New Page</h1>
+<%= error_messages_for :page %>
 <div class="step_form">
-<% form_for(:item, :url=>items_path) do |f|
+<% form_for(:page, :url=>pages_path) do |f|
 	%><%= render :partial=>'form' %>
 <% end -%>
 </div>

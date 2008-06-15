@@ -1,0 +1,8 @@
+<ul class="dir">
+<%
+if @page
+	%><%= render :partial=>'page', :locals=>{:page=>@page, :pages=>@pages} %><%
+else
+	%><%= render :partial=>'page', :collection=>@pages %><%
+end
+%></ul>

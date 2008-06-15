@@ -14,7 +14,7 @@ two:
   subpath: two
   title: Page Two
   description: The second page.
-  content: This is just the second page.
+  content: This is just the second page. It has the keyword for searching.
   content_type: text/plain
   keywords: two, 2, second
 
@@ -25,7 +25,7 @@ three:
   subpath: three
   title: Page Three
   description: The third page.
-  content: This is just the third page.
+  content: This is just the third page. It has the keyword for searching.
   content_type: text/plain
   keywords: three, 3, third
 
@@ -33,9 +33,9 @@ update_this:
   user: staff
   parent: one
   subpath: update
-  title: Item To Update
-  description: An item that should be updated.
-  content: This is an item that should be updated.
+  title: Page To Update
+  description: A page that should be updated.
+  content: This is a page that should be updated.
   content_type: text/plain
   keywords: update, change, edit
 
@@ -44,9 +44,9 @@ delete_this:
   editor: admin
   parent: one
   subpath: delete_this
-  title: Item To Be Deleted
-  description: An item to be deleted.
-  content: Just delete this item.
+  title: Page To Be Deleted
+  description: A page to be deleted.
+  content: Just delete this page.
   content_type: text/plain
   keywords: trash, delete, destroy, remove, erase
 
