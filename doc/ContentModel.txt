@@ -1,136 +1,111 @@
 # This is an in-progress rethinking of the content model.
-# It does NOT match the current content model directly.
+# It does NOT necessarily match the current content model directly.
 
-COMMON
+
+ITEMS
+
+There are models that are the primary content “items” that get displayed. These include: Page, Document, Image, Event and Container (future items might include Weblink, Video, BlogPost, Listing, Resource,…).
+
+
+COMMON ATTRIBUTES
+
+Most of the item models have most of these attributes:
 user (owner)
 editor (last user to edit)
-subpath
-[sitepath] (auto-gen based on subpath & item parentage)
+subpath (used to auto-generate path.sitepath)
 title
 description
 keywords
-[tags]
-[ratings]
-[access_restrictions]
+timestamps
 
-PAGE
-content
-content_type
 
-BLOG
+ITEM ATTRIBUTE MODELS
 
-BLOGPOST
-blog
-post_date
-url
-content
-content_type
+There are models for attributes that almost any of the items can have:
 
-ARTICLE
-author
-publication_date
-content
-content_type
+Access: Security/privilege restriction for specific Users to access items.
+Category: An arbitrary string that groups items (“by category”).
+Comment: A (optionally) titled comment on an item by a User.
+Path: Used to determine custom urls for the item.
+Rating: User numeric ratings (with optional comments) for items.
+Tag: Used for Users to add tags/keywords to items. “Folksonomy”.
+Weblink: Mostly linked to Events and Democracy items (generally not relevant for other items).
 
-WIKIPAGE
-content
-content_type
 
-WEBLINK
-url
+CONTAINERS
 
-REDIRECT
-url
-{-description, -keywords, -tags, -ratings, -access_restrictions}
+Containers reference bunches of items. They specify constraints (class, containment, user, date, category, tag) for selecting items, an optional Template for formatting the items, and a Layout for the display of the container (as sort of a page). You might use a Container to define a Blog or Calendar, for example.
 
-SNIPPET
-content
-content_type
+Layouts are kind of like Templates. They define the overall page layout (within the constraints of the site layout) for a Container.
 
-POLICY
-content
-content_type
 
-CALENDAR
-group
+CHUNKS
 
-EVENT
-calendar
-content
-content_type
-url
-schedule_info
-location
-[rsvps]
+Page objects can have multiple chunks that make up part or all of the page’s content.
 
-PETITION
-group
-target
-content
-content_type
-deadline
-[signatures]
+Chunk is an abstract class.
 
-VOTE
-group
-content
-content_type
-options
-[votes]
+RawChunk just has some content (and a content_type).
 
-FORUM
+ItemChunk links to an item. It can optionally link to a custom Template for formatting the display of the linked item’s values.
 
-FORUM_TOPIC
-forum
-content
-content_type
-FORUM_POST
-forum_topic
-content
-content_type
+ContainerChunk links to a Container (list of items). It specifies additional constraints on the items to be selected (user, date). It can also specify a custom maximum number of items to include. Like ItemChunk, a Template may be applied to the linked items.
 
-MESSAGE
-sender
-recipient
-content
-content_type
-MESSAGE_EMAIL
-MESSAGE_PHONE
+Template specifies formatting options for the values of objects of a given item model.
 
-DOCUMENT
-filename
-folder_path
-content_type
 
-PICTURE
+WIKI
 
-VIDEO
-source (youtube, google, etc.)
-identifier (the id on the source)
+Page objects may have WikiEdits which track user edits of the Page.
 
-LISTING
-date_expires
 
-GROUP
-[admins]
-[members]
-forum
-calendar
-blog
-[votes]
-[petitions]
-[wikipages]
-[resources]
+EVENTS
 
-MEMBERSHIP (a contact/user's membership in a group)
-date_expires
-status (expired, request, blocked, member, moderator, admin)
+An Event can have one or more Schedules.
 
-RESOURCE
+A Schedule specifies the date & time range, and optional recurrence (repeating events). Each Schedule has one Location. A short description can be included with each Schedule — potentially useful if an Event has more than one Schedule.
 
-LEVEL (of government)
-OFFICE
-CANDIDATE
-ELECTION
-CAMPAIGN
-PARTY (political)
+An Rsvp defines a relationship between a User and an Event (i.e., confirmed, maybe, not attending, invited).
+
+
+DEMOCRACY / POLITICS
+
+There are a number of items specifically for information about governments, elections, candidates, parties, etc.
+
+Level: The level of government (e.g., federal/national, provincial/state, municipal, etc.). Users will generally not interact with Level objects directly — they act mainly as a sort of container for other political objects.
+
+Office: A given elected position (e.g., federal Senator for Alberta, Mayor of Calgary, trustee for the Calgary Public School Board, …).
+
+Election: An election for one or more Offices at a given Level of government.
+
+Party: A political party, a grouping of candidate campaigns.
+
+Candidate: A person who runs in one or more elections.
+
+Campaign: A specific Election campaign for a specific Office by a given Candidate, often for a political Party.
+
+Most of the item attribute models apply to the above models (except Level which has few attributes).
+
+There are some other models I haven’t explored in detail: Petition (with PetitionSignature), Policy and Vote (with UserVote).
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MESSAGING
+
+Forums contain Topics which can have multiple Replies.
+
+There are different types of Messages that can be sent to/from users. In addition to web-based messages, there can also be emails and phone messages (for a PhoneLog).
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+USERS, GROUPS, CONTACTS
+
+The User model contains the basic info needed for the user’s interaction with the website.
+
+The Contact model contains information about a person (address, phone, email, etc.).
+
+A Contact record can be linked to a single User. A User may have multiple Contact records associated with them.
+
+The Group model is linked to multiple Users and Contacts through the Membership model. The Membership defines a status for the User/Contact (expired, request, blocked, invited, member, moderator, staff, admin).
