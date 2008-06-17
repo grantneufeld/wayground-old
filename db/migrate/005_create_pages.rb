@@ -10,7 +10,7 @@ class CreatePages < ActiveRecord::Migration
 			# CONTAINMENT
 			t.integer :parent_id
 			t.string :subpath
-			t.text :sitepath
+			t.string :sitepath
 			# CONTENT
 			t.string :title
 			t.string :description
@@ -30,9 +30,7 @@ class CreatePages < ActiveRecord::Migration
 		add_index :pages, [:user_id, :title], :name=>'user'
 		add_index :pages, [:parent_id, :title], :name=>'parent'
 		add_index :pages, [:title, :content_type], :name=>'title'
-		# can’t add regular indexes for text fields in MySQL,
-		# must truncate to max 255 bytes
-		execute "ALTER TABLE pages ADD INDEX sitepath (sitepath(255))"
+		add_index :pages, :sitepath, :name=>'sitepath'
 		
 		# ======================================================== #
 		# Create standard pages for the site

@@ -326,4 +326,8 @@ class Document < ActiveRecord::Base
 	def uploaded_data=(upload)
 		@uploaded_data = upload
 	end
+	
+	def css_class(prefix='')
+		self.is_image? ? "#{prefix}image" : "#{prefix}document"
+	end
 end

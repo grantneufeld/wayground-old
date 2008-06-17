@@ -30,41 +30,15 @@ class PagesController < ApplicationController
 			@page_title = "Site Index"
 		end
 		respond_to do |format|
-			# TODO: respond to javascript request to add children to page tree
-			#
-			#format.js  {
-			#	# prerender the child pages list so it can be used by the rjs
-			#	@child_listpages = ''
-			#	@pages.each do |page|
-			#		@child_listpages += render_to_string(:partial=>'treepage',
-			#			:locals=>{:page=>page})
-			#	end
-			#	@child_listpages = nil if @child_listpages == ''
-			#	render :action=>'index.rjs', :status=>(@err_msg.blank? ? 200 : 500)
-			#}
-			format.html # index.rhtml
+			format.html # index.html.erb
+			format.js   { render :partial=>'page', :collection=>@pages }
 			format.xml  { render :xml => @pages.to_xml }
 		end
 	end
 	
 	# display a page
 	def show
-		if params[:id].blank?
-			if params[:url].blank?
-				@page = Page.find_home
-			else
-				path = (params[:url].is_a?(Array) ?
-					params[:url].join('/') : params[:url].to_s)
-				if path.length > 0 and path[0].chr != '/'
-					path = "/#{path}"
-				end
-				path = Path.find(:first, :conditions=>
-					['(sitepath = ? OR sitepath = ?)', path, "#{path}/"])
-				@page = path.item if path
-			end
-		else
-			@page = Page.find(params[:id])
-		end
+		@page = Page.find(params[:id])
 		if @page.is_a? Page
 			@page_title = @page.title
 			@content_for_description = @page.description
@@ -72,6 +46,9 @@ class PagesController < ApplicationController
 				format.html # show.rhtml
 				format.xml  { render :xml => @page.to_xml }
 			end
+		elsif @page.is_a? String
+			# Redirect
+			redirect_to @page
 		elsif @page
 			# FIXME: render the show action for @page.class controller
 		else
@@ -146,50 +123,21 @@ class PagesController < ApplicationController
 	# delete a page
 	def destroy
 		@page = Page.find(params[:id])
-		#if current_user.staff? or @page.user == current_user
-			@page.destroy
-			flash[:notice] = "The page ‘#{@page.title}’ has been permanently removed."
-			redirect_to pages_path
-		#else
-		#	flash[:error] = "You do not have permission to modify the requested page (‘#{params[:id]}’)."
-		#	redirect_to page_path(@page)
-		#	@page = nil
-		#end
+		@page.destroy
+		flash[:notice] = "The page ‘#{@page.title}’ has been permanently removed."
+		redirect_to pages_path
 	rescue ActiveRecord::RecordNotFound
 		flash[:warning] = "Could not find a page matching the requested id (‘#{params[:id]}’)."
 		redirect_to :action=>'index'
 	end
 	
-	# report that the requested url does not exist (missing - 404 error)
-	def missing
-		@page_title = '404 Missing'
-		@path = get_path
-		flash.now[:error] = "Requested page not found (‘#{@path}’)."
-		render :action=>'missing', :status=>'404 Missing'
-	end
-	
 	# report an error result
 	def error
 		@page_title = '500 Error'
-		@path = get_path
+		@url_path = get_path
 		flash.now[:error] = "An error occurred while attempting to access ‘#{@path}’."
 		render :action=>'error', :status=>'500 Error'
 	end
 	
 	
-	protected
-	
-	# determine the request path
-	def get_path
-		# TODO: need to get the cgi request path if params[:url] is nil
-		if params[:url].is_a? Array
-			path = params[:url].join '/'
-		else
-			path = params[:url].to_s
-		end
-		if path.length > 0 and path[0].chr != '/'
-			path = '/' + path
-		end
-		path
-	end
 end

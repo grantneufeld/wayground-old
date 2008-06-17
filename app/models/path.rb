@@ -7,11 +7,16 @@ class Path < ActiveRecord::Base
 	
 	validates_uniqueness_of :sitepath
 	
+	
 	# the home page is a special page
 	def self.find_home
 		find(:first, :conditions=>'sitepath = "/"')
 	end
 	
-	# TODO: Support for redirect paths
-	
+	# keyword search
+	def self.find_by_key(key) #, parent=nil)
+		key_arg = "%#{key}%"
+		find(:all, :conditions=>['paths.sitepath like ?', key_arg],
+			:order=>'paths.sitepath', :include=>:item)
+	end
 end

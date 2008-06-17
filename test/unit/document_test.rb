@@ -203,4 +203,10 @@ class DocumentTest < ActiveSupport::TestCase
 		assert !(File.exist? 'public/file/arusha/upload.jpg')
 	end
 	
+	def test_document_css_class
+		assert_equal 'document', documents(:text).css_class
+		assert_equal 'dir-document', documents(:pdf).css_class('dir-')
+		assert_equal 'image', documents(:pic).css_class
+		assert_equal 'dir-image', documents(:pic_thumb).css_class('dir-')
+	end
 end

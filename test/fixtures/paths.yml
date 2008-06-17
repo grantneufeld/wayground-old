@@ -23,3 +23,6 @@ delete_this:
   item_type: Page
   sitepath: '/delete_this'
 
+redirect_me:
+  sitepath: '/redirect_me'
+  redirect: 'http://wayground.ca/'

@@ -16,9 +16,14 @@ class PathTest < ActiveSupport::TestCase
 		assert_equal paths(:one), path
 	end
 	
-	
+	def test_find_by_key
+		p = Path.find_by_key('two')
+		assert_equal 2, p.length
+		assert_equal paths(:two), p[0]
+	end
 	
 	# INSTANCE METHODS
 	
+	# TODO: test path.redirect support
 	
 end

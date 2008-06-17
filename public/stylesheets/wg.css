@@ -188,11 +188,13 @@ a.dir-root:before{content:url('../icon/root.png'); padding-right:4px;}
 li.dir-article{list-style-image:url('../icon/article.png');}
 li.dir-document{list-style-image:url('../icon/document.png');}
 a.dir-document:before{content:url('../icon/document.png'); padding-right:4px;}
-li.dir-page, li.dir-item{list-style-image:url('../icon/page.png');}
-a.dir-page:before, a.dir-item:before{content:url('../icon/page.png'); padding-right:4px;}
 li.dir-event{list-style-image:url('../icon/event.png');}
 li.dir-folder{list-style-image:url('../icon/folder.png');}
 li.dir-image{list-style-image:url('../icon/image.png');}
+li.dir-item{list-style-image:url('../icon/item.png');}
+a.dir-item:before{content:url('../icon/item.png'); padding-right:4px;}
+li.dir-page{list-style-image:url('../icon/page.png');}
+a.dir-page:before{content:url('../icon/page.png'); padding-right:4px;}
 li.dir-weblink{list-style-image:url('../icon/weblink.png');}
 li.dir-redirect{list-style-image:url('../icon/redirect.png');}
 ul.dir a, ul.dir a:link, ul.dir a:visited, ul.dir a:link:hover, ul.dir a:visited:hover, ul.dir a:link:active, ul.dir a:visited:active{border:0px none; text-decoration:none;}

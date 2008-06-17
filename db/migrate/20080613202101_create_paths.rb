@@ -3,13 +3,11 @@ class CreatePaths < ActiveRecord::Migration
 		create_table :paths do |t|
 			t.integer :item_id
 			t.string :item_type
-			t.text :sitepath, :null=>false
+			t.string :sitepath, :null=>false
 			t.text :redirect
 		end
 		add_index :paths, [:item_id, :item_type], :name=>'item'
-		# can’t add regular indexes for text fields in MySQL,
-		# must truncate to max 255 bytes
-		execute "ALTER TABLE paths ADD INDEX sitepath (sitepath(255))"
+		add_index :paths, :sitepath, :name=>'sitepath'
 		# create path objects for every existing page
 		say "Migrating sitepaths from pages table to new paths table"
 		execute "INSERT INTO paths (item_id, item_type, sitepath)
@@ -20,11 +18,11 @@ class CreatePaths < ActiveRecord::Migration
 	end
 
 	def self.down
-		# Restore the sitepath column for pages
 		say "Restoring sitepaths from paths table to pages.sitepath"
-		#add_column :pages, :sitepath, :text
-		execute "ALTER TABLE pages ADD COLUMN sitepath TEXT AFTER subpath"
-		execute "ALTER TABLE pages ADD INDEX sitepath (sitepath(255))"
+		# Restore the sitepath column for pages
+		#add_column :pages, :sitepath, :string
+		execute "ALTER TABLE pages ADD COLUMN sitepath char(255) AFTER subpath"
+		add_index :pages, :sitepath, :name=>'sitepath'
 		# copy the path data back into the pages table’s sitepath column
 		paths = Path.find(:all, :conditions=>'paths.item_type = "Page" AND paths.sitepath != "" AND paths.sitepath IS NOT NULL')
 		paths.each do |path|

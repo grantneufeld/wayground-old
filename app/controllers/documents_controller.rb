@@ -23,10 +23,10 @@ class DocumentsController < ApplicationController
 			send_data @document.content, :type=>@document.content_type,
 				:filename=>@document.filename, :disposition=>disposition
 		else
-			@path = "#{params[:root]}#{@filename}"
+			@url_path = "#{params[:root]}#{@filename}"
 			flash.now[:error] =
 				"Could not find the requested file ‘#{@filename}’"
-			render :template=>'pages/missing', :status=>404
+			missing
 		end
 	end
 	

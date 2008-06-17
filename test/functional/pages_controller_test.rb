@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class PagesControllerTest < ActionController::TestCase
-	fixtures :pages, :users
+	fixtures :pages, :users, :paths
 
 	def setup
 		@controller = PagesController.new
@@ -16,23 +16,23 @@ class PagesControllerTest < ActionController::TestCase
 		assert_routing_for_resources 'pages', [], [], {}
 	end
 	
-	def test_routing
-		#map.root :controller=>'pages', :action=>'show'
-		assert_generates('/', {:controller=>'pages', :action=>'show'})
-		assert_recognizes({:controller=>'pages', :action=>'show'}, '/')
-		#assert_equal '/', root_url
-		#assert_equal '/', root_path
-		
-		#map.page '*url', :controller=>'pages', :action=>'show',
-		#	:conditions=>{:method=>:get}
-		assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
-			:url=>['custom','url']})
-		# FIXME: generation of route strings is url-encoding slashes when it shouldn’t be
-		#assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
-		#	:url=>'custom/url'})
-		assert_recognizes({:controller=>'pages', :action=>'show',
-			:url=>['custom','url']}, '/custom/url')
-	end
+	#def test_routing
+	#	#map.root :controller=>'pages', :action=>'show'
+	#	assert_generates('/', {:controller=>'pages', :action=>'show'})
+	#	assert_recognizes({:controller=>'pages', :action=>'show'}, '/')
+	#	#assert_equal '/', root_url
+	#	#assert_equal '/', root_path
+	#	
+	#	#map.page '*url', :controller=>'pages', :action=>'show',
+	#	#	:conditions=>{:method=>:get}
+	#	assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
+	#		:url=>['custom','url']})
+	#	# FIXME: generation of route strings is url-encoding slashes when it shouldn’t be
+	#	#assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
+	#	#	:url=>'custom/url'})
+	#	assert_recognizes({:controller=>'pages', :action=>'show',
+	#		:url=>['custom','url']}, '/custom/url')
+	#end
 	
 	# INDEX (LIST)
 
@@ -119,6 +119,8 @@ class PagesControllerTest < ActionController::TestCase
 			assert_select 'h1', pages(:two).title
 		end
 	end
+	# TODO !!! test path.redirect support
+	
 	# TODO future: support private pages
 	## test private
 	#def test_show_private
@@ -177,18 +179,21 @@ class PagesControllerTest < ActionController::TestCase
 	#end 
 	# test missing id - gets home page
 	def test_show_no_id
-		assert_efficient_sql do
+		#assert_efficient_sql do
+		#	get :show, {}, {:user=>users(:admin).id}
+		#end
+		#assert_response :success
+		#assert assigns(:page)
+		#assert_equal pages(:one).title, assigns(:page_title)
+		#assert_nil flash[:notice]
+		## view result
+		#assert_template 'show'
+		#assert_select 'div#flash:empty'
+		#assert_select 'div#content' do
+		#	assert_select 'h1', pages(:one).title
+		#end
+		assert_raise(ActionController::RoutingError) do
 			get :show, {}, {:user=>users(:admin).id}
-		end
-		assert_response :success
-		assert assigns(:page)
-		assert_equal pages(:one).title, assigns(:page_title)
-		assert_nil flash[:notice]
-		# view result
-		assert_template 'show'
-		assert_select 'div#flash:empty'
-		assert_select 'div#content' do
-			assert_select 'h1', pages(:one).title
 		end
 	end
 

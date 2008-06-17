@@ -14,8 +14,10 @@ if page.children.size > 0 #or page.is_container?
 		%><%=
 		link_to_remote('<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
 			{:url=>{:controller=>'pages', :action=>'index', :id=>page},
+			:method=>:get,
 			:loading=>"Element.update('#{row_id}_expand','<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\" alt=\"Loading…\" class=\"diricon\" />');",
-			:loaded=>"Element.replace('#{row_id}_expand','<img src=\"/icon/expanded.png\" width=\"16\" height=\"16\" alt=\"Expanded\" class=\"diricon\" />');"},
+			:loaded=>"Element.replace('#{row_id}_expand','<img src=\"/icon/expanded.png\" width=\"16\" height=\"16\" alt=\"Expanded\" class=\"diricon\" />');",
+			:update=>"#{row_id}_pages"},
 			{:href=>url_for({:controller=>'pages',:action=>'index', :id=>page}),
 				:title => "Show the children of this #{page.class}",
 				:id=>"#{row_id}_expand"}) %><%

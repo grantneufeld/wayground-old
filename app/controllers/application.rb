@@ -102,6 +102,29 @@ class ApplicationController < ActionController::Base
 	end
 	
 	
+	# report that the requested url does not exist (missing - 404 error)
+	def missing
+		@page_title = '404 Missing'
+		@url_path ||= get_path
+		flash.now[:error] ||= "Requested page not found (‘#{@url_path}’)."
+		render :template=>'paths/missing', :status=>'404 Missing'
+	end
+	
+	# determine the request path
+	def get_path
+		# TODO: need to get the cgi request path if params[:url] is nil
+		if params[:url].is_a?(Array)
+			path = params[:url].join('/')
+		else
+			path = params[:url].to_s
+		end
+		if path.length > 0 and path[0].chr != '/'
+			path = "/#{path}"
+		end
+		path
+	end
+	
+	
 	private
 	
 	# ########################################################

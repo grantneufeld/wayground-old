@@ -111,6 +111,6 @@ class Page < ActiveRecord::Base
 	end
 	
 	def css_class(prefix='')
-		"#{prefix}#{sitepath == '/' ? 'root' : self.class.name.downcase}"
+		"#{prefix}#{subpath == '/' ? 'root' : self.class.name.downcase}"
 	end
 end

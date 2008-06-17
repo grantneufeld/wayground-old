@@ -62,10 +62,9 @@ class DocumentsControllerTest < ActionController::TestCase
 		end
 		assert_response 404
 		assert_nil assigns(:document)
-		assert assigns(:path)
-		# flash gets eaten by render :-(
-		#assert flash[:error]
-		assert_template 'pages/missing'
+		assert assigns(:url_path)
+		assert flash[:error]
+		assert_template 'paths/missing'
 	end
 	def test_data_private_wrong_user
 		assert_efficient_sql do
@@ -74,10 +73,9 @@ class DocumentsControllerTest < ActionController::TestCase
 		end
 		assert_response 404
 		assert_nil assigns(:document)
-		assert assigns(:path)
-		# flash gets eaten by render :-(
-		#assert flash[:error]
-		assert_template 'pages/missing'
+		assert assigns(:url_path)
+		assert flash[:error]
+		assert_template 'paths/missing'
 	end
 	def test_data_private_invalid_filename
 		assert_efficient_sql do
@@ -86,10 +84,9 @@ class DocumentsControllerTest < ActionController::TestCase
 		end
 		assert_response 404
 		assert_nil assigns(:document)
-		assert assigns(:path)
-		# flash gets eaten by render :-(
-		#assert flash[:error]
-		assert_template 'pages/missing'
+		assert assigns(:url_path)
+		assert flash[:error]
+		assert_template 'paths/missing'
 	end
 	
 	# INDEX (LIST)

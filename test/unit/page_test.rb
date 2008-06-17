@@ -16,6 +16,12 @@ class PageTest < ActiveSupport::TestCase
 		assert_equal pages(:one), page
 	end
 	
+	def test_find_by_key
+		p = Page.find_by_key('keyword')
+		assert_equal 2, p.length
+		assert_equal pages(:three), p[0]
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -67,5 +73,10 @@ class PageTest < ActiveSupport::TestCase
 		assert_equal [], pages(:one).parent_chain
 		assert_equal [pages(:one)], pages(:two).parent_chain
 		assert_equal [pages(:one), pages(:two)], pages(:three).parent_chain
+	end
+	
+	def test_page_css_class
+		assert_equal 'root', pages(:one).css_class
+		assert_equal 'dir-page', pages(:two).css_class('dir-')
 	end
 end

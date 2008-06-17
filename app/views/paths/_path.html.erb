@@ -1,0 +1,4 @@
+<%
+css_class = path.item ? path.item.css_class('dir-') : 'dir-redirect'
+
+%><li class="<%= css_class + cycle('', ' alternate') %>"><%= link_to path.sitepath, path.sitepath %></li>
