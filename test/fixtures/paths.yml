@@ -18,6 +18,10 @@ update_this:
   item_type: Page
   sitepath: '/update'
 
+update_redirect:
+  sitepath: '/update_redirect'
+  redirect: 'http://wayground.ca/update_redirect'
+
 delete_this:
   item: delete_this
   item_type: Page

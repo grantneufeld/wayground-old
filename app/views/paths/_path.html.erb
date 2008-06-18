@@ -1,4 +1,43 @@
 <%
+row_id ||= "path_#{path.id}"
+
 css_class = path.item ? path.item.css_class('dir-') : 'dir-redirect'
 
-%><li class="<%= css_class + cycle('', ' alternate') %>"><%= link_to path.sitepath, path.sitepath %></li>
+%><li id="<%= row_id %>" class="<%= css_class + cycle('', ' alternate') %>"><%= link_to path.sitepath, path.sitepath %><%
+
+if current_user && current_user.staff
+	%>
+<%=
+	link_to('<img src="/icon/info.png" width="16" height="16" alt="Info" ' +
+			'class="diricon" />',
+		{:action=>'show', :id=>path},
+		{:title=>"Info for this path"})
+		%><span class="separator">.</span>
+<%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
+			'class="diricon" />',
+		edit_path_path(path),
+		{:title=>"Edit this path"})
+		%><span class="separator">.</span>
+<%=
+	link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="diricon" />',
+		{:url=>{:controller=>'paths', :action=>'destroy', :id=>path},
+		:method=>'delete',
+		:loading=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+			" alt=\"Processing…\" class=\"diricon\" />');",
+		:loaded=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+			" alt=\"Delete\" class=\"diricon\" />');",
+		:confirm=>
+			"Are you sure you want to permanently delete the path “#{path.sitepath}”?"
+		},
+		{:href=>url_for({:controller=>'paths', :action=>'destroy', :id=>path}),
+		:title=>"Permanently delete this path", :method=>'delete',
+		:id=>"#{row_id}_delete"
+		} %>
+<%
+end
+
+%></li>

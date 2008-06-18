@@ -6,13 +6,15 @@ class PagesController < ApplicationController
 	# site page index (page tree?)
 	def index
 		@section = 'pages'
+		@key = params[:key]
 		if params[:id] and params[:id].to_i > 0
 			@page = Page.find(params[:id], :include=>:children)
 			@pages = @page.children
+			@key = nil
 			@page_title = "Site Index: #{@page.title}"
-		elsif !(params[:key].blank?)
+		elsif !(@key.blank?)
 			@page = nil
-			@pages = Page.find_by_key(params[:key])
+			@pages = Page.find_by_key(@key)
 			@page_title = "Site Index: ‘#{params[:key]}’"
 		else
 			# find all top-level pages
@@ -39,18 +41,13 @@ class PagesController < ApplicationController
 	# display a page
 	def show
 		@page = Page.find(params[:id])
-		if @page.is_a? Page
+		if @page
 			@page_title = @page.title
 			@content_for_description = @page.description
 			respond_to do |format|
 				format.html # show.rhtml
 				format.xml  { render :xml => @page.to_xml }
 			end
-		elsif @page.is_a? String
-			# Redirect
-			redirect_to @page
-		elsif @page
-			# FIXME: render the show action for @page.class controller
 		else
 			missing
 		end

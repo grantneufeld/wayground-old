@@ -1,2 +1,31 @@
-<h1>Paths#show</h1>
-<p>Find me in app/views/paths/show.html.erb</p>
+<table cellspacing="0"><tbody>
+<% if @path.item -%>
+<tr class="<%= cycle('', ' alternate') %>"><th>Item:</th> <td><%= link_to @path.item.title, @path.sitepath, :class=>@path.item.css_class('dir-') %></td></tr>
+<% end -%>
+<tr class="<%= cycle('', ' alternate') %>"><th>Sitepath:</th> <td><%= @path.sitepath %></td></tr>
+<% unless @path.redirect.blank? -%>
+<tr class="<%= cycle('', ' alternate') %>"><th>Redirect URL:</th> <td><%= h @path.redirect %></td></tr>
+<% end -%>
+</tbody>
+<tfoot>
+<tr><th>Actions:</th> <td>
+<%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
+			'class="diricon" />',
+		edit_path_path(@path),
+		{:title=>"Edit this path"})
+		%><span class="separator">.</span>
+<%=
+	link_to '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="diricon" />',
+		{:url=>{:controller=>'paths', :action=>'destroy', :id=>@path},
+		:method=>'delete',
+		:confirm=>
+			"Are you sure you want to permanently delete the path “#{@path.sitepath}”?"
+		},
+		{:href=>url_for({:controller=>'paths', :action=>'destroy', :id=>@path}),
+		:title=>"Permanently delete this path", :method=>'delete'
+		} %>
+</td></tr>
+</tfoot></table>
+<%= render :partial=>'standard'%>

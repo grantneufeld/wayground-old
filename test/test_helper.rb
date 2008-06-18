@@ -127,4 +127,25 @@ class Test::Unit::TestCase
 			end
 		end
 	end
+	
+	# ar is an ActiveRecord object that has been validated and should
+	# have validation errors.
+	# fields is an array of field (attribute) name strings that should be invalid.
+	def assert_validation_errors_on(ar, fields)
+		# check that the ActiveRecord object (ar) has errors registered
+		# for the fields expecting to have errors
+		missing_errors = []
+		fields.each do |field_name|
+			missing_errors << field_name if ar.errors[field_name].blank?
+		end
+		if missing_errors.length > 0
+			assert false, "missing validation error for fields #{missing_errors.join(', ')}"
+		end
+		# check that the page content has the validation errors box,
+		# and the expected number of error items in it
+		assert_select 'div#errorExplanation' do
+			assert_select 'li', :count=>fields.length
+		end
+		
+	end
 end

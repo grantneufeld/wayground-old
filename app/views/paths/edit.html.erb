@@ -1,2 +1,11 @@
-<h1>Paths#edit</h1>
-<p>Find me in app/views/paths/edit.html.erb</p>
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Path: <%= link_to @path.sitepath, @path.sitepath %></h1>
+<%= error_messages_for :path %>
+<div class="step_form">
+<% form_for(:path, :url=>{:action=>'update', :id=>@path}, :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

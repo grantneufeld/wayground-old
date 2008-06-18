@@ -43,7 +43,11 @@ CHUNKS
 
 Page objects can have multiple chunks that make up part or all of the page’s content.
 
-Chunk is an abstract class.
+Chunk is an abstract class. The common attributes are:
+- page: the page this is a ‘chunk’ of.
+- section: The part of the page content this chunk goes in (e.g, ‘’ default, ‘sidebar’, ‘column1’, etc.).
+- position: The numeric ordering of the chunk relative to other chunks in the same section.
+- flavour: Special attributes of the chunk (e.g., ‘feature’, ‘video’, etc.). Typically used to set the class (for CSS) of the chunk’s wrapper.
 
 RawChunk just has some content (and a content_type).
 

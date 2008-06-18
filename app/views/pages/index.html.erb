@@ -1,3 +1,6 @@
+<% unless @key.blank?
+	%><h1>Page search: “<%= h @key %>”</h1>
+<% end -%>
 <ul class="dir">
 <%
 if @page
@@ -6,3 +9,4 @@ else
 	%><%= render :partial=>'page', :collection=>@pages %><%
 end
 %></ul>
+<%= render :partial=>'standard'%>

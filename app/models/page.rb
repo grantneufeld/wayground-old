@@ -6,10 +6,11 @@ class Page < ActiveRecord::Base
 	
 	validates_presence_of :subpath
 	validates_presence_of :title
-	validates_presence_of :content_type, :if=>Proc.new {|i| !(i.content.blank?)}
-	validates_format_of :subpath, :allow_nil=>true,
+	validates_presence_of :content_type, :if=>Proc.new {|p| !(p.content.blank?)}
+	validates_format_of :subpath,
 		:with=>/\A([\w\-](\.?[\w\-]+)*)?\/?\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
+	validates_uniqueness_of :subpath, :scope=>[:parent_id]
 	validates_format_of :content_type, :allow_nil=>true, :with=> /\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,
 		:message=>'is not a valid mimetype'
 	
@@ -19,9 +20,9 @@ class Page < ActiveRecord::Base
 	# page containment hierarchy
 	belongs_to :parent, :class_name=>"Page", :foreign_key=>"parent_id"
 	has_many :children, :class_name=>"Page", :foreign_key=>"parent_id",
-		:order=>'title'
+		:order=>'title', :dependent=>:nullify
 	
-	has_one :path, :as=>:item
+	has_one :path, :as=>:item, :dependent=>:destroy
 	
 	
 	# ########################################################
@@ -29,7 +30,7 @@ class Page < ActiveRecord::Base
 	
 	# the home page is a special page
 	def self.find_home
-		Path.find_home.item
+		@@home_page ||= Path.find_home.item
 	end
 	
 	# keyword search
@@ -45,7 +46,14 @@ class Page < ActiveRecord::Base
 	# Instance Methods
 	
 	def before_validation
+		if parent.nil?
+			self.class.find_home.children << self
+		end
+		self
+	end
+	def after_validation
 		set_sitepath!
+		self
 	end
 	
 	# access the path.sitepath as if it were an attribute on page
@@ -60,6 +68,8 @@ class Page < ActiveRecord::Base
 			path.sitepath = p
 		else
 			self.path = Path.new(:sitepath=>p)
+			self.path.item = self
+			self.path.valid?
 		end
 		p
 	end
@@ -70,10 +80,8 @@ class Page < ActiveRecord::Base
 		old_subpath = self.subpath || self.read_attribute('subpath') || ''
 		workpath = old_subpath
 		if workpath.blank?
-			workpath = self.id ? self.id.to_s : '-'
-		end
-		# root document is special case - not referenced by sitepath
-		if workpath == '/'
+			# TODO? deal with blank subpath when setting sitepath?
+		elsif workpath == '/'
 			self.sitepath = '/'
 		else
 			if workpath[0].chr == '/'

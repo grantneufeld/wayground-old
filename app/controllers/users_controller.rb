@@ -41,6 +41,7 @@ class UsersController < ApplicationController
 	def new
 		@user = User.new(params[:user])
 		@user.valid? if params[:user]
+		@user.time_zone = Time.zone.name unless params[:user]
 		@page_title = 'New User Registration'
 	end
 	

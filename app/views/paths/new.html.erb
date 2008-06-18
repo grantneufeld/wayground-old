@@ -1,2 +1,10 @@
-<h1>Paths#new</h1>
-<p>Find me in app/views/paths/new.html.erb</p>
+<div class="steps">
+<h1>New Redirect Path</h1>
+<%= error_messages_for :path %>
+<div class="step_form">
+<% form_for(:path, :url=>paths_path) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

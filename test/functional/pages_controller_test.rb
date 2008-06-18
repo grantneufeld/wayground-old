@@ -16,24 +16,6 @@ class PagesControllerTest < ActionController::TestCase
 		assert_routing_for_resources 'pages', [], [], {}
 	end
 	
-	#def test_routing
-	#	#map.root :controller=>'pages', :action=>'show'
-	#	assert_generates('/', {:controller=>'pages', :action=>'show'})
-	#	assert_recognizes({:controller=>'pages', :action=>'show'}, '/')
-	#	#assert_equal '/', root_url
-	#	#assert_equal '/', root_path
-	#	
-	#	#map.page '*url', :controller=>'pages', :action=>'show',
-	#	#	:conditions=>{:method=>:get}
-	#	assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
-	#		:url=>['custom','url']})
-	#	# FIXME: generation of route strings is url-encoding slashes when it shouldn’t be
-	#	#assert_generates('/custom/url', {:controller=>'pages', :action=>'show',
-	#	#	:url=>'custom/url'})
-	#	assert_recognizes({:controller=>'pages', :action=>'show',
-	#		:url=>['custom','url']}, '/custom/url')
-	#end
-	
 	# INDEX (LIST)
 
 	def test_index
@@ -50,12 +32,9 @@ class PagesControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			# TODO: test html content for test_index
-			#assert_select 'table' do
-			#	assert_select 'thead'
-			#	assert_select 'tbody' do
-			#		assert_select 'tr', :count=>assigns(:pages).size
-			#	end
-			#end
+			assigns(:pages).each do |p|
+				assert_select "li#page_#{p.id}"
+			end
 		end
 	end
 	def test_index_search
@@ -71,11 +50,8 @@ class PagesControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			# TODO: test html content for test_index_search
-			#assert_select 'table' do
-			#	assert_select 'thead'
-			#	assert_select 'tbody' do
-			#		assert_select 'tr', :count=>assigns(:pages).size
-			#	end
+			#assert_select 'ul' do
+			#	assert_select 'li', :count=>assigns(:pages).size
 			#end
 		end
 	end
@@ -93,11 +69,8 @@ class PagesControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			# TODO: test html content for test_index_parent
-			#assert_select 'table' do
-			#	assert_select 'thead'
-			#	assert_select 'tbody' do
-			#		assert_select 'tr', :count=>assigns(:pages).size
-			#	end
+			#assert_select 'ul' do
+			#	assert_select 'li', :count=>assigns(:pages).size
 			#end
 		end
 	end
@@ -119,7 +92,6 @@ class PagesControllerTest < ActionController::TestCase
 			assert_select 'h1', pages(:two).title
 		end
 	end
-	# TODO !!! test path.redirect support
 	
 	# TODO future: support private pages
 	## test private
@@ -177,21 +149,8 @@ class PagesControllerTest < ActionController::TestCase
 	#	assert flash[:notice]
 	#	assert_redirected_to pages_path
 	#end 
-	# test missing id - gets home page
+	# test missing id - can’t show without an id
 	def test_show_no_id
-		#assert_efficient_sql do
-		#	get :show, {}, {:user=>users(:admin).id}
-		#end
-		#assert_response :success
-		#assert assigns(:page)
-		#assert_equal pages(:one).title, assigns(:page_title)
-		#assert_nil flash[:notice]
-		## view result
-		#assert_template 'show'
-		#assert_select 'div#flash:empty'
-		#assert_select 'div#content' do
-		#	assert_select 'h1', pages(:one).title
-		#end
 		assert_raise(ActionController::RoutingError) do
 			get :show, {}, {:user=>users(:admin).id}
 		end
@@ -262,6 +221,7 @@ class PagesControllerTest < ActionController::TestCase
 		# with the addition of a validation error list in the view
 		assert_response :success
 		assert assigns(:page)
+		assert_validation_errors_on(assigns(:page), ['title','subpath'])
 		assert assigns(:page).user == users(:staff)
 		assert_nil flash[:notice]
 		assert_equal 'New Page', assigns(:page_title)
@@ -269,7 +229,6 @@ class PagesControllerTest < ActionController::TestCase
 		assert_template 'new'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			# TODO: Check for ERRORS LIST
 			assert_select "form[action=#{pages_path}]" do
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
@@ -377,7 +336,7 @@ class PagesControllerTest < ActionController::TestCase
 		assert_redirected_to pages_path
 	end
 	
-	## UPDATE
+	# UPDATE
 	def test_update
 		put :update, {:id=>pages(:update_this).id,
 			:page=>{:subpath=>'test_update', :title=>'test_update',
@@ -583,9 +542,4 @@ class PagesControllerTest < ActionController::TestCase
 			delete :destroy, {}, {:user=>users(:staff).id}
 		end
 	end
-	
-	# TODO: write test cases for missing
-	# TODO: write test cases for error
-	# TODO: write test cases for get_path
-	
 end
