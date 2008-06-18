@@ -22,10 +22,9 @@ end
 	<td><%= f.text_field :description %>
 	<br />The description is used when listing pages, and by some search engines.</td></tr>
 <tr class="alternate"><th><label for="page_content">Content:</label></th>
-	<td><%= f.text_area :content, :rows=>20, :cols=>68 %>
-	<br /><label for="page_content_type">Content Type:</label>
-	<% #= f.text_field :content_type %>
-	<%
+	<td id="content_field"><%= render :partial=>'content_field', :locals=>{:f=>f, :content_type=>@page.content_type} %></td></tr>
+<tr class="alternate"><th><label for="page_content_type">Content Type:</label></th>
+	<td><%
 	content_types = [
 		#['Auto-formatted text (Markdown)','text/markdown'],
 		#['Message Board text (BBCode)','text/bbcode'],

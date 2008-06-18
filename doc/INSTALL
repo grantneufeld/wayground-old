@@ -179,7 +179,9 @@ ActiveRecord#find_each support
  ./script/plugin install svn://rubyforge.org/var/svn/pseudocursors
 
 Visual/wysiwyg editor for forms:
- ./script/plugin install svn://zuurstof.openminds.be/home/kaizer/svn/rails_stuff/plugins/wym_editor_helper
+ # ./script/plugin install svn://zuurstof.openminds.be/home/kaizer/svn/rails_stuff/plugins/wym_editor_helper
+ ./script/plugin install svn://rubyforge.org//var/svn/fckeditorp/trunk/fckeditor
+ rake fckeditor:install
 
 File Upload:
  ./script/plugin install http://svn.techno-weenie.net/projects/plugins/attachment_fu/

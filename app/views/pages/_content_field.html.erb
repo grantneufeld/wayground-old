@@ -1,0 +1,8 @@
+<% if content_type == 'text/html'
+	content_for("head") do
+		%><%= javascript_include_tag :fckeditor %><%
+	end
+	%><%= fckeditor_textarea('page', 'content', :toolbarSet=>'Wayground', :width=>'100%', :height => '320px') %><%
+else
+	%><%= f.text_area :content, :rows=>20, :cols=>68 %><%
+end %>
