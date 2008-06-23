@@ -21,8 +21,6 @@ function change_content_type() {
 			Element.hide('change_type_progress');
 		},
 	});
-	//string.urlEncode()
-	//encodeURIComponent($F('page_content'))
 	return false;
 }
 </script>
@@ -59,8 +57,8 @@ end
 		#['Auto-formatted text (Markdown)','text/markdown'],
 		#['Message Board text (BBCode)','text/bbcode'],
 		['Plain text','text/plain'],
-		['HTML formatted text','text/html']
-		# ['Textilize','text/textilize']
+		['HTML formatted text','text/html'],
+		['Textilize','text/textilize']
 		]
 	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
 	%><%= f.select :content_type, content_types, {}, {:onchange=>'return change_content_type();'} %>
