@@ -180,8 +180,12 @@ ActiveRecord#find_each support
 
 Visual/wysiwyg editor for forms:
  # ./script/plugin install svn://zuurstof.openminds.be/home/kaizer/svn/rails_stuff/plugins/wym_editor_helper
+# FCKEditor (html wysiwyg)
  ./script/plugin install svn://rubyforge.org//var/svn/fckeditorp/trunk/fckeditor
  rake fckeditor:install
+# Textile Editor Helper (textile helper bar)
+ script/plugin install http://svn.webtest.wvu.edu/repos/rails/plugins/textile_editor_helper/
+ rake textile_editor_helper:install
 
 File Upload:
  ./script/plugin install http://svn.techno-weenie.net/projects/plugins/attachment_fu/
