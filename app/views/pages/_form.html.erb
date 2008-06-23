@@ -1,4 +1,34 @@
 <%
+content_for("head") do
+	%><%= javascript_include_tag :fckeditor
+	%><script type="text/javascript" charset="utf-8">
+function change_content_type() {
+	var theContent = $F('page_content');
+	if($F('old_content_type') == 'text/html') {
+		theContent = FCKeditorAPI.GetInstance('page_content').GetXHTML();
+	}
+	var u = new Ajax.Updater('content_field', '<%= content_switch_path() %>', {
+		//asynchronous:true, DEFAULT
+		evalScripts:true, parameters: {
+			old_content_type: $F('old_content_type'),
+			content_type: $F('page_content_type'),
+			content: theContent
+		},
+		onCreate: function(requestor, xhr_obj){
+			Element.show('change_type_progress');
+		},
+		onComplete: function(){
+			Element.hide('change_type_progress');
+		},
+	});
+	//string.urlEncode()
+	//encodeURIComponent($F('page_content'))
+	return false;
+}
+</script>
+<%
+end
+
 fields_for :page do |f|
 %><table cellspacing="0">
 <%
@@ -33,7 +63,8 @@ end
 		# ['Textilize','text/textilize']
 		]
 	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
-	%><%= f.select :content_type, content_types %>
+	%><%= f.select :content_type, content_types, {}, {:onchange=>'return change_content_type();'} %>
+<span id="change_type_progress" style="display:none" onclick="Element.hide('change_type_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Converting Content…</span>
 <%	#	<br />Auto-formatted text allows you to use the formatting described above.
 %>		<br />Plain text is just plain paragraphs, no special formatting.
 		<br />HTML is for text formatted using standard HTML markup.</td></tr>

@@ -36,6 +36,8 @@ http://blog.codahale.com/2006/05/26/rails-plugin-rails_rcov/
 http://svn.codahale.com/rails_rcov/
 http://eigenclass.org/hiki.rb?rcov
 sudo gem install rcov
+* rubydoctest
+http://github.com/tablatom/rubydoctest/tree
 
 Text search
 * Ferret

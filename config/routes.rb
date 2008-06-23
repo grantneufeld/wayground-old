@@ -50,6 +50,8 @@ ActionController::Routing::Routes.draw do |map|
 	map.root :controller=>'paths', :action=>'show'
 	map.resources :paths
 	map.resources :pages
+	map.content_switch '/pages/content_type_switch', :controller=>'pages',
+		:action=>'content_type_switch', :conditions=>{:method=>:post}
 	
 	map.private_doc '/private/*filename', :controller=>'documents',
 		:action=>'data', :root=>'/private/', :conditions=>{:method=>:get}

@@ -16,6 +16,16 @@ class PagesControllerTest < ActionController::TestCase
 		assert_routing_for_resources 'pages', [], [], {}
 	end
 	
+	def test_routing
+		# map.content_switch '/pages/content_type_switch', :controller=>'pages',
+		# 	:action=>'content_type_switch', :conditions=>{:method=>:post}
+		assert_generates("/pages/content_type_switch",
+			{:controller=>"pages", :action=>"content_type_switch"})
+		assert_recognizes(
+			{:controller=>"pages", :action=>"content_type_switch"},
+			{:path=>"/pages/content_type_switch", :method=>:post})
+	end
+	
 	# INDEX (LIST)
 
 	def test_index
@@ -542,4 +552,7 @@ class PagesControllerTest < ActionController::TestCase
 			delete :destroy, {}, {:user=>users(:staff).id}
 		end
 	end
+	
+	# dynamic content format change
+	# TODO: test rjs update of content field based on changing content_type
 end

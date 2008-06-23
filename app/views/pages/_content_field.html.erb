@@ -1,8 +1,46 @@
-<% if content_type == 'text/html'
-	content_for("head") do
-		%><%= javascript_include_tag :fckeditor %><%
-	end
-	%><%= fckeditor_textarea('page', 'content', :toolbarSet=>'Wayground', :width=>'100%', :height => '320px') %><%
+<%
+# requires @page
+# requires f to be set as the fields for @page
+
+
+field_id ||= 'page_content'
+rows = 20
+cols = 68
+
+# if we’re switching from one content_type to another
+@old_content_type ||= nil
+if @old_content_type && @old_content_type != content_type
+	@page.content = convert_content(@page.content, @old_content_type, content_type)
+end
+
+%><input type="hidden" name="old_content_type" id="old_content_type" value="<%= h content_type %>"/>
+<%
+
+if content_type == 'text/html'
+	#content_for("head") do
+	#	%><%= javascript_include_tag :fckeditor %><%
+	#end
+	%><%
+	#fckeditor_textarea('page', 'content', :toolbarSet=>'Wayground', :width=>'100%', :height => '320px')
+	
+	# This is derived from the fckeditor_textarea function
+	# in vendor/plugins/fckeditor/lib/fckeditor.rb
+	# Modified
+	
+	toolbarset = 'Wayground'
+	width = '100%'
+	height = '320px'
+	js_path = "#{request.relative_url_root}/javascripts/"
+	base_path = "#{js_path}fckeditor/"
+	
+	%><textarea id="<%= field_id %>" name="page[content]" rows="<%= rows %>" cols="<%= cols %>"><%= h @page.content %></textarea>
+<%=	javascript_tag(
+"var oFCKeditor = new FCKeditor('#{field_id}', '#{width}', '#{height}', '#{toolbarset}');
+oFCKeditor.BasePath = \"#{base_path}\"
+oFCKeditor.Config['CustomConfigurationsPath'] = '#{js_path}fckcustom.js';
+oFCKeditor.ReplaceTextarea();
+")
+	 %><%
 else
-	%><%= f.text_area :content, :rows=>20, :cols=>68 %><%
+	%><%= f.text_area :content, :rows=>rows, :cols=>cols, :id=>field_id %><%
 end %>

@@ -2,8 +2,9 @@
 module ApplicationHelper
 	# TODO: NO TESTS HAVE BEEN WRITTEN FOR THESE FUNCTIONS!!!
 	
+	include Conversions
 	
-	# http://railscasts.com/episodes/77
+	# {Destroy Without Javascript}[http://railscasts.com/episodes/77]
 	# Creates a friendlier destroy link.
 	# (<a href="fallback_url" onclick="confirm_destroy(this,'url')">name</a>)
 	# fallback_url should point to a page where the user can confirm the destroy request
@@ -46,6 +47,8 @@ module ApplicationHelper
 	
 	# always format before processing
 	# if unconfirmed_urls is set, add ' rel="nofollow"' to anchor elements
+	# (that tells search engines to not reference those urls — a useful
+	# anti-spam technique)
 	def process_and_format(content, content_type='text/plain', unconfirmed_urls=false)
 		process_content format_content(content, content_type, unconfirmed_urls)
 	end
@@ -407,5 +410,30 @@ module ApplicationHelper
 			# return the list text
 			list_text
 		}
-	end	
+	end
+	
+	# Returns content converted from one type to another
+	# (e.g., from text/plain to text/html)
+	def convert_content(content, in_type, out_type, confirmed_urls=true)
+		# in_type and out_type must both be set and different
+		if in_type.blank? or out_type.blank? or in_type == out_type
+			return content
+		end
+		case out_type
+		when 'text/html' :
+			# to convert to html, just use the formatter helper used by views
+			return format_content(content, in_type, confirmed_urls)
+		when 'text/plain' :
+			case in_type
+			when 'text/html' :
+				return html2text(content)
+			end
+			# non-html text encodings just pass-through as for text/plain
+		when 'text/bbcode' :
+		when 'text/markdown' :
+		when 'text/textilize' :
+		end
+		return content
+	end
+	
 end

@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+	protect_from_forgery :except=>:content_type_switch
 	before_filter :staff_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
 	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
@@ -126,6 +127,13 @@ class PagesController < ApplicationController
 	rescue ActiveRecord::RecordNotFound
 		flash[:warning] = "Could not find a page matching the requested id (‘#{params[:id]}’)."
 		redirect_to :action=>'index'
+	end
+	
+	# handle switching of content_type within edit form
+	def content_type_switch
+		@old_content_type = params[:old_content_type]
+		@page = Page.new(:content=>params[:content],
+			:content_type=>params[:content_type])
 	end
 	
 	# report an error result
