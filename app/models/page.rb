@@ -56,6 +56,13 @@ class Page < ActiveRecord::Base
 		self
 	end
 	
+	def validate
+		if Path.restricted_path?(subpath, (parent.nil? ? nil : parent.path))
+			errors.add(:subpath,
+				"you cannot use the subpath “#{subpath}” — it is reserved")
+		end
+	end
+	
 	# access the path.sitepath as if it were an attribute on page
 	def sitepath
 		unless path

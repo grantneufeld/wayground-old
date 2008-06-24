@@ -28,4 +28,12 @@ class Path < ActiveRecord::Base
 		find(:all, :conditions=>['paths.sitepath like ?', key_arg],
 			:order=>'paths.sitepath', :include=>:item)
 	end
+	
+	# Certain paths should not be created.
+	def self.restricted_path?(subpath, parent_path=nil)
+		p = "#{(parent_path.nil? || parent_path.sitepath == '/' ? nil : parent_path.sitepath)}/#{subpath}"
+		!(p.match(
+		/^\/(activate|campaigns|candidates|contacts|crm|documents|elections|events|forums|groups|login|offices|pages|parties|paths|people|petitions|policies|sessions|signup|users|votes)(\/.*)?$/
+		).nil?)
+	end
 end

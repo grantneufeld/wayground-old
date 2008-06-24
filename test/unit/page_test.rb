@@ -53,6 +53,10 @@ class PageTest < ActiveSupport::TestCase
 		page = Page.new(:subpath=>'An Invalid Subpath!', :title=>'Invalid')
 		assert page
 		assert !(page.save)
+		# restricted subpath
+		page = Page.new(:subpath=>'documents', :title=>'Invalid')
+		assert page
+		assert !(page.save)
 		# invalid content_type format
 		page = Page.new(:subpath=>'invalid_content_type', :title=>'Invalid',
 			:content_type=>'invalid/mimetype')

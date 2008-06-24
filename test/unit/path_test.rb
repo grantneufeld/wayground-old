@@ -62,15 +62,33 @@ class PathTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
-	def test_find_home_path
+	def test_path_find_home
 		path = Path.find_home
 		assert_equal paths(:one), path
 	end
 	
-	def test_find_by_key
+	def test_path_find_by_key
 		p = Path.find_by_key('two')
 		assert_equal 2, p.length
 		assert_equal paths(:two), p[0]
+	end
+	
+	def test_restricted_paths
+		assert !(Path.restricted_path?('test_restricted_paths'))
+		assert !(Path.restricted_path?('test_restricted_paths', paths(:one)))
+		assert Path.restricted_path?('documents')
+		assert Path.restricted_path?('documents', paths(:one))
+		assert !(Path.restricted_path?('documents', paths(:two)))
+		assert !(Path.restricted_path?('document'))
+		assert !(Path.restricted_path?('documentsx'))
+		assert Path.restricted_path?('pages')
+		assert Path.restricted_path?('paths')
+		assert Path.restricted_path?('sessions')
+		assert Path.restricted_path?('users')
+		assert Path.restricted_path?('login')
+		assert Path.restricted_path?('signup')
+		assert Path.restricted_path?('activate')
+		assert Path.restricted_path?('people')
 	end
 	
 	# INSTANCE METHODS

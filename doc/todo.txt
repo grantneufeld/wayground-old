@@ -3,12 +3,6 @@ For a list of to-do’s (and other action notes) directly from the code, enter:
 from the project root.
 
 
-Split out a separate path controller from the pages_controller.
- Action: show. Displays the related Page, Event or whatever.
- Action: index. Lists paths and links to their objects (edit links for admins).
- Action: create & edit. Manage redirect paths.
-
-
 ==============================================================
 NEW FEATURES
 
@@ -48,10 +42,3 @@ http://agilewebdevelopment.com/plugins/acts_as_fulltextable
 http://wonsys.googlecode.com/svn/plugins/acts_as_fulltextable/
 * ActiveSearch
 http://julik.textdriven.com/svn/tools/rails_plugins/simple_search/
-
-WYSIWYG text-field edit
-* FCKEditor
-http://fckeditor.caronsoftware.com/
-* WYMEditor
-http://agilewebdevelopment.com/plugins/wym_editor_helper
-http://www.gorilla-webdesign.be/artikel/42-WYM+on+Rails
