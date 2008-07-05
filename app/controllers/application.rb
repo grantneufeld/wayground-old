@@ -14,6 +14,11 @@ class ApplicationController < ActionController::Base
 	# from your application log (in this case, all fields with names like "password"). 
 	filter_parameter_logging :password, :password_confirm
 	
+	# Turn off sessions for robots (e.g., search engines)
+	# Ref “The Rails Way”, page 472
+	session :off, :if=>lambda {|req|
+		req.user_agent = ~/(Google|Slurp|msnbot|Gigabot)/i}
+	
 	# Timezone code based on:
 	# http://mad.ly/2008/04/09/rails-21-time-zone-support-an-overview/
 	before_filter :set_time_zone
