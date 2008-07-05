@@ -93,6 +93,9 @@ Rails::Initializer.run do |config|
 	# To instruct the browser only to send the cookie over encrypted HTTPS
 	# and never over normal HTTP:
 	#ActionController::Base.session_options[:session_secure] = true
+	
+	# Make ActiveRecord only save the attributes that have changed since the record was loaded.
+	config.active_record.partial_updates = true
 end
 
 
