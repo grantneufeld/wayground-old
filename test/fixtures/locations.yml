@@ -1,0 +1,38 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  locatable: login (User)
+  name: One Place
+  address: 1 The Street NW
+  address2: ''
+  city: Calgary
+  province: AB
+  country: CA
+  postal: T2R 0G9
+  longitude: ''
+  latitude: ''
+  url: http://wayground.ca/test/location_one
+  email: location_one_test@wayground.ca
+  phone1_type: w
+  phone1: 123-456-7890
+  phone2_type: f
+  phone2: 234-567-8901
+  phone3_type: c
+  phone3: 345-678-9012
+
+two:
+  locatable: admin (User)
+  address: 2 An Avenue N
+  address2: Box 2
+  city: Somewheresville
+  province: ''
+  country: CA
+  postal: A1B 2C3
+  longitude: ''
+  latitude: ''
+  url: http://wayground.ca/test/location_two
+  email: location_two_test@wayground.ca
+  phone1_type: h
+  phone1: "1 (234) 567-8901"
+  phone2_type: c
+  phone2: "(234) 567-8902"

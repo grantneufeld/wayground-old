@@ -33,7 +33,7 @@ class Path < ActiveRecord::Base
 	def self.restricted_path?(subpath, parent_path=nil)
 		p = "#{(parent_path.nil? || parent_path.sitepath == '/' ? nil : parent_path.sitepath)}/#{subpath}"
 		!(p.match(
-		/^\/(activate|campaigns|candidates|contacts|crm|documents|elections|events|forums|groups|login|offices|pages|parties|paths|people|petitions|policies|sessions|signup|users|votes)(\/.*)?$/
+		/^\/(activate|campaigns|candidates|contacts|crm|documents|elections|events|forums|groups|locations|login|offices|pages|parties|paths|people|petitions|policies|sessions|signup|users|votes)(\/.*)?$/
 		).nil?)
 	end
 end

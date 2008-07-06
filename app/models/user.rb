@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
 	
 	attr_accessor :password, :password_confirmation
 	
+	# TODO: FUTURE: don’t destroy dependent locations when the location model is changed to allow sharing of location objects.
+	has_many :locations, :as=>:locatable, :dependent=>:destroy
+	
 	validates_presence_of :fullname
 	validates_presence_of :email, :if=>:email_required
 	validates_format_of :email,

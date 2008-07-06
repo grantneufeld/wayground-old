@@ -57,6 +57,8 @@ ActionController::Routing::Routes.draw do |map|
 		:action=>'data', :root=>'/private/', :conditions=>{:method=>:get}
 	map.resources :documents
 	
+	map.resources :locations
+	
 	# Install the default routes as the lowest priority.
 	#map.connect ':controller/:action/:id'
 	#map.connect ':controller/:action/:id.:format'
