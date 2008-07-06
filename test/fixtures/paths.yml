@@ -1,21 +1,17 @@
 one:
-  item: one
-  item_type: Page
+  item: one (Page)
   sitepath: '/'
 
 two:
-  item: two
-  item_type: Page
+  item: two (Page)
   sitepath: '/two'
 
 three:
-  item: three
-  item_type: Page
+  item: three (Page)
   sitepath: '/two/three'
 
 update_this:
-  item: update_this
-  item_type: Page
+  item: update_this (Page)
   sitepath: '/update'
 
 update_redirect:
@@ -23,8 +19,7 @@ update_redirect:
   redirect: 'http://wayground.ca/update_redirect'
 
 delete_this:
-  item: delete_this
-  item_type: Page
+  item: delete_this (Page)
   sitepath: '/delete_this'
 
 redirect_me:
