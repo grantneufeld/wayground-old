@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
 	# Turn off sessions for robots (e.g., search engines)
 	# Ref “The Rails Way”, page 472
 	session :off, :if=>lambda {|req|
-		req.user_agent = ~/(Google|Slurp|msnbot|Gigabot)/i}
+		req.user_agent == ~/(Google|Slurp|msnbot|Gigabot)/i}
 	
 	# Timezone code based on:
 	# http://mad.ly/2008/04/09/rails-21-time-zone-support-an-overview/

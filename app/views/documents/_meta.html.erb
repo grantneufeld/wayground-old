@@ -41,6 +41,7 @@ end %><%= link_to document.filename, document.siteurl, :title=>"Load the documen
 	<td><%=h document.updated_at.to_s(:tight) %></td></tr>
 <%	end
 %></tbody>
+<% if current_user and current_user.admin -%>
 <tfoot><tr><th align="right">Actions:</th>
 		<td><%
 #= link_to '<img src="/icon/edit.png" width="16" height="16" ' +
@@ -55,4 +56,5 @@ link_to_destroy('<img src="/icon/delete.png" width="16" height="16" alt=" " clas
 #	:title=>"Permanently delete ‘#{h document.filename}’"
 	%></td>
 </tr></tfoot>
+<% end %>
 </table>
