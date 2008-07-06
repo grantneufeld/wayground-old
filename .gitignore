@@ -3,6 +3,7 @@ config/database.yml
 config/amazon_s3.yml
 db/*.sqlite3
 db/development_structure.sql
+ignore/*
 log/*.log
 public/cache/**/*
 public/file/*
