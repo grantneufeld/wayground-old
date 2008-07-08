@@ -11,7 +11,7 @@ Copy the database-default.yml file to database.yml, and edit accordingly.
 
 Edit the following to match your site’s configuration:
 config/config.yml
-config/emvironment.rb
+config/environment.rb
 config/environments/*.rb
 
 
@@ -45,7 +45,7 @@ Version Control (git)
 
 (You can probably skip this section since you most likely downloaded the source through git, anyway.)
 
-Download latest from http://git.or.cz/
+Download latest git from http://git.or.cz/
  make configure
  ./configure --prefix=/usr/local
  make all doc
@@ -162,6 +162,7 @@ Time & Date
 -----------
 
  sudo gem install tzinfo chronic
+
 
 Miscellaneous
 -------------

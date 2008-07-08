@@ -4,7 +4,12 @@ http://wayground.ca/
 Notable functions this is intended to serve:
 • Content Management (CMS - administering website content)
 • Contact Relation Management (CRM)
+• Calendaring & events
+	Scheduling (including identifying available times)
+	RSVPs
+	Event promotion
 • Democracy tools
+	Elected representative tracking
 	Candidate tracking
 	Party tracking
 	Policy tracking and development
@@ -13,10 +18,6 @@ Notable functions this is intended to serve:
 	Petitions
 	Group organizing
 	Etc.
-• Calendaring & events
-	Scheduling (including identifying available times)
-	RSVPs
-	Event promotion
 • Etc.
 
 
@@ -30,5 +31,5 @@ This version is the beginning of a from-the-ground-up rebuilding of the Waygroun
 Basic functionality that seems to be somewhat working includes:
 - User registration and login,
 - Document (file) upload,
-- Basic web-page (item) management.
+- Basic web-page content management.
 

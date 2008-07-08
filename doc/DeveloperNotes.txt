@@ -25,11 +25,6 @@ For functional tests:
 • use *_test@wayground.ca for email addresses in test cases (where ‘*’ is some phrase relevant to the tests you are using the address in).
 
 
-# DATE & TIME HANDLING
-
-# • Handle local timezone conversions wherever dates are presented (stored in UTC). See lib/tz_helper.rb for methods. Based on Peepcode Code Review chapter 4. http://peepcode.com/products/draft-rails-code-review-pdf
-
-
 EMAIL
 
 • Mailer classes inherit from ActionMailer::ARMailer (not ActionMailer::Base).
