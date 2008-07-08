@@ -23,6 +23,7 @@ For your convenience, this is a one-line install of all the gems. For more detai
  sudo gem install rails passenger ruby-debug mocha ZenTest assert2 ruby-prof \
  	ruby-openid ar_mailer ar_mailer_generator tzinfo chronic will_paginate \
  	image_science
+ sudo gem install RedCloth --source=http://code.whytheluckystiff.net
 
 (Note that image_science may not install properly if you don’t have FreeImage http://freeimage.sourceforge.net/ installed.)
 
@@ -171,6 +172,9 @@ OLD: ./script/plugin install svn://errtheblog.com/svn/plugins/will_paginate
 # --no-ri
 Add the following line to config/environment.rb:
 require 'will_paginate'
+
+Textile support:
+ sudo gem install RedCloth --source=http://code.whytheluckystiff.net
 
 Markdown support:
  sudo gem install BlueCloth

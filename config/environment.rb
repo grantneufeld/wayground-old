@@ -39,6 +39,8 @@ Rails::Initializer.run do |config|
 	config.gem 'chronic'
 	config.gem 'will_paginate'
 	config.gem 'image_science'
+	config.gem 'RedCloth', :version=>'>= 3.301',
+		:source=>'http://code.whytheluckystiff.net/'
 	
 	# Only load the plugins named here, in the order given. By default, all plugins 
 	# in vendor/plugins are loaded in alphabetical order.
