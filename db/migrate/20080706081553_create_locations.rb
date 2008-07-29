@@ -4,6 +4,7 @@ class CreateLocations < ActiveRecord::Migration
 		:options=>'COMMENT="Address info." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.integer :locatable_id
 			t.string :locatable_type
+			t.integer :position, :null=>false, :default=>0
 			t.string :name
 			t.string :address
 			t.string :address2
@@ -25,16 +26,20 @@ class CreateLocations < ActiveRecord::Migration
 
 			t.timestamps
 		end
-		add_index :locations, [:locatable_type, :locatable_id],
+		add_index :locations, [:locatable_type, :locatable_id, :position],
 			:name=>'locatable'
 		add_index :locations, [:name, :address], :name=>'name_address'
 		add_index :locations, [:country, :province, :city],
 			:name=>'country_province_city'
 		add_index :locations, [:postal, :address], :name=>'postal_idx'
 		add_index :locations, [:email], :name=>'email_idx'
+		
+		remove_column :users, :location
 	end
 
 	def self.down
+		add_column :users, :location, :string
+		
 		drop_table :locations
 	end
 end

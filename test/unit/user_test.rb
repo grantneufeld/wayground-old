@@ -48,8 +48,9 @@ class UserTest < ActiveSupport::TestCase
 	def test_new_user
 		u_attrs = {:email=>'new_test@wayground.ca',
 			:nickname=>'Newbie', :fullname=>'New User', :subpath=>'new',
-			:location=>'The database', :about=>'This is a new user.'}
-		u = User.new(u_attrs.merge({:password=>'password', :password_confirmation=>'password'}))
+			:about=>'This is a new user.'}
+		u = User.new(u_attrs.merge({:password=>'password',
+			:password_confirmation=>'password'}))
 		assert u
 		u.save!
 		u_attrs.each_pair do |k,v|

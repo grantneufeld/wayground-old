@@ -382,6 +382,22 @@ class UsersControllerTest < ActionController::TestCase
 	
 	
 	# UPDATE
+	def test_update_user_self
+		new_about = 'User updated self from users/update'
+		c = users(:login).locations.count
+		#assert_difference(users(:login).locations, :count, 1) do
+			post :update, {:id=>users(:login).id,
+				:user=>{:about=>new_about},
+				:location=>{'0'=>{:name=>'new location from users/update'}}},
+				{:user=>users(:login).id}
+		#end
+		assert_equal c + 1, users(:login).locations.count
+		assert_equal users(:login), assigns(:user)
+		assert_equal new_about, assigns(:user).about
+		assert_response :redirect
+		assert flash[:notice]
+		assert_redirected_to account_users_path
+	end
 	# TODO test user update
 	
 	

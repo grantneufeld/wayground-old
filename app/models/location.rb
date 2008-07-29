@@ -9,16 +9,22 @@ class Location < ActiveRecord::Base
 	# TODO: make locations reusable so the data doesn’t have to be duplicated when multiple items are at the same location.
 	
 	validates_format_of :url, :allow_nil=>true,
-		:with=>/\Ahttps?:\/\/.+\z/,
+		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'
 	validates_format_of :email, :allow_nil=>true,
 		:with=>/\A(\w[\w_\.\+\-]*@(?:\w[\w\-]*\.)+[a-z]{2,})?\z/i,
 		:message=>'invalid email'
 	validate :valid_email?
 
-
 	include EmailHelper # email validation
-
+	
+	
+	# phone_type options for form select fields
+	def self.phone_options
+		[['',''], ['home','h'], ['work','w'], ['cell','c'], ['fax','f']]
+	end
+	
+	
 	# based on http://lindsaar.net/2008/4/15/tip-6-validating-the-domain-of-an-email-address-with-ruby-on-rails
 	def valid_email?
 		unless email.blank?

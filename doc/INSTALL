@@ -22,7 +22,7 @@ For your convenience, this is a one-line install of all the gems. For more detai
 
  sudo gem install rails passenger ruby-debug mocha ZenTest assert2 ruby-prof \
  	ruby-openid ar_mailer ar_mailer_generator tzinfo chronic will_paginate \
- 	image_science
+ 	BlueCloth libxml-ruby image_science
  sudo gem install RedCloth --source=http://code.whytheluckystiff.net
 
 (Note that image_science may not install properly if you don’t have FreeImage http://freeimage.sourceforge.net/ installed.)
@@ -194,6 +194,9 @@ Visual/wysiwyg editor for forms:
 
 File Upload:
  ./script/plugin install http://svn.techno-weenie.net/projects/plugins/attachment_fu/
+
+XML
+ gem install libxml-ruby
 
 Misc. Add-ons (testing & rake tasks):
  ./script/plugin install http://topfunky.net/svn/plugins/topfunky_power_tools/

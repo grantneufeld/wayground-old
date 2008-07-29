@@ -1,3 +1,51 @@
 <%
 # TODO: embedable location form for use by locatable models (such as user)
+
+# EXPECTS:
+# f (the fields or form object for creating form-fields)
+# label is the first part of the field html id attribute.
+label ||= 'location'
+# skip is an array of fields to be skipped (e.g., [:email]).
+skip ||= []
+
 %>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_name">Place Name:</label></th>
+	<td><%= f.text_field :name, :title=>'The name of the location, if applicable. E.g., “The Place Centre”, “Shops Mall”, “Pizza Restaurant”.' %></td></tr>
+
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_address">Address:</label></th>
+	<td><%= f.text_field :address,
+		:title=>'The street or postal address of the location' %>
+	<br /><%= f.text_field :address2,
+		:title=>'Optional second line of the street or postal address' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_city">City:</label></th>
+	<td><%= f.text_field :city, :size=>32, :class=>'fixed' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_province">Province:</label></th>
+	<td><%= f.text_field :province, :size=>32, :class=>'fixed',
+		:title=>'The province, state, or other sub-region the location is in' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_country">Country:</label></th>
+	<td><%= f.text_field :country, :size=>32, :class=>'fixed' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_postal">Postal Code:</label></th>
+	<td><%= f.text_field :postal, :size=>16, :maxlength=>15, :class=>'fixed', :title=>'The postal, zip or other mailing code' %></td></tr>
+
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_longitude">Longitude:</label></th>
+	<td><%= f.text_field :longitude, :size=>16, :class=>'fixed' %>
+	<label for="<%= label %>_latitude">Latitude:</label>
+	<%= f.text_field :latitude, :size=>16, :class=>'fixed' %></td></tr>
+
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_url">Website:</label></th>
+	<td><%= f.text_field :url %>
+		<br />Must be the complete URL, including the “http://” part.</td></tr>
+<% unless skip.include?(:email) -%>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_email">Email:</label></th>
+	<td><%= f.text_field :email, :title=>'An email' %></td></tr>
+<% end -%>
+
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone1">Phone 1:</label></th>
+	<td><%= f.select :phone1_type, Location.phone_options %><%=
+		f.text_field :phone1, :size=>26, :maxlength=>31, :class=>'fixed' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone2">Phone 2:</label></th>
+	<td><%= f.select :phone2_type, Location.phone_options %><%=
+		f.text_field :phone2, :size=>26, :maxlength=>31, :class=>'fixed' %></td></tr>
+<tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone3">Phone 3:</label></th>
+	<td><%= f.select :phone3_type, Location.phone_options %><%=
+		f.text_field :phone3, :size=>26, :maxlength=>31, :class=>'fixed' %></td></tr>

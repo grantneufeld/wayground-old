@@ -19,9 +19,8 @@ subpath = @user.subpath.blank? ? @user.id : h(@user.subpath)
 <h2>Public Profile</h2>
 <p><a href="/people/<%= subpath %>">View Your Profile</a>.</p>
 <p>Screen Name: <%= @user.nickname.blank? ? @user.id : h(@user.nickname) %>
-<br />Subpath: <a href="/people/<%= subpath %>"><%= subpath %></a> (for the web-link to your profile)
-<br />Location: <%= h @user.location %></p>
+<br />Subpath: <a href="/people/<%= subpath %>"><%= subpath %></a> (for the web-link to your profile)</p>
 <% unless @user.about.blank? %>
 <h3>About You</h3>
-<%= process_and_format @user.about, 'text/plain', (not admin?) %>
+<%= process_and_format @user.about, 'text/plain', (not @user.admin?) %>
 <% end %>

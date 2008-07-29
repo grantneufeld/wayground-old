@@ -105,8 +105,21 @@ class UsersController < ApplicationController
 	
 	# user edit form
 	def edit
-		if current_user && (current_user.admin || (current_user.id == params[:id].to_i))
+		if current_user && current_user.id == params[:id].to_i
+			@user = current_user
+		elsif current_user && current_user.admin
 			@user = User.find(params[:id])
+		else
+			@user = nil
+		end
+		if @user
+			blank_location = Location.new()
+			blank_location.id = 0
+			if @user.locations && @user.locations.size > 0
+				@locations = @user.locations + [blank_location]
+			else
+				@locations = [blank_location]
+			end
 			@page_title = "Edit User: #{@user.display_name}"
 		else
 			#flash[:notice] = 'You do not have permission to access the requested action. Please login as a user with sufficient permission.'
@@ -119,7 +132,47 @@ class UsersController < ApplicationController
 		redirect_to :action=>'index'
 	end
 	
-	# TODO: update (user edit submit)
+	def update
+		if current_user && current_user.id == params[:id].to_i
+			@user = current_user
+		elsif current_user && current_user.admin
+			@user = User.find(params[:id])
+		else
+			@user = nil
+		end
+		if @user
+			params[:location].each_pair do |loc_id, location_params|
+				loc_id = loc_id.to_i
+				if loc_id > 0
+					@user.locations.find(loc_id).update_attributes!(
+						location_params)
+				else
+					blank_loc = true
+					location_params.each_pair do |k, v|
+						blank_loc = false unless v.blank?
+					end
+					unless blank_loc
+						@user.locations << Location.new(location_params)
+					end
+				end
+			end
+			@user.update_attributes!(params[:user])
+			
+			flash[:notice] = 'User details updated.'
+			if current_user == @user
+				redirect_to account_users_path
+			else
+				redirect_to users_path
+			end
+		else
+			access_denied
+		end
+	rescue ActiveRecord::RecordNotFound
+		flash[:notice] =
+			"Could not find a user matching the requested id (‘#{params[:id]}’)."
+		redirect_to :action=>'index'
+	end
+	
 	# TODO: user password change
 	# TODO: user email change request
 	# TODO: user email change confirm

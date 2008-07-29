@@ -5,29 +5,55 @@
 <% form_for(@user) do |f| -%>
 
 <h2>Private Info</h2>
-<p>This personal information is only shown to the website administrators.</p>
+<p>This personal information is only available to you and the website administrators.</p>
 <div class="step_form"><table cellspacing="0"><tbody>
-<tr><th><label for="user_time_zone">Time zone</label><br/></th>
+<tr><th><label for="screen_name">Real Name:<br/>(nickname)</label><br/></th>
+<td><b><%= h @user.fullname %></b></td></tr>
+<tr class="alternate"><th><label for="user_time_zone">Time zone:</label><br/></th>
 <td><%= f.time_zone_select :time_zone, TimeZone.ca_zones %></td></tr>
 </tbody></table></div>
 
-<h2>Public Info</h2>
-<p>This information is shown publicly on the website.</p>
+<h2>Public Info (Profile)</h2>
+<p>This information is available publicly to anyone visiting this website.</p>
 <div class="step_form"><table cellspacing="0"><tbody>
-<tr><th><label for="screen_name">Screen Name<br/>(nickname)</label><br/></th>
-<td>You cannot change your screen name.</td></tr>
+<tr><th><label for="screen_name">Screen Name:<br/>(nickname)</label><br/></th>
+<td><b><%= h @user.nickname %></b> (You cannot change your screen name.)</td></tr>
+<tr class="alternate"><th><label for="user_about">About You:</label><br/></th>
+<td>A brief profile about who you are. Please keep it appropriate for all-ages. You may include a few of your personal or favorite web-links.
+<br /><%= f.text_area :about, :rows=>4 %></td></tr>
 </tbody></table></div>
 
-<h2>Signing-In to the Website</h2>
-<p>In addition to your email address, you have to create a password to be able to sign-in to the website.</p>
+<h2>Contact Info</h2>
+<p>This information is only shared with this website’s administrators,
+<br />and administrators of groups you authorize to access it.</p>
+<p>All address fields are optional.</p>
+<%
+counter = 0
+@locations.each do |location|
+	counter += 1
+	@location = location
+	fields_for "location[]" do |location_fields|
+		%><h3><%= location.id == 0 ? 'Add An Address' : "Address #{counter}" %></h3>
 <div class="step_form"><table cellspacing="0"><tbody>
-<tr><th><label for="password">Password</label><br/></th>
-<td><%= f.password_field :password %>
-<br />Create a password that you will use to login to this website.</td></tr>
-<tr class="alternate"><th><label for="password_confirmation">Confirm Password</label><br/></th>
-<td><%= f.password_field :password_confirmation %>
-<br />Let’s make sure you typed in excatly what you think you typed in since you can’t actually see what’s in the password here.</td></tr>
+<%=		render :partial=>'locations/form',
+			:locals=>{:f=>location_fields, :label=>"location_#{location.id}",
+				:skip=>[:email]} %>
 </tbody></table></div>
+<%	end
+end -%>
+
+<% if false %>
+	<h2>Signing-In to the Website</h2>
+	<p>In addition to your email address, you have to create a password to be able to sign-in to the website.</p>
+	<div class="step_form"><table cellspacing="0"><tbody>
+	<tr><th><label for="user_password">Password:</label><br/></th>
+	<td><%= f.password_field :password %>
+	<br />Create a password that you will use to login to this website.</td></tr>
+	<tr class="alternate"><th><label for="user_password_confirmation">Confirm Password:</label><br/></th>
+	<td><%= f.password_field :password_confirmation %>
+	<br />Let’s make sure you typed in excatly what you think you typed in since you can’t actually see what’s in the password here.</td></tr>
+	</tbody></table></div>
+<% end -%>
 
 <h2>Save Changes</h2>
 <p><%= submit_tag 'Update User Settings', :disable_with=>"Updating…" %></p>
