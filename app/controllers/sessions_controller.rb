@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
 					:value=>self.current_user.remember_token,
 					:expires=>self.current_user.remember_token_expires_at}
 			end
-			current_user.update_attribute(:login_at, Time.now)
+			current_user.update_attribute(:login_at, Time.current)
 			if current_user.activated?
 				flash[:notice] = 'Logged in successfully'
 			else

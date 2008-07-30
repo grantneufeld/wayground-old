@@ -77,20 +77,20 @@ class User < ActiveRecord::Base
 	def encrypt_password
 		return if password.blank?
 		if new_record?
-			self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{email}--")
+			self.salt = Digest::SHA1.hexdigest("--#{Time.current.to_s}--#{email}--")
 		end
 		self.crypted_password = encrypted(password)
 	end
 	
 	def make_activation_code
 		self.activation_code = Digest::SHA1.hexdigest(
-			Time.now.to_s.split(//).sort_by {rand}.join )
+			Time.current.to_s.split(//).sort_by {rand}.join )
 	end
 	
 	# Activates the user in the database.
 	def activate(code)
 		if code == activation_code
-			self.activated_at = Time.now # .utc
+			self.activated_at = Time.current # .utc
 			self.activation_code = nil
 			save!
 			@activated = true
@@ -134,8 +134,8 @@ class User < ActiveRecord::Base
 	# Remember Me Token
 	
 	def remember_token?
-#		remember_token_expires_at && Time.now.utc < remember_token_expires_at
-		remember_token_expires_at && Time.now < remember_token_expires_at
+#		remember_token_expires_at && Time.current.utc < remember_token_expires_at
+		remember_token_expires_at && Time.current < remember_token_expires_at
 	end
 
 	# These create and unset the fields required for remembering users between browser closes

@@ -53,7 +53,7 @@ class UsersController < ApplicationController
 		self.new
 		# User model doesn’t require email, but web login does
 		@user.email_required = true
-		@user.login_at = Time.now
+		@user.login_at = Time.current
 		@user.save!
 		self.current_user = @user
 		
