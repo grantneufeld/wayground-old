@@ -36,6 +36,9 @@ class LocationTest < ActiveSupport::TestCase
 		assert !(l.valid?)
 	end
 	
+	
+	# CLASS METHODS
+	
 	def test_location_phone_options
 		opts = [['',''], ['home','h'], ['work','w'], ['cell','c'], ['fax','f']]
 		assert_equal opts, Location.phone_options

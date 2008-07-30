@@ -1,0 +1,30 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  creator: admin
+  owner: admin
+  is_visible: false
+  is_public: false
+  is_members_visible: false
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: one
+  name: Group One
+  url: http://wayground.ca/groups/one
+  description: The first test group.
+  welcome: Welcome to Group One.
+
+two:
+  parent: one
+  creator: login
+  owner: login
+  is_visible: false
+  is_public: false
+  is_members_visible: false
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: two
+  name: Group Two
+  url: http://wayground.ca/groups/two
+  description: The second test group.
+  welcome: Welcome to Group Two.
