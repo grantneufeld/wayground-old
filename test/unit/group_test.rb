@@ -5,11 +5,18 @@ class GroupTest < ActiveSupport::TestCase
 	
 	def test_associations
 		assert check_associations
+		
+		#belongs_to :creator
 		assert_equal users(:admin), groups(:one).creator
+		#belongs_to :owner
 		assert_equal users(:admin), groups(:one).owner
-		assert_equal 1, groups(:one).children.size
-		assert_equal groups(:two), groups(:one).children[0]
+		
+		#belongs_to :parent
 		assert_equal groups(:one), groups(:two).parent
+		
+		#has_many :children
+		assert_equal 2, groups(:one).children.size
+		assert_equal groups(:three), groups(:one).children[0]
 	end
 	
 	

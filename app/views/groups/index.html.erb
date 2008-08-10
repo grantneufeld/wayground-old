@@ -1,0 +1,8 @@
+<h1>Groups<% unless @key.blank?
+	%>: <%= h @key %><%
+end %></h1>
+<ul>
+<% @groups.each do |group|
+	%><li id="group_<%= group.id %>"><%= link_to group.name, group_path(group) %></li>
+<% end
+%></ul>

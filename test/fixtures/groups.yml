@@ -3,7 +3,7 @@
 one:
   creator: admin
   owner: admin
-  is_visible: false
+  is_visible: true
   is_public: false
   is_members_visible: false
   is_invite_only: false
@@ -11,14 +11,14 @@ one:
   subpath: one
   name: Group One
   url: http://wayground.ca/groups/one
-  description: The first test group.
+  description: The first test group. Has a keyword.
   welcome: Welcome to Group One.
 
 two:
   parent: one
   creator: login
   owner: login
-  is_visible: false
+  is_visible: true
   is_public: false
   is_members_visible: false
   is_invite_only: false
@@ -27,4 +27,19 @@ two:
   name: Group Two
   url: http://wayground.ca/groups/two
   description: The second test group.
+  welcome: Welcome to Group Two.
+
+three:
+  parent: one
+  creator: staff
+  owner: staff
+  is_visible: true
+  is_public: false
+  is_members_visible: false
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: three
+  name: Group Three
+  url: http://wayground.ca/groups/three
+  description: The third test group. Has a keyword.
   welcome: Welcome to Group Two.

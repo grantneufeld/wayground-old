@@ -25,4 +25,38 @@ class Group < ActiveRecord::Base
 	belongs_to :parent, :class_name=>'Group'
 	has_many :children, :class_name=>'Group', :foreign_key=>'parent_id',
 		:order=>'groups.name'
+	
+	
+	# CLASS METHODS
+	
+	# return a conditions string for find.
+	# u is the current_user to use to determine access to private groups. [currently ignored]
+	# key is a search restriction key
+	def self.search_conditions(only_visible=false, u=nil, key=nil)
+		constraints = []
+		values = []
+		if only_visible or u.nil?
+			# only public or no user
+			constraints << '(groups.is_visible = 1)'
+		end
+		unless key.blank?
+			constraints << "(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)"
+			values += ["%#{key}%"] * 3
+		end
+		[constraints.join(' AND ')] + values
+	end
+	
+	
+	# INSTANCE METHODS
+	
+	# Returns an Array of email address Strings for members of the group.
+	def email_addresses(only_validated = false)
+		[]
+	end
+	# Returns a Hash of email addresses with details for members of the group.
+	def email_addresses_with_details(only_validated = false)
+		# {'email@address'=>{:name=>'member name'},...}
+		{}
+	end
+	
 end
