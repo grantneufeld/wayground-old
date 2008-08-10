@@ -10,7 +10,7 @@
 <tr><th><label for="screen_name">Real Name:<br/>(nickname)</label><br/></th>
 <td><b><%= h @user.fullname %></b></td></tr>
 <tr class="alternate"><th><label for="user_time_zone">Time zone:</label><br/></th>
-<td><%= f.time_zone_select :time_zone, TimeZone.ca_zones %></td></tr>
+<td><%= f.time_zone_select :time_zone, TimeZone.ca_zones, :default=>Time.zone.name %></td></tr>
 </tbody></table></div>
 
 <h2>Public Info (Profile)</h2>
