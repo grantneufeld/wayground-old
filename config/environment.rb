@@ -65,9 +65,13 @@ Rails::Initializer.run do |config|
 	# If you change this key, all old sessions will become invalid!
 	# Make sure the secret is at least 30 characters and all random, 
 	# no regular words or you'll be exposed to dictionary attacks.
+	# YAML loading based on:
+	# http://almosteffortless.com/2007/12/27/configuring-cookie-based-sessions-in-rails-20/
+	require 'yaml'
+	db = YAML.load_file('config/database.yml')
 	config.action_controller.session = {
-		:session_key => '_wayground_session',
-		:secret      => 'ea6e4ea18d4d8d34a96d7b1a37412aaaf2445ab0287a0731e00faba1a723ad3b1a6f0e421bd14b17cee00e00a5484a55680dc4ca222f5dd46e2229a38945cd7e'
+		:session_key => db[RAILS_ENV]['session_key'],
+		:secret      => db[RAILS_ENV]['secret']
 	}
 	
 	# Use the database for sessions instead of the cookie-based default,

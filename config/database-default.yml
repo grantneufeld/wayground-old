@@ -15,6 +15,11 @@
 # SQLite version 3.x
 #   gem install sqlite3-ruby (not necessary on OS X Leopard)
 
+# WAYGROUND SETUP:
+# You can change these setting however you choose.
+# You will at least want to set the values of username, password and secret.
+# Secret can be quite long (>128 chars) and should be just letters and numbers.
+
 development:
   adapter: mysql
   database: wayground
@@ -24,6 +29,8 @@ development:
   #port: 3306
   socket: /tmp/mysql.sock
   encoding: utf8
+  session_key: _wayground_session
+	secret: 
 
 # Warning: The database defined as 'test' will be erased and
 # re-generated from your development database when you run 'rake'.
@@ -36,6 +43,8 @@ test:
   host: localhost
   socket: /tmp/mysql.sock
   encoding: utf8
+  session_key: _wayground_test
+	secret: 
   # alternate:
   #adapter: sqlite3
   #database: db/test.sqlite3
