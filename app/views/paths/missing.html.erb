@@ -2,7 +2,7 @@
 @page_title ||= '404 Missing'
 
 %><h1>404 Not Found</h1>
-<p>The request ‘<%= h @url_path %>’ was not found on this website.</p><%
+<p>The request<%= @url_path.blank? ? '' : " ‘#{h(@url_path)}’" %> was not found on this website.</p><%
 
 unless current_user and current_user.admin? %>
 <p>Some files on this site require a registered user to access. If you were expecting the file to be here, please make sure you are logged-in as a user who has access to the file.</p><%
