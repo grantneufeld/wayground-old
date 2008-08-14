@@ -1,8 +1,43 @@
 <h1>Groups<% unless @key.blank?
 	%>: <%= h @key %><%
 end %></h1>
+<% if @groups.size > 0 -%>
 <ul>
 <% @groups.each do |group|
-	%><li id="group_<%= group.id %>"><%= link_to group.name, group_path(group) %></li>
+	row_id = "group_#{group.id}"
+	%><li id="<%= row_id %>"><img src="/icon/group.png" width="16" height="16" alt="Group" class="diricon" />
+<%= link_to group.name, group_path(group) %><%
+	if current_user && current_user.staff
+		#if page.is_container?
+			%>
+<%=
+		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
+			edit_group_path(group),
+			{:title=>"Edit this group"})
+			%><span class="separator">.</span><%=
+		link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+				' alt="Delete" class="diricon" />',
+			{:url=>{:controller=>'groups', :action=>'destroy', :id=>group},
+			:method=>'delete',
+			:loading=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+				" alt=\"Processing…\" class=\"diricon\" />');",
+			:loaded=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+				" alt=\"Delete\" class=\"diricon\" />');",
+			#:success=>"Element.replace('#{row_id}_delete','');",
+			:confirm=>
+				"Are you sure you want to permanently delete the group “#{group.name}”?"
+			},
+			{:href=>url_for({:controller=>'groups', :action=>'destroy', :id=>group}),
+			:title=>"Permanently delete this group", :method=>'delete',
+			:id=>"#{row_id}_delete"
+			} %><%
+	end %></li>
 <% end
 %></ul>
+<% else -%>
+<p>No groups found.</p>
+<% end -%>
+<%= will_paginate @groups, :params=>params %>
+<%= render :partial=>'standard'%>

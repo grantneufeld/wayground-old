@@ -1,0 +1,10 @@
+<div class="steps">
+<h1>New Group</h1>
+<%= error_messages_for :group %>
+<div class="step_form">
+<% form_for(:group, :url=>groups_path) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

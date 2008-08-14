@@ -43,3 +43,18 @@ three:
   url: http://wayground.ca/groups/three
   description: The third test group. Has a keyword.
   welcome: Welcome to Group Two.
+
+update_group:
+  creator: staff
+  owner: staff
+  is_visible: false
+  is_public: false
+  is_members_visible: false
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: updatable
+  name: Updatable Group
+  url: http://wayground.ca/test/updatable-group
+  description: A group to be updated.
+  welcome: Welcome to the group to be updated.
+

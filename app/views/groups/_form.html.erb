@@ -1,0 +1,33 @@
+<%
+fields_for :group do |f|
+%><table cellspacing="0"><tbody>
+<tr><th><label for="group_name">Name:</label></th>
+	<td><%= f.text_field :name %></td></tr>
+<tr class="alternate"><th><label for="group_subpath">Path:</label></th>
+	<td><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
+	<br />This permanently sets the subpath (used for the web-link address) for this group
+	(e.g., “http://website/group/<b>subpath</b>”).
+	<br />Only the following characters may be used, no spaces: <b class="nowrap">A-Z a-z 0-9 -</b></td></tr>
+<tr><th><label for="group_url">External Web Link:</label></th>
+	<td><%= f.text_field :url %>
+	<br />If the group has it’s own website, enter the link here.
+	<br />Must be a complete URL (starts with ‘http://’) or a root-relative URL for this website (starts with ‘/’).</td></tr>
+<tr class="alternate"><th>Settings:</th>
+	<td><%= f.check_box :is_visible %><label for="group_is_visible">Group Is Visible:</label> Show this group in public group lists.
+	<br /><%= f.check_box :is_public %><label for="group_is_public">Public Content:</label> Let anyone view this group’s content.
+	<br /><%= f.check_box :is_members_visible %><label for="group_is_members_visible">Public Members List:</label> Let anyone see the list of group members.
+	<br /><%= f.check_box :is_invite_only %><label for="group_is_invite_only">Invitation Only:</label> Only allow group admins to add members.
+	<br /><%= f.check_box :is_no_unsubscribe %><label for="group_is_no_unsubscribe">No Unsubscribe:</label> Users can’t remove themselves.
+	</td></tr>
+<tr><th><label for="group_description">Description:</label></th>
+	<td>Briefly introduce the group.
+	<br /><%= f.text_area :description, :rows=>8 %>
+	</td></tr>
+<tr class="alternate"><th><label for="group_welcome">Welcome Message:</label></th>
+	<td>Welcome message shown to newly signed-up members.
+	<br /><%= f.text_area :welcome, :rows=>8 %>
+	</td></tr>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
+</table>
+<% end %>

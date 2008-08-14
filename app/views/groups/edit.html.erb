@@ -1,0 +1,11 @@
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Group: <%= link_to @group.name, group_path(@group) %></h1>
+<%= error_messages_for :group %>
+<div class="step_form">
+<% form_for(:group, :url=>{:action=>'update', :id=>@group}, :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

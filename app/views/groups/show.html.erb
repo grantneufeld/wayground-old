@@ -1,0 +1,23 @@
+<h1><%= h @group.name %></h1>
+<%= format_content(@group.description, 'text/plain', false) %>
+<%
+if current_user && current_user.staff
+	render_sidebar do
+		%><h2>Manage This Group</h2>
+<p><%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit this group',
+		edit_group_path(@group),
+		{:title=>"Edit this group"})
+		%><span class="separator">.</span>
+<br /><%=	link_to '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="diricon" /> Delete this group',
+		group_path(@group),
+		{:method=>'delete',
+		:confirm=>
+			"Are you sure you want to permanently delete the group “#{@group.name}”?",
+		:href=>group_path(@group),
+		:title=>"Permanently delete this group"
+		} %></p>
+<%	end
+end -%>
+<%= render :partial=>'standard'%>
