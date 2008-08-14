@@ -60,7 +60,7 @@ class GroupsControllerTest < ActionController::TestCase
 	# SHOW
 	def test_groups_show
 		assert_efficient_sql do
-			get :show, {:id=>groups(:one).id.to_s}
+			get :show, {:id=>groups(:one).subpath}
 		end
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
@@ -231,7 +231,7 @@ class GroupsControllerTest < ActionController::TestCase
 
 	# EDIT
 	def test_groups_edit
-		get :edit, {:id=>groups(:three).id}, {:user=>users(:staff).id}
+		get :edit, {:id=>groups(:three).subpath}, {:user=>users(:staff).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:three), assigns(:group)
@@ -241,7 +241,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{groups_path()}/#{groups(:three).id}']" do
+			assert_select "form[action='#{groups_path()}/#{groups(:three).subpath}']" do
 				assert_select 'input#group_is_visible'
 				assert_select 'input#group_is_public'
 				assert_select 'input#group_is_members_visible'
@@ -256,7 +256,7 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 	end
 	def test_groups_edit_admin
-		get :edit, {:id=>groups(:two).id}, {:user=>users(:admin).id}
+		get :edit, {:id=>groups(:two).subpath}, {:user=>users(:admin).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:two), assigns(:group)
@@ -266,7 +266,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{groups_path()}/#{groups(:two).id}']" do
+			assert_select "form[action='#{groups_path()}/#{groups(:two).subpath}']" do
 				assert_select 'input#group_is_visible'
 				assert_select 'input#group_is_public'
 				assert_select 'input#group_is_members_visible'
@@ -281,14 +281,14 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 	end
 	def test_groups_edit_invalid_user
-		get :edit, {:id=>groups(:two).id}, {:user=>users(:login).id}
+		get :edit, {:id=>groups(:two).subpath}, {:user=>users(:login).id}
 		assert_response :redirect
 		assert_nil assigns(:group)
 		assert flash[:warning]
 		assert_redirected_to account_users_path
 	end
 	def test_groups_edit_no_user
-		get :edit, {:id=>groups(:two).id}, {}
+		get :edit, {:id=>groups(:two).subpath}, {}
 		assert_response :redirect
 		assert_nil assigns(:group)
 		assert flash[:warning]
@@ -312,7 +312,7 @@ class GroupsControllerTest < ActionController::TestCase
 	def test_groups_update
 		put :update,
 			{
-				:id=>groups(:update_group).id,
+				:id=>groups(:update_group).subpath,
 				:group=>{
 					:is_visible=>'1',
 					:is_public=>'1',
@@ -344,7 +344,7 @@ class GroupsControllerTest < ActionController::TestCase
 	def test_groups_update_admin
 		put :update,
 			{
-				:id=>groups(:update_group).id,
+				:id=>groups(:update_group).subpath,
 				:group=>{
 					:is_visible=>'1',
 					:is_public=>'1',
@@ -375,7 +375,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_update_non_staff_or_admin_user
 		original_name = groups(:update_group).name
-		put :update, {:id=>groups(:update_group).id,
+		put :update, {:id=>groups(:update_group).subpath,
 			:group=>{:name=>'Update Group by Non Staff'}},
 			{:user=>users(:login).id}
 		assert_response :redirect
@@ -387,7 +387,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_update_no_user
 		original_name = groups(:update_group).name
-		put :update, {:id=>groups(:update_group).id,
+		put :update, {:id=>groups(:update_group).subpath,
 			:group=>{:name=>'Update Group with No User'}},
 			{}
 		assert_response :redirect
@@ -399,14 +399,13 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_update_invalid_params
 		original_name = groups(:update_group).name
-		put :update, {:id=>groups(:update_group).id,
-			:group=>{:subpath=>'invalid subpath',
-				:url=>'invalid url'}},
+		put :update, {:id=>groups(:update_group).subpath,
+			:group=>{:url=>'invalid url'}},
 			{:user=>users(:staff).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:update_group), assigns(:group)
-		assert_validation_errors_on(assigns(:group), ['url'], 1)
+		assert_validation_errors_on(assigns(:group), ['url'])
 		# group was not updated
 		assert_equal original_name, groups(:update_group).name
 		assert_nil flash[:notice]
@@ -416,7 +415,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{groups_path}/#{groups(:update_group).id}']" do
+			assert_select "form[action='#{groups_path}/#{groups(:update_group).subpath}']" do
 				assert_select 'input#group_is_visible'
 				assert_select 'input#group_is_public'
 				assert_select 'input#group_is_members_visible'
@@ -432,7 +431,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_update_no_params
 		original_name = groups(:update_group).name
-		put :update, {:id=>groups(:update_group).id, :group=>{}},
+		put :update, {:id=>groups(:update_group).subpath, :group=>{}},
 			{:user=>users(:staff).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
@@ -446,7 +445,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{groups_path}/#{groups(:update_group).id}']" do
+			assert_select "form[action='#{groups_path}/#{groups(:update_group).subpath}']" do
 				assert_select 'input#group_is_visible'
 				assert_select 'input#group_is_public'
 				assert_select 'input#group_is_members_visible'
@@ -473,7 +472,7 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 		# destroy the group (and it's thumbnail)
 		assert_difference(Group, :count, -1) do
-			delete :destroy, {:id=>group.id}, {:user=>users(:admin).id}
+			delete :destroy, {:id=>group.subpath}, {:user=>users(:admin).id}
 		end
 		assert_response :redirect
 		assert flash[:notice]
@@ -490,7 +489,7 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 		# destroy the group (and it's thumbnail)
 		assert_difference(Group, :count, -1) do
-			delete :destroy, {:id=>group.id}, {:user=>users(:staff).id}
+			delete :destroy, {:id=>group.subpath}, {:user=>users(:staff).id}
 		end
 		assert_response :redirect
 		assert flash[:notice]
@@ -498,7 +497,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_destroy_with_wrong_user
 		assert_difference(Group, :count, 0) do
-			delete :destroy, {:id=>groups(:three).id},
+			delete :destroy, {:id=>groups(:three).subpath},
 				{:user=>users(:login).id}
 		end
 		assert_response :redirect
@@ -508,7 +507,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	def test_groups_destroy_with_no_user
 		assert_difference(Group, :count, 0) do
-			delete :destroy, {:id=>groups(:two).id}, {}
+			delete :destroy, {:id=>groups(:two).subpath}, {}
 		end
 		assert_response :redirect
 		assert_nil assigns(:group)

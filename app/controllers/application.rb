@@ -110,6 +110,7 @@ class ApplicationController < ActionController::Base
 	# report that the requested url does not exist (missing - 404 error)
 	# TODO: support params for missing (name of missing resource, e.g., "Group ID 123")
 	def missing
+		@section = nil
 		@page_title = '404 Missing'
 		@url_path ||= get_path
 		flash.now[:error] ||= 'Requested page not found' + (@url_path.blank? ? '' : " (‘#{@url_path}’)") + '.'
