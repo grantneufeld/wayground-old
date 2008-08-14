@@ -54,8 +54,57 @@ class Group < ActiveRecord::Base
 		[constraints.join(' AND ')] + values
 	end
 	
+	# override the default find to allow first argument to be a string -
+	# the subpath
+	def self.find(*args)
+		if args[0].is_a?(Symbol) or args[0].to_i > 0 or !(args[0].is_a?(String))
+			super(*args)
+		else
+			# first argument is a string (subpath)
+			id = args[0]
+			args[0] = :first
+			options = args.last.is_a?(Hash) ? args.pop : nil
+			if options.nil? or options[:conditions].nil?
+				# no conditions set, so set to our security conditions
+				options ||= {}
+				options[:conditions] =
+					["(groups.subpath = :subpath)",
+					{:subpath=>id}]
+			elsif options[:conditions].is_a? String
+				# conditions are just a raw SQL sub-string, so add our conditions
+				options[:conditions] = ["(#{options[:conditions]}) AND (groups.subpath = :subpath)",
+					{:subpath=>id}]
+			elsif options[:conditions].is_a? Array	
+				# conditions are an array so mix-in our conditions
+				if options[:conditions][1].class == Hash
+					# the conditions array is using a parameter hash,
+					# so mix-in our conditions as hash values
+					options[:conditions][0] = "(#{options[:conditions][0]}) AND (groups.subpath = :subpath)"
+					options[:conditions][1].merge!({:subpath=>id})
+				else
+					# conditions array is using '?' parameters,
+					# so append our conditions
+					options[:conditions][0] =
+						"(#{options[:conditions][0]}) AND (groups.subpath = ?)"
+					options[:conditions] << id
+				end
+			else
+				raise Exception.new("class of supplied conditions is not recognized")
+			end
+			args << options
+			group = super(*args)
+			raise ActiveRecord::RecordNotFound if group.nil?
+			group
+		end
+	end
+	
 	
 	# INSTANCE METHODS
+	
+	# use the group’s subpath instead of the id
+	def to_param
+		subpath
+	end
 	
 	# Returns an Array of email address Strings for members of the group.
 	def email_addresses(only_validated = false)

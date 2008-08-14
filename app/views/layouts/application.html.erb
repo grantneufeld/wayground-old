@@ -147,6 +147,10 @@ unless @content_for_keywords.blank?
 	:class=>(@section == 'pages' ? 'current-tab' : nil),
 	:title=>'Page management for this site'
 	} %><span class="separator">,</span>
+<%= link_to 'Groups', groups_path, {
+	:class=>(@section == 'groups' ? 'current-tab' : nil),
+	:title=>'Groups'
+	} %><span class="separator">,</span>
 <%= link_to 'Documents', documents_path, {
 	:class=>(@section == 'documents' ? 'current-tab' : nil),
 	:title=>'Document/file management for this site'

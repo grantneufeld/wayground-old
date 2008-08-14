@@ -128,7 +128,7 @@ class GroupsControllerTest < ActionController::TestCase
 	end
 	
 	
-	# TODO: CREATE
+	# CREATE
 	def test_groups_create
 		assert_difference(Group, :count, 1) do
 			post :create, {:group=>{:subpath=>'test-create', :name=>'Test Create Group',
