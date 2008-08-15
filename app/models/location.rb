@@ -8,6 +8,8 @@ class Location < ActiveRecord::Base
 	belongs_to :locatable, :polymorphic=>true
 	# TODO: make locations reusable so the data doesn’t have to be duplicated when multiple items are at the same location.
 	
+	has_many :memberships, :dependent=>:nullify
+	
 	validates_format_of :url, :allow_nil=>true,
 		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'

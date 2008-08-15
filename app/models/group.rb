@@ -2,8 +2,9 @@
 
 class Group < ActiveRecord::Base
 	# restrict which attributes users can set directly
-	attr_accessible :is_public, :is_visible, :is_invite_only, :is_members_visible,
-		:is_no_unsubscribe, :subpath, :name, :url, :description, :welcome
+	attr_accessible :is_public, :is_visible, :is_invite_only,
+		:is_members_visible, :is_no_unsubscribe, :subpath, :name, :url,
+		:description, :welcome
 	
 	validates_presence_of :subpath
 	validates_presence_of :name
@@ -33,6 +34,8 @@ class Group < ActiveRecord::Base
 	belongs_to :parent, :class_name=>'Group'
 	has_many :children, :class_name=>'Group', :foreign_key=>'parent_id',
 		:order=>'groups.name'
+	
+	has_many :memberships, :order=>'memberships.position', :dependent=>:destroy
 	
 	
 	# CLASS METHODS

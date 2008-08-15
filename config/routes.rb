@@ -59,6 +59,7 @@ ActionController::Routing::Routes.draw do |map|
 	
 	map.resources :groups
 	map.resources :locations
+	map.resources :memberships
 	
 	# Install the default routes as the lowest priority.
 	#map.connect ':controller/:action/:id'
