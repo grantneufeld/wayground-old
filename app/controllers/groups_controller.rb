@@ -59,7 +59,6 @@ class GroupsController < ApplicationController
 				redirect_to({:action=>'show', :id=>@group})
 			else
 				# failed to save, back to edit form
-			#	@section = 'groups'
 				render :action=>:edit
 			end
 		end

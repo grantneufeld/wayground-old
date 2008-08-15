@@ -1,6 +1,10 @@
 Wayground is a Ruby on Rails based web content management system.
 http://wayground.ca/
 
+Source code repository:
+http://github.com/grantneufeld/wayground/tree/master
+
+
 Notable functions this is intended to serve:
 • Content Management (CMS - administering website content)
 • Contact Relation Management (CRM)
@@ -21,10 +25,22 @@ Notable functions this is intended to serve:
 • Etc.
 
 
+FEEDBACK
+========
+You can make suggestions for new features, functions and fixes, and vote on which suggestions should be given priority.
+http://wayground.uservoice.com/
+
+
+CONTRIBUTORS
+============
+
+Grant Neufeld http://grantneufeld.ca/
+
+
 VERSION HISTORY
 ===============
 
-0.1 - May 16, 2008, Grant Neufeld
+0.1 - May 16, 2008
 
 This version is the beginning of a from-the-ground-up rebuilding of the Wayground system, and is currently notably incomplete.
 

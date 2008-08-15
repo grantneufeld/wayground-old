@@ -112,4 +112,12 @@ The Contact model contains information about a person (address, phone, email, et
 
 A Contact record can be linked to a single User. A User may have multiple Contact records associated with them.
 
-The Group model is linked to multiple Users and Contacts through the Membership model. The Membership defines a status for the User/Contact (expired, request, blocked, invited, member, moderator, staff, admin).
+MEMBERSHIPS
+
+The Group model is linked to multiple Users and Contacts through the Membership model.
+
+The Membership defines the User’s access permissions for the Group: blocked, request (User initiated request to join non-public Group), invited, member, moderator, staff, admin. Permissions for specific actions can also be individually set (add events, invite new members, moderate forums/messages, manage members, …)
+
+Users can be invited. Memberships can have an expiry date. Users can be blocked from a Group. Users can have a title for the Group (e.g., “Treasurer”, “Events Coordinator”, etc.).
+
+A specific Location for the User can be associated with the Membership. This is used for contacting them, Group phone list, Group mailing list, and their Group profile (if they make the info public).

@@ -17,6 +17,7 @@ class Page < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :editor, :class_name=>"User", :foreign_key=>"editor_id"
 	
+	# TODO: make page containment polymorphic so pages can be contained by pages groups or maybe even users. This is a significant change that will affect Path objects, too.
 	# page containment hierarchy
 	belongs_to :parent, :class_name=>"Page", :foreign_key=>"parent_id"
 	has_many :children, :class_name=>"Page", :foreign_key=>"parent_id",
