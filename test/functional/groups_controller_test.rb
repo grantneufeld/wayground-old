@@ -9,15 +9,16 @@ class GroupsControllerTest < ActionController::TestCase
 		@response   = ActionController::TestResponse.new
 	end
 	
-	# ROUTING
 	
+	# ROUTING
 	def test_groups_resource_routing
 		# map.resources :groups
 		assert_routing_for_resources 'groups', [], [], {}
 	end
 	
+	
 	# INDEX (LIST)
-	def test_index
+	def test_groups_index
 		assert_efficient_sql do
 			get :index #, {}, {:user=>users(:admin).id}
 		end
@@ -30,13 +31,13 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'index'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			# TODO: test html content for test_index
+			# TODO: test html content for test_groups_index
 			assigns(:groups).each do |g|
 				assert_select "li#group_#{g.id}"
 			end
 		end
 	end
-	def test_index_search
+	def test_groups_index_search
 		assert_efficient_sql do
 			get :index, {:key=>'keyword'} #, {:user=>users(:admin).id}
 		end
@@ -49,7 +50,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_template 'index'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			# TODO: test html content for test_index_search
+			# TODO: test html content for test_groups_index_search
 			assigns(:groups).each do |g|
 				assert_select "li#group_#{g.id}"
 			end
@@ -228,7 +229,8 @@ class GroupsControllerTest < ActionController::TestCase
 		assert flash[:warning]
 		assert_redirected_to login_path
 	end
-
+	
+	
 	# EDIT
 	def test_groups_edit
 		get :edit, {:id=>groups(:three).subpath}, {:user=>users(:staff).id}
@@ -307,6 +309,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert flash[:error]
 		assert_template 'paths/missing'
 	end
+	
 	
 	# UPDATE
 	def test_groups_update
@@ -459,7 +462,8 @@ class GroupsControllerTest < ActionController::TestCase
 			end
 		end
 	end
-
+	
+	
 	# DELETE
 	def test_groups_destroy_with_admin_user
 		# create a group to be destroyed
