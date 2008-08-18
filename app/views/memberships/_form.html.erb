@@ -1,7 +1,7 @@
 <%
 fields_for :membership do |f|
 if @user
-	%><%= f.hidden_field :user_id, :value=>@user.id %>
+	%><%= hidden_field_tag :user_id, @user.id, {:id=>'membership_user_id'} %>
 <%
 end
 %><table cellspacing="0">

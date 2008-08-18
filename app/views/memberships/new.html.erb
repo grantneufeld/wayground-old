@@ -5,7 +5,7 @@ if @user
 	%> for <%= link_to @user.nickname, user_path(@user) %><%
 end
 %></h2>
-<%= error_messages_for :group %>
+<%= error_messages_for :membership %>
 <div class="step_form">
 <% form_for(:membership, :url=>group_memberships_path(@group)) do |f|
 	%><%= render :partial=>'form' %>

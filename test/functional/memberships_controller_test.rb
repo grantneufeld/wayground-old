@@ -110,13 +110,13 @@ class MembershipsControllerTest < ActionController::TestCase
 	# NEW
 	def test_memberships_new
 		get :new, {:group_id=>groups(:membered_group).subpath,
-			:user_id=>users(:plain).id.to_s},
+			:user_id=>users(:staff).id.to_s},
 			{:user=>users(:login).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:membered_group), assigns(:group)
 		assert assigns(:membership)
-		assert_equal users(:plain), assigns(:user)
+		assert_equal users(:staff), assigns(:user)
 		assert_nil flash[:notice]
 		assert_equal "#{assigns(:group).name}: New Membership",
 			assigns(:page_title)
@@ -127,37 +127,34 @@ class MembershipsControllerTest < ActionController::TestCase
 			assert_select 'h1', assigns(:group).name
 			assert_select 'h2', "New Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action=#{group_memberships_path(assigns(:group))}]" do
-				#assert_select 'input#membership_group_id'
-				#assert_select 'input#membership_position'
 				assert_select 'input#membership_user_id'
-				#assert_select 'input#membership_location_id'
 				assert_select 'input#membership_is_admin'
 				assert_select 'input#membership_can_add_event'
 				assert_select 'input#membership_can_invite'
 				assert_select 'input#membership_can_moderate'
 				assert_select 'input#membership_can_manage_members'
 				assert_select 'input#membership_expires_at'
-				#assert_select 'input#membership_invited_at'
-				#assert_select 'input#membership_inviter_id'
-				#assert_select 'input#membership_blocked_at'
-				#assert_select 'input#membership_block_expires_at'
-				#assert_select 'input#membership_blocker_id'
 				assert_select 'input#membership_title'
 			end
 		end
 	end
-	
-	if false # •••
-	
 	def test_memberships_new_duplicate_user_membership
-		# TODO: test where the user already has a membership
-		assert true
-	end
-	def test_memberships_new_user_not_permission
-		get :new, {:group_id=>groups(:membered_group).subpath}, {:user=>users(:plain).id}
+		get :new, {:group_id=>groups(:membered_group).subpath,
+			:user_id=>users(:regular).id.to_s},
+			{:user=>users(:login).id}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
-		assert_nil assigns(:page)
+		assert assigns(:membership)
+		assert flash[:warning]
+		assert_redirected_to group_membership_path(assigns(:group),
+			assigns(:membership))
+	end
+	def test_memberships_new_user_not_permission
+		get :new, {:group_id=>groups(:membered_group).subpath},
+			{:user=>users(:staff).id}
+		assert_response :redirect
+		assert_equal groups(:membered_group), assigns(:group)
+		assert_nil assigns(:membership)
 		assert flash[:warning]
 		assert_redirected_to account_users_path
 	end
@@ -165,7 +162,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		get :new, {:group_id=>groups(:membered_group).subpath}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
-		assert_nil assigns(:page)
+		assert_nil assigns(:membership)
 		assert flash[:warning]
 		assert_redirected_to login_path
 	end
@@ -174,8 +171,15 @@ class MembershipsControllerTest < ActionController::TestCase
 	# CREATE
 	def test_memberships_create
 		assert_difference(Membership, :count, 1) do
-			post :create, {:group_id=>groups(:membered_group).subpath, :membership=>{:subpath=>'test-create', :name=>'Test Create Membership',
-				:description=>'Test of membership creation.'}},
+			post :create, {:group_id=>groups(:membered_group).subpath,
+				:user_id=>users(:staff).id,
+				:membership=>{:is_admin=>'0', :can_add_event=>'0',
+					:can_invite=>'0', :can_moderate=>'0',
+					:can_manage_members=>'0',
+					:expires_at=>1.day.from_now.to_s(:db),
+					:title=>'Test Create Membership'
+					}
+				},
 				{:user=>users(:login).id}
 		end
 		assert_response :redirect
@@ -189,39 +193,7 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_create_no_params
 		assert_difference(Membership, :count, 0) do
-			post :create, {:group_id=>groups(:membered_group).subpath}, {:user=>users(:login).id}
-		end
-		# this basically returns the same as a call to new,
-		# with the addition of a validation error list in the view
-		assert_response :success
-		assert_equal 'groups', assigns(:section)
-		assert_equal groups(:membered_group), assigns(:group)
-		assert assigns(:membership)
-		assert_validation_errors_on(assigns(:membership), ['subpath', 'name'], 1)
-		assert_nil flash[:notice]
-		assert_equal 'New Membership', assigns(:page_title)
-		# view result
-		assert_template 'new'
-		assert_select 'div#flash:empty'
-		assert_select 'div#content' do
-			assert_select "form[action=#{group_memberships_path(assigns(:group))}]" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
-			end
-		end
-	end
-	def test_memberships_create_bad_params
-		assert_difference(Membership, :count, 0) do
-			post :create, {:group_id=>groups(:membered_group).subpath, :membership=>{:subpath=>'bad subpath', :name=>'Test Bad Params',
-				:url=>'bad url', :description=>'Test of membership creation with bad params.'}},
+			post :create, {:group_id=>groups(:membered_group).subpath},
 				{:user=>users(:login).id}
 		end
 		# this basically returns the same as a call to new,
@@ -230,33 +202,40 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:membered_group), assigns(:group)
 		assert assigns(:membership)
-		assert_validation_errors_on(assigns(:membership), ['subpath', 'url'])
+		assert_validation_errors_on(assigns(:membership), ['user'])
 		assert_nil flash[:notice]
-		assert_equal 'New Membership', assigns(:page_title)
+		assert_equal "#{assigns(:group).name}: New Membership",
+			assigns(:page_title)
 		# view result
-		#debugger
 		assert_template 'new'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', "New Membership"
 			assert_select "form[action=#{group_memberships_path(assigns(:group))}]" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
+				#assert_select 'input#membership_user_id'
+				assert_select 'input#membership_is_admin'
+				assert_select 'input#membership_can_add_event'
+				assert_select 'input#membership_can_invite'
+				assert_select 'input#membership_can_moderate'
+				assert_select 'input#membership_can_manage_members'
+				assert_select 'input#membership_expires_at'
+				assert_select 'input#membership_title'
 			end
 		end
 	end
 	def test_memberships_create_user_without_access
 		assert_difference(Membership, :count, 0) do
-			post :create, {:group_id=>groups(:membered_group).subpath, :membership=>{:subpath=>'no-access', :name=>'Test No Access',
-				:description=>'Test of membership creation with invalid access.'}},
-				{:user=>users(:login).id}
+			post :create, {:group_id=>groups(:membered_group).subpath,
+				:user_id=>users(:staff).id,
+				:membership=>{:is_admin=>'0', :can_add_event=>'0',
+					:can_invite=>'0', :can_moderate=>'0',
+					:can_manage_members=>'0',
+					:expires_at=>1.day.from_now.to_s(:db),
+					:title=>'Test Create Membership Without Access'
+					}
+				},
+				{:user=>users(:staff).id}
 		end
 		assert_response :redirect
 		assert_nil assigns(:membership)
@@ -265,8 +244,15 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_create_no_user
 		assert_difference(Membership, :count, 0) do
-			post :create, {:group_id=>groups(:membered_group).subpath, :membership=>{:subpath=>'no-user', :name=>'Test No User',
-				:description=>'Test of membership creation with no user.'}},
+			post :create, {:group_id=>groups(:membered_group).subpath,
+				:user_id=>users(:staff).id,
+				:membership=>{:is_admin=>'0', :can_add_event=>'0',
+					:can_invite=>'0', :can_moderate=>'0',
+					:can_manage_members=>'0',
+					:expires_at=>1.day.from_now.to_s(:db),
+					:title=>'Test Create Membership No User'
+					}
+				},
 				{}
 		end
 		assert_response :redirect
@@ -275,6 +261,9 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert flash[:warning]
 		assert_redirected_to login_path
 	end
+	
+	
+	if false # TODO: Finish adapting these tests copied from the groups controller test. •••
 	
 	
 	# EDIT
@@ -290,17 +279,17 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				#assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
+				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_is_admin'
+				assert_select 'input#membership_can_add_event'
+				assert_select 'input#membership_can_invite'
+				assert_select 'input#membership_can_moderate'
+				assert_select 'input#membership_can_manage_members'
+				assert_select 'input#membership_expires_at'
+				assert_select 'input#membership_title'
 			end
 		end
 	end
@@ -316,17 +305,17 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				#assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
+				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_is_admin'
+				assert_select 'input#membership_can_add_event'
+				assert_select 'input#membership_can_invite'
+				assert_select 'input#membership_can_moderate'
+				assert_select 'input#membership_can_manage_members'
+				assert_select 'input#membership_expires_at'
+				assert_select 'input#membership_title'
 			end
 		end
 	end
@@ -474,17 +463,17 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				#assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
+				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_is_admin'
+				assert_select 'input#membership_can_add_event'
+				assert_select 'input#membership_can_invite'
+				assert_select 'input#membership_can_moderate'
+				assert_select 'input#membership_can_manage_members'
+				assert_select 'input#membership_expires_at'
+				assert_select 'input#membership_title'
 			end
 		end
 	end
@@ -505,17 +494,17 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_is_visible'
-				assert_select 'input#membership_is_public'
-				assert_select 'input#membership_is_members_visible'
-				assert_select 'input#membership_is_invite_only'
-				assert_select 'input#membership_is_no_unsubscribe'
-				#assert_select 'input#membership_subpath'
-				assert_select 'input#membership_name'
-				assert_select 'input#membership_url'
-				assert_select 'textarea#membership_description'
-				assert_select 'textarea#membership_welcome'
+				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_is_admin'
+				assert_select 'input#membership_can_add_event'
+				assert_select 'input#membership_can_invite'
+				assert_select 'input#membership_can_moderate'
+				assert_select 'input#membership_can_manage_members'
+				assert_select 'input#membership_expires_at'
+				assert_select 'input#membership_title'
 			end
 		end
 	end

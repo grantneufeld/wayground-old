@@ -40,7 +40,8 @@ class ApplicationController < ActionController::Base
 			@current_user
 		else	
 			@current_user_already_checked = true
-			@current_user = (login_from_session || login_from_basic_auth || login_from_cookie)
+			#@current_user = 
+			(login_from_session || login_from_basic_auth || login_from_cookie)
 		end
 	end
 	# Store the given user id in the session.
