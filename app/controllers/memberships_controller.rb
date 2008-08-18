@@ -56,15 +56,34 @@ class MembershipsController < ApplicationController
 	end
 	
 	def edit
-		
+		@membership = Membership.find(params[:id])
+		@page_title = "Edit Membership for #{@membership.user.nickname}"
+	rescue ActiveRecord::RecordNotFound
+		missing
 	end
 	
 	def update
-		
+		self.edit
+		if response.redirected_to
+			# can’t update - was caught in edit
+		else
+			if params[:membership] && params[:membership].size > 0 && @membership.update_attributes(params[:membership])
+				flash[:notice] = "Updated membership information for #{@membership.user.nickname}."
+				redirect_to group_membership_path(@group, @membership)
+			else
+				# failed to save, back to edit form
+				render :action=>:edit
+			end
+		end
 	end
 	
 	def destroy
-		
+		@membership = Membership.find(params[:id])
+		@membership.destroy
+		flash[:notice] = "The membership for ‘#{@membership.user.nickname}’ has been permanently removed."
+		redirect_to group_memberships_path(@group)
+	rescue ActiveRecord::RecordNotFound
+		missing
 	end
 	
 	

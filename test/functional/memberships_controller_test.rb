@@ -263,18 +263,17 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	
 	
-	if false # TODO: Finish adapting these tests copied from the groups controller test. •••
-	
-	
 	# EDIT
 	def test_memberships_edit
-		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath}, {:user=>users(:login).id}
+		get :edit, {:group_id=>groups(:membered_group).subpath,
+			:id=>memberships(:regular).id.to_s}, {:user=>users(:login).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_equal memberships(:regular), assigns(:membership)
 		assert_nil flash[:notice]
-		assert_equal "Edit Membership: #{memberships(:regular).name}", assigns(:page_title)
+		assert_equal "Edit Membership for #{memberships(:regular).user.nickname}",
+			assigns(:page_title)
 		# view result
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
@@ -282,33 +281,8 @@ class MembershipsControllerTest < ActionController::TestCase
 			assert_select 'h1', assigns(:group).name
 			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_user_id'
-				assert_select 'input#membership_is_admin'
-				assert_select 'input#membership_can_add_event'
-				assert_select 'input#membership_can_invite'
-				assert_select 'input#membership_can_moderate'
-				assert_select 'input#membership_can_manage_members'
-				assert_select 'input#membership_expires_at'
-				assert_select 'input#membership_title'
-			end
-		end
-	end
-	def test_memberships_edit_admin
-		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath}, {:user=>users(:admin).id}
-		assert_response :success
-		assert_equal 'groups', assigns(:section)
-		assert_equal groups(:membered_group), assigns(:group)
-		assert_equal memberships(:regular), assigns(:membership)
-		assert_nil flash[:notice]
-		assert_equal "Edit Membership: #{memberships(:regular).name}", assigns(:page_title)
-		# view result
-		assert_template 'edit'
-		assert_select 'div#flash:empty'
-		assert_select 'div#content' do
-			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
-			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_user_id', false,
+					'Edit form should not contain the user id'
 				assert_select 'input#membership_is_admin'
 				assert_select 'input#membership_can_add_event'
 				assert_select 'input#membership_can_invite'
@@ -320,7 +294,8 @@ class MembershipsControllerTest < ActionController::TestCase
 		end
 	end
 	def test_memberships_edit_invalid_user
-		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath}, {:user=>users(:login).id}
+		get :edit, {:group_id=>groups(:membered_group).subpath,
+			:id=>memberships(:regular).id}, {:user=>users(:staff).id}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_nil assigns(:membership)
@@ -328,7 +303,8 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_redirected_to account_users_path
 	end
 	def test_memberships_edit_no_user
-		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath}, {}
+		get :edit, {:group_id=>groups(:membered_group).subpath,
+			:id=>memberships(:regular).id}, {}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_nil assigns(:membership)
@@ -337,11 +313,13 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_edit_no_id
 		assert_raise(ActionController::RoutingError) do
-			get :edit, {:group_id=>groups(:membered_group).subpath}, {:user=>users(:login).id}
+			get :edit, {:group_id=>groups(:membered_group).subpath},
+				{:user=>users(:login).id}
 		end
 	end
 	def test_memberships_edit_invalid_id
-		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>'invalid'}, {:user=>users(:login).id}
+		get :edit, {:group_id=>groups(:membered_group).subpath, :id=>'invalid'},
+			{:user=>users(:login).id}
 		assert_response :missing
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_nil assigns(:membership)
@@ -353,142 +331,78 @@ class MembershipsControllerTest < ActionController::TestCase
 	
 	# UPDATE
 	def test_memberships_update
+		expires = Time.current.utc
 		put :update,
 			{	:group_id=>groups(:membered_group).subpath,
-				:id=>memberships(:update_membership).subpath,
+				:id=>memberships(:update_membership).id,
 				:membership=>{
-					:is_visible=>'1',
-					:is_public=>'1',
-					:is_members_visible=>'1',
-					:is_invite_only=>'1',
-					:is_no_unsubscribe=>'1',
-					#:subpath=>'changed-subpath',
-					:name=>'Updated Membership Name',
-					:url=>'http://wayground.ca/test/updated-membership',
-					:description=>'This membership has been updated.',
-					:welcome=>'Welcome to the updated membership.'
+					:position=>'10',
+					:is_admin=>'1',
+					:can_add_event=>'1',
+					:can_invite=>'1',
+					:can_moderate=>'1',
+					:can_manage_members=>'1',
+					:expires_at=>expires.to_s,
+					:title=>'Updated Membership Title'
 				}
 			},
 			{:user=>users(:login).id}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_equal memberships(:update_membership), assigns(:membership)
-		assert assigns(:membership).is_visible
-		assert assigns(:membership).is_public
-		assert assigns(:membership).is_members_visible
-		assert assigns(:membership).is_invite_only
-		assert assigns(:membership).is_no_unsubscribe
-		assert_equal 'Updated Membership Name', assigns(:membership).name
-		assert_equal 'http://wayground.ca/test/updated-membership', assigns(:membership).url
-		assert_equal 'This membership has been updated.', assigns(:membership).description
-		assert_equal 'Welcome to the updated membership.', assigns(:membership).welcome
+		assert_equal 10, assigns(:membership).position
+		assert assigns(:membership).is_admin
+		assert assigns(:membership).can_add_event
+		assert assigns(:membership).can_invite
+		assert assigns(:membership).can_moderate
+		assert assigns(:membership).can_manage_members
+		assert_equal expires.to_s, assigns(:membership).expires_at.utc.to_s
+		assert_equal 'Updated Membership Title', assigns(:membership).title
 		assert flash[:notice]
-		assert_redirected_to({:action=>'show', :id=>assigns(:membership)})
+		assert_redirected_to(group_membership_path(assigns(:group),
+			assigns(:membership)))
 	end
-	def test_memberships_update_admin
-		put :update,
-			{	:group_id=>groups(:membered_group).subpath,
-				:id=>memberships(:update_membership).subpath,
-				:membership=>{
-					:is_visible=>'1',
-					:is_public=>'1',
-					:is_members_visible=>'1',
-					:is_invite_only=>'1',
-					:is_no_unsubscribe=>'1',
-					#:subpath=>'changed-subpath',
-					:name=>'Updated Membership Name',
-					:url=>'http://wayground.ca/test/updated-membership',
-					:description=>'This membership has been updated.',
-					:welcome=>'Welcome to the updated membership.'
-				}
-			},
-			{:user=>users(:admin).id}
-		assert_response :redirect
-		assert_equal groups(:membered_group), assigns(:group)
-		assert_equal memberships(:update_membership), assigns(:membership)
-		assert assigns(:membership).is_visible
-		assert assigns(:membership).is_public
-		assert assigns(:membership).is_members_visible
-		assert assigns(:membership).is_invite_only
-		assert assigns(:membership).is_no_unsubscribe
-		assert_equal 'Updated Membership Name', assigns(:membership).name
-		assert_equal 'http://wayground.ca/test/updated-membership', assigns(:membership).url
-		assert_equal 'This membership has been updated.', assigns(:membership).description
-		assert_equal 'Welcome to the updated membership.', assigns(:membership).welcome
-		assert flash[:notice]
-		assert_redirected_to({:action=>'show', :id=>assigns(:membership)})
-	end
-	def test_memberships_update_non_group_admin_or_admin_user
-		original_name = memberships(:update_membership).name
-		put :update, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:update_membership).subpath,
-			:membership=>{:name=>'Update Membership by Non Group Admin'}},
-			{:user=>users(:login).id}
+	def test_memberships_update_user_without_access
+		original_title = memberships(:update_membership).title
+		put :update, {:group_id=>groups(:membered_group).subpath,
+				:id=>memberships(:update_membership).id,
+				:membership=>{:title=>'Update Membership by Non Group Admin'}},
+			{:user=>users(:staff).id}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_nil assigns(:membership)
 		# membership was not updated
-		assert_equal original_name, memberships(:update_membership).name
+		assert_equal original_title, memberships(:update_membership).title
 		assert flash[:warning]
 		assert_redirected_to account_users_path
 	end
 	def test_memberships_update_no_user
-		original_name = memberships(:update_membership).name
-		put :update, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:update_membership).subpath,
-			:membership=>{:name=>'Update Membership with No User'}},
+		original_title = memberships(:update_membership).title
+		put :update, {:group_id=>groups(:membered_group).subpath,
+				:id=>memberships(:update_membership).id,
+				:membership=>{:title=>'Update Membership with No User'}},
 			{}
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_nil assigns(:membership)
 		# membership was not updated
-		assert_equal original_name, memberships(:update_membership).name
+		assert_equal original_title, memberships(:update_membership).title
 		assert flash[:warning]
 		assert_redirected_to login_path
 	end
-	def test_memberships_update_invalid_params
-		original_name = memberships(:update_membership).name
-		put :update, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:update_membership).subpath,
-			:membership=>{:url=>'invalid url'}},
-			{:user=>users(:login).id}
-		assert_response :success
-		assert_equal 'groups', assigns(:section)
-		assert_equal groups(:membered_group), assigns(:group)
-		assert_equal memberships(:update_membership), assigns(:membership)
-		assert_validation_errors_on(assigns(:membership), ['url'])
-		# membership was not updated
-		assert_equal original_name, memberships(:update_membership).name
-		assert_nil flash[:notice]
-		assert_equal "Edit Membership: #{memberships(:update_membership).name}",
-			assigns(:page_title)
-		# view result
-		assert_template 'edit'
-		assert_select 'div#flash:empty'
-		assert_select 'div#content' do
-			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
-			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_user_id'
-				assert_select 'input#membership_is_admin'
-				assert_select 'input#membership_can_add_event'
-				assert_select 'input#membership_can_invite'
-				assert_select 'input#membership_can_moderate'
-				assert_select 'input#membership_can_manage_members'
-				assert_select 'input#membership_expires_at'
-				assert_select 'input#membership_title'
-			end
-		end
-	end
 	def test_memberships_update_no_params
-		original_name = memberships(:update_membership).name
-		put :update, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:update_membership).subpath, :membership=>{}},
+		original_title = memberships(:update_membership).title
+		put :update, {:group_id=>groups(:membered_group).subpath,
+				:id=>memberships(:update_membership).id, :membership=>{}},
 			{:user=>users(:login).id}
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_equal memberships(:update_membership), assigns(:membership)
 		# membership was not updated
-		assert_equal original_name, memberships(:update_membership).name
+		assert_equal original_title, memberships(:update_membership).title
 		assert_nil flash[:notice]
-		assert_equal "Edit Membership: #{memberships(:update_membership).name}",
+		assert_equal "Edit Membership for #{memberships(:update_membership).user.nickname}",
 			assigns(:page_title)
 		# view result
 		assert_template 'edit'
@@ -497,7 +411,8 @@ class MembershipsControllerTest < ActionController::TestCase
 			assert_select 'h1', assigns(:group).name
 			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
-				assert_select 'input#membership_user_id'
+				assert_select 'input#membership_user_id', false,
+					'Edit form should not contain the user id'
 				assert_select 'input#membership_is_admin'
 				assert_select 'input#membership_can_add_event'
 				assert_select 'input#membership_can_invite'
@@ -515,32 +430,15 @@ class MembershipsControllerTest < ActionController::TestCase
 		# create a membership to be destroyed
 		membership = nil
 		assert_difference(Membership, :count, 1) do
-			membership = Membership.new({:name=>'Delete Membership', :subpath=>'delete-membership'})
-			membership.creator = users(:login)
-			membership.owner = users(:login)
+			membership = Membership.new(:title=>'Delete Membership')
+			membership.group = groups(:membered_group)
+			membership.user = users(:staff)
 			membership.save!
 		end
 		# destroy the membership (and it's thumbnail)
 		assert_difference(Membership, :count, -1) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath, :id=>membership.subpath}, {:user=>users(:admin).id}
-		end
-		assert_response :redirect
-		assert_equal groups(:membered_group), assigns(:group)
-		assert flash[:notice]
-		assert_redirected_to group_memberships_path(assigns(:group))
-	end
-	def test_memberships_destroy_with_group_admin_user
-		# create a membership to be destroyed
-		membership = nil
-		assert_difference(Membership, :count, 1) do
-			membership = Membership.new({:name=>'Delete Membership', :subpath=>'delete-membership'})
-			membership.creator = users(:login)
-			membership.owner = users(:login)
-			membership.save!
-		end
-		# destroy the membership (and it's thumbnail)
-		assert_difference(Membership, :count, -1) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath, :id=>membership.subpath}, {:user=>users(:login).id}
+			delete :destroy, {:group_id=>groups(:membered_group).subpath,
+				:id=>membership.id}, {:user=>users(:login).id}
 		end
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
@@ -549,8 +447,9 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_destroy_with_wrong_user
 		assert_difference(Membership, :count, 0) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath},
-				{:user=>users(:login).id}
+			delete :destroy, {:group_id=>groups(:membered_group).subpath,
+				:id=>memberships(:regular).id},
+				{:user=>users(:staff).id}
 		end
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
@@ -560,7 +459,8 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_destroy_with_no_user
 		assert_difference(Membership, :count, 0) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath, :id=>memberships(:regular).subpath}, {}
+			delete :destroy, {:group_id=>groups(:membered_group).subpath,
+				:id=>memberships(:regular).id}, {}
 		end
 		assert_response :redirect
 		assert_equal groups(:membered_group), assigns(:group)
@@ -570,7 +470,8 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_destroy_with_invalid_id
 		assert_difference(Membership, :count, 0) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath, :id=>'invalid'}, {:user=>users(:login).id}
+			delete :destroy, {:group_id=>groups(:membered_group).subpath,
+				:id=>'invalid'}, {:user=>users(:login).id}
 		end
 		assert_response :missing
 		assert_equal groups(:membered_group), assigns(:group)
@@ -581,9 +482,8 @@ class MembershipsControllerTest < ActionController::TestCase
 	end
 	def test_memberships_destroy_with_no_id
 		assert_raise(ActionController::RoutingError) do
-			delete :destroy, {:group_id=>groups(:membered_group).subpath}, {:user=>users(:login).id}
+			delete :destroy, {:group_id=>groups(:membered_group).subpath},
+				{:user=>users(:login).id}
 		end
 	end
-	
-	end # ••• if false
 end
