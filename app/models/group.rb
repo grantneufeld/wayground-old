@@ -36,6 +36,7 @@ class Group < ActiveRecord::Base
 		:order=>'groups.name'
 	
 	has_many :memberships, :order=>'memberships.position', :dependent=>:destroy
+	has_many :members, :through=>:memberships, :source=>:user
 	
 	
 	# CLASS METHODS

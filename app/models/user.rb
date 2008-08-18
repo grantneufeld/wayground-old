@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
 	# TODO: FUTURE: don’t destroy dependent locations when the location model is changed to allow sharing of location objects.
 	has_many :locations, :as=>:locatable, :dependent=>:destroy
 	has_many :memberships, :dependent=>:destroy
+	has_many :groups, :through=>:memberships, :source=>:group
 	has_many :invited_memberships, :class_name=>'Membership',
 	 	:foreign_key=>'inviter_id', :dependent=>:destroy
 	has_many :blocked_memberships, :class_name=>'Membership',

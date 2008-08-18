@@ -27,7 +27,10 @@ class CreateMemberships < ActiveRecord::Migration
 			t.index [:user_id, :group_id], :name=>'membership_user'
 			t.index [:group_id, :invited_at], :name=>'membership_invitation'
 			t.index [:group_id, :blocked_at], :name=>'membership_blocked'
-			t.index [:group_id, :title, :user_id], :name=>'membership_title'
+			t.index [:group_id, :expires_at, :position],
+				:name=>'membership_expiry'
+			t.index [:group_id, :title, :position, :user_id],
+				:name=>'membership_title'
 		end
 	end
 

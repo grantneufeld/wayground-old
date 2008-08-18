@@ -69,3 +69,51 @@ change_pass:
   admin: false
   staff: false
 
+plain:
+  email: plain-user@wayground.ca
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Plain
+  fullname: Plain User
+  subpath: plain
+  time_zone: Mountain Time (US & Canada)
+  admin: false
+  staff: false
+
+regular:
+  email: regular-user@wayground.ca
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Regular
+  fullname: Regular User
+  subpath: regular
+  time_zone: Mountain Time (US & Canada)
+  admin: false
+  staff: false
+
+another:
+  email: another-user@wayground.ca
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Another
+  fullname: Another User
+  subpath: another
+  time_zone: Mountain Time (US & Canada)
+  admin: false
+  staff: false
+
+someone:
+  email: someone-user@wayground.ca
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Someone
+  fullname: Someone User
+  subpath: someone
+  time_zone: Mountain Time (US & Canada)
+  admin: false
+  staff: false
+

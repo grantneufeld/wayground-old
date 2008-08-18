@@ -1,35 +1,165 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-one:
-  group: 
-  user: 
+owner:
+  group: membered_group
+  position: 1
+  user: login
   location: 
-  is_admin: false
-  can_add_event: false
-  can_invite: false
-  can_moderate: false
-  can_manage_members: false
-  expires_at: 2008-08-14 18:58:45
+  is_admin: true
+  can_add_event: true
+  can_invite: true
+  can_moderate: true
+  can_manage_members: true
+  expires_at:
   invited_at: 
   inviter: 
-  blocked_at: 2008-08-14 18:58:45
-  block_expires_at: 2008-08-14 18:58:45
+  blocked_at: 
+  block_expires_at: 
   blocker: 
-  title: MyString
+  title: President
 
-two:
-  group: 
-  user: 
+regular:
+  group: membered_group
+  position: 2
+  user: regular
   location: 
   is_admin: false
   can_add_event: false
   can_invite: false
   can_moderate: false
   can_manage_members: false
-  expires_at: 2008-08-14 18:58:45
+  expires_at: <%= 1.day.from_now.to_s(:db) %>
   invited_at: 
   inviter: 
-  blocked_at: 2008-08-14 18:58:45
-  block_expires_at: 2008-08-14 18:58:45
+  blocked_at: 
+  block_expires_at: 
   blocker: 
-  title: MyString
+  title: 
+
+update_membership:
+  group: membered_group
+  position: 3
+  user: another
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+expired_blockee:
+  group: membered_group
+  position: 
+  user: plain
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: <%= 2.day.ago.to_s(:db) %>
+  block_expires_at: <%= 1.day.ago.to_s(:db) %>
+  blocker: login
+  title: 
+
+
+privateowner:
+  group: private_group
+  position: 1
+  user: login
+  location: 
+  is_admin: true
+  can_add_event: true
+  can_invite: true
+  can_moderate: true
+  can_manage_members: true
+  expires_at:
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: Great Leader
+
+blockee:
+  group: private_group
+  position: 
+  user: another
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: <%= 1.day.ago.to_s(:db) %>
+  block_expires_at: <%= 1.day.from_now.to_s(:db) %>
+  blocker: login
+  title: 
+
+private_member:
+  group: private_group
+  position: 
+  user: regular
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: login
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+invitee:
+  group: private_group
+  position: 
+  user: plain
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: <%= 1.day.ago.to_s(:db) %>
+  inviter: login
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+expired:
+  group: private_group
+  position: 
+  user: someone
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: <%= 1.day.ago.to_s(:db) %>
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+

@@ -1,0 +1,6 @@
+<%
+membership ||= @membership
+row_id ||= "membership_#{membership.id}"
+
+-%>
+<tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><%= link_to membership.user.nickname, user_path(membership.user) %></td></tr>

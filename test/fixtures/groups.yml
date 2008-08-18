@@ -58,3 +58,31 @@ update_group:
   description: A group to be updated.
   welcome: Welcome to the group to be updated.
 
+membered_group:
+  creator: login
+  owner: login
+  is_visible: true
+  is_public: true
+  is_members_visible: true
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: membered
+  name: Group With Members
+  url: http://wayground.ca/groups/membered_group
+  description: This a regular user owned group that has members.
+  welcome: Welcome to the Membered Group.
+
+private_group:
+  creator: login
+  owner: login
+  is_visible: false
+  is_public: false
+  is_members_visible: false
+  is_invite_only: true
+  is_no_unsubscribe: true
+  subpath: private_group
+  name: Private Group
+  url: http://wayground.ca/groups/private_group
+  description: This a private user owned group that restricts access.
+  welcome: Welcome to the Private Group.
+

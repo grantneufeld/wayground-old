@@ -57,9 +57,11 @@ ActionController::Routing::Routes.draw do |map|
 		:action=>'data', :root=>'/private/', :conditions=>{:method=>:get}
 	map.resources :documents
 	
-	map.resources :groups
+	map.resources :groups do |groups|
+		groups.resources :memberships
+	end
 	map.resources :locations
-	map.resources :memberships
+	#map.resources :memberships
 	
 	# Install the default routes as the lowest priority.
 	#map.connect ':controller/:action/:id'
