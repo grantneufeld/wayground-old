@@ -35,7 +35,11 @@ VERSION CONTROL
 To save changes to the repository:
 (from the project directory root)
  git add .
- git commit -a -m "short message about what is being committed"
+ git commit -m "short message about what is being committed"
+
+If you don’t want to commit all changes, use:
+ git add path/to/files/to/commit
+instead of `git add .`
 
 To update the GitHub repository (if you’ve setup the correct access for this):
  git push origin master
