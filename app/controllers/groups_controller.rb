@@ -19,6 +19,12 @@ class GroupsController < ApplicationController
 	def show
 		@section = 'groups'
 		@group = Group.find(params[:id])
+		if current_user
+			@membership = @group.memberships.find(:first,
+				:conditions=>['memberships.user_id = ?', current_user.id])
+		else
+			@membership = nil
+		end
 		@page_title = "Group: #{@group.name}"
 	rescue ActiveRecord::RecordNotFound
 		missing

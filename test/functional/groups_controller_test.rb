@@ -65,7 +65,7 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
-		assert assigns(:group)
+		assert_equal groups(:one), assigns(:group)
 		assert_equal("Group: #{groups(:one).name}", assigns(:page_title))
 		assert_nil flash[:notice]
 		# view result
@@ -84,6 +84,25 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_nil flash[:notice]
 		assert flash[:error]
 		assert_template 'paths/missing'
+	end
+	def test_groups_show_for_member_user
+		assert_efficient_sql do
+			get :show, {:id=>groups(:membered_group).subpath},
+				{:user=>users(:regular).id}
+		end
+		assert_response :success
+		assert_equal 'groups', assigns(:section)
+		assert_equal groups(:membered_group), assigns(:group)
+		assert_equal memberships(:regular), assigns(:membership)
+		assert_equal("Group: #{groups(:membered_group).name}",
+			assigns(:page_title))
+		assert_nil flash[:notice]
+		# view result
+		assert_template 'show'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			assert_select 'h1', groups(:membered_group).name
+		end
 	end
 	
 	

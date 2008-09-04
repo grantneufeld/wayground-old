@@ -37,6 +37,10 @@ class Group < ActiveRecord::Base
 	
 	has_many :memberships, :order=>'memberships.position', :dependent=>:destroy
 	has_many :members, :through=>:memberships, :source=>:user
+	has_many :active_memberships, :class_name=>'Membership',
+		:conditions=>['(memberships.blocked_at IS NULL OR memberships.blocked_at > NOW() OR memberships.block_expires_at <= NOW()) AND (memberships.expires_at IS NULL OR memberships.expires_at > NOW()) AND memberships.invited_at IS NULL'],
+		:order=>'memberships.position', :dependent=>:destroy
+	has_many :active_members, :through=>:active_memberships, :source=>:user
 	
 	
 	# CLASS METHODS

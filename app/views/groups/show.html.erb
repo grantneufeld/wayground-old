@@ -1,6 +1,35 @@
 <h1><%= h @group.name %></h1>
 <%= format_content(@group.description, 'text/plain', false) %>
 <%
+render_sidebar do
+	%><h2>Membership</h2>
+<p><%= link_to("#{@group.active_memberships.count} members",
+	group_memberships_path(@group),
+	{:title=>"View member list for this group"})
+	%><span class="separator">.</span></p>
+<%	if @membership && @membership.active?
+		%><p><%=
+		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit your membership',
+			edit_group_membership_path(@group, @membership),
+			{:title=>"Change the options for your membership for this group"})
+		%><span class="separator">.</span><%
+		unless @group.is_no_unsubscribe %>
+<br /><%=	link_to '<img src="/icon/delete.png" width="16" height="16"' +
+					' alt="Delete" class="diricon" /> Quit this group',
+				group_membership_path(@group, @membership),
+				{:method=>'delete',
+				:confirm=>"Are you sure you want to remove your membership from the group “#{@group.name}”?",
+				:href=>group_membership_path(@group, @membership),
+				:title=>"remove your membership from this group"
+				} %><span class="separator">.</span><%
+		end
+		%></p>
+<%
+	else
+		
+	end
+end
+
 if current_user && current_user.staff
 	render_sidebar do
 		%><h2>Manage This Group</h2>
