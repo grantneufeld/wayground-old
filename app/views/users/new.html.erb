@@ -22,7 +22,7 @@ It will also be used to confirm your registration.</td></tr>
 <td><%= f.text_field :fullname %>
 <br />Your actual first and last name.</td></tr>
 <tr><th><label for="user_time_zone">Time zone</label><br/></th>
-<td><%= f.time_zone_select :time_zone, TimeZone.ca_zones, :default=>Time.zone.name %></td></tr>
+<td><%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.ca_zones, :default=>Time.zone.name %></td></tr>
 </tbody></table></div>
 
 <h2>Public Info</h2>
