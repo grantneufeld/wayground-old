@@ -69,6 +69,7 @@ website_prefix = WAYGROUND['TITLE_PREFIX']
 
 # special case this on the front page so that links don't refer to the page they're already on:
 if request.request_uri == "/"
+	website_root_link = nil
 	website_root_title_link = website_title
 	if @page_title.blank?
 		# set the page title to the website title for the front page only
@@ -90,6 +91,7 @@ else
 			end
 		end
 	end
+	website_root_link = '/'
 	website_root_title_link = '<a href="/">' + website_title + '</a>'
 end
 
@@ -141,7 +143,12 @@ unless @content_for_keywords.blank?
 <li><a rel="bookmark" href="#content">Skip to content</a>.</li>
 </ul>
 <div id="header">
-<h1 id="title"><%= website_root_title_link %></h1>
+<h1 id="title"><% if website_root_link
+	%><a href="<%= website_root_link %>" title="<%= h website_title %>"><%
+end %><img src="/images/wayground-logo-64x39.png" alt=" " width="64" height="39" id="logo" /><% if website_root_link
+	%></a><%
+end %>
+<%= website_root_title_link %></h1>
 <map title="Navigation Bar" name="NavigationBar" id="navigation"><p id="menu">
 <%= link_to 'Pages', pages_path, {
 	:class=>(@section == 'pages' ? 'current-tab' : nil),

@@ -95,6 +95,7 @@ form.inline *, form.inline input{display:inline;}
 
 /* HEADER */
 #header{background:#593B00 url('/images/shadow-up.png') repeat-x left bottom; color:#DCCEB2; width:100%; margin:0em; padding:0em; outline-color:yellow;}
+#logo{float:left; margin:0px 10px 0px 0px; border:0px none;}
 #title{background:transparent; color:#DCCEB2; margin:0em; padding:1em 2em 0em; text-shadow:2px 2px 1px black; outline-color:black;}
 #header a{text-decoration:none;}
 #header a:link{background-color:transparent; color:#BFE0E1;}
