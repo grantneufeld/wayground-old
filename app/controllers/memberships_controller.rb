@@ -78,7 +78,7 @@ class MembershipsController < ApplicationController
 	end
 	
 	def destroy
-		@membership = Membership.find(params[:id])
+		@membership = Membership.find(params[:id], :include=>:user)
 		@membership.destroy
 		flash[:notice] = "The membership for ‘#{@membership.user.nickname}’ has been permanently removed."
 		redirect_to group_memberships_path(@group)

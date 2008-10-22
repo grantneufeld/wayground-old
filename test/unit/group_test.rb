@@ -75,4 +75,28 @@ class GroupTest < ActiveSupport::TestCase
 	
 	# INSTANCE METHODS
 	
+	def test_group_display_name
+		assert_equal 'Group One', groups(:one).display_name
+	end
+	
+	# user access/non-access
+	def test_public_group_user_can_access
+		assert groups(:membered_group).user_can_access?(users(:nonmember))
+	end
+	def test_private_group_member_can_access
+		assert groups(:private_group).user_can_access?(users(:regular))
+	end
+	def test_private_group_nonmember_has_no_access
+		assert !(groups(:private_group).user_can_access?(users(:nonmember)))
+	end
+	def test_private_group_blocked_member_has_no_access
+		assert !(groups(:private_group).user_can_access?(users(:another)))
+	end
+	def test_private_group_expired_member_has_no_access
+		assert !(groups(:private_group).user_can_access?(users(:someone)))
+	end
+	def test_private_group_invited_member_has_no_access
+		assert !(groups(:private_group).user_can_access?(users(:plain)))
+	end
+	
 end

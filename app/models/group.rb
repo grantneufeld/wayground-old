@@ -42,6 +42,8 @@ class Group < ActiveRecord::Base
 		:order=>'memberships.position', :dependent=>:destroy
 	has_many :active_members, :through=>:active_memberships, :source=>:user
 	
+	has_many :weblinks, :as=>:item, :dependent=>:destroy
+	
 	
 	# CLASS METHODS
 	
@@ -112,6 +114,23 @@ class Group < ActiveRecord::Base
 	# use the group’s subpath instead of the id
 	def to_param
 		subpath
+	end
+	
+	def display_name
+		name
+	end
+	
+	def user_can_access?(u)
+		if is_public
+			return true
+		else
+			m = Membership.find_for(self,u)
+			if m
+				return m.active?
+			else
+				false
+			end
+		end
 	end
 	
 	# Returns an Array of email address Strings for members of the group.

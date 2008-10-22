@@ -117,3 +117,14 @@ someone:
   admin: false
   staff: false
 
+nonmember:
+  email: nonmember-user@wayground.ca
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
+  salt: salt
+  nickname: Non-member
+  fullname: Non Member
+  subpath: nonmember
+  time_zone: Mountain Time (US & Canada)
+  admin: false
+  staff: false

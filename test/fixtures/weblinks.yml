@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user: login
+  item: public_group (Group)
+  is_confirmed: false
+  position: 2
+  category: testing
+  title: Weblink One
+  site: wayground
+  url: http://wayground.ca/weblink/one
+  description: Weblink one for Group one.
+
+two:
+  user: login
+  item: public_group (Group)
+  is_confirmed: true
+  position: 1
+  category: testing
+  title: Weblink Two
+  site: wayground
+  url: http://wayground.ca/weblink/two
+  description: Weblink two for Group one.

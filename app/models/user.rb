@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
 	 	:foreign_key=>'inviter_id', :dependent=>:destroy
 	has_many :blocked_memberships, :class_name=>'Membership',
 	 	:foreign_key=>'blockerer_id', :dependent=>:nullify
+	has_many :weblinks, :as=>:item, :dependent=>:destroy
 	
 	validates_presence_of :fullname
 	validates_presence_of :email, :if=>:email_required

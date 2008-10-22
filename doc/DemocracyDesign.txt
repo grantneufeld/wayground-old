@@ -1,0 +1,41 @@
+# These are notes on the design of the democracy functions to be developed in Wayground.
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Candidate/Campaign Info
+
+• Contact Info: Phones, offices, email addresses, official websites.
+• Links: Sites by or generally about the candidate. Social networking sites, personal sites, blogs, etc. (Facebook, MySpace, YouTube, Twitter, …)
+• Videos: Links to online videos.
+• Media: Links to articles, interviews, 3rd party blog posts, etc., that mention or cover the candidate.
+• Surveys: Links to candidate’s responses to surveys.
+• Promises: Details, with citations, on promises made by the candidate. Include details on how they upheld or failed to uphold promises once elected. Could include a mini-chart showing the ratios of upheld, partially upheld, partially failed and fully failed promises.
+• Voting record: For candidates that are in office, or have previously held elected office, details on how they voted on legislation/by-law/etc. proposals.
+• Campaign history: Which offices they’ve run for, when, for which parties, and the election results.
+
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+INTERFACE DESIGN
+
+An interesting wireframe idea for a user-centred government site:
+http://visiblegovernment.ca/index.php?option=com_content&task=view&id=40&Itemid=29
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+REGISTERED USER FUNCTIONS
+
+Allow users to pick which wards/ridings/eds/etc. they are in manually, or by entering a postal code, or a street address.
+Specify which school board, neither or both.
+Allow users to add non governmental institutions that have elected representatives (co-ops, credit unions, etc.).
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MAPPING
+
+Have a database that maps ward/riding/etc. overlaps, and can identify which ward/riding/etc.(s) a given postal code or address falls in.
+

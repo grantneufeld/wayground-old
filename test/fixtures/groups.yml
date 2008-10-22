@@ -72,6 +72,20 @@ membered_group:
   description: This a regular user owned group that has members.
   welcome: Welcome to the Membered Group.
 
+public_group:
+  creator: login
+  owner: login
+  is_visible: true
+  is_public: true
+  is_members_visible: true
+  is_invite_only: false
+  is_no_unsubscribe: false
+  subpath: publicgroup
+  name: Public Group
+  url: http://wayground.ca/groups/public_group
+  description: This group has completely open access.
+  welcome: Welcome to the Public Group.
+
 private_group:
   creator: login
   owner: login

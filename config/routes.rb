@@ -34,16 +34,18 @@ ActionController::Routing::Routes.draw do |map|
 
 	# See how all your routes lay out with "rake routes"
 
+	# SESSION
 	map.login '/login', :controller=>'sessions', :action=>'new'
 	map.logout '/logout', :controller=>'sessions', :action=>'destroy'
 	map.resource :session, :controller=>'sessions'
-
+	# USER
 	map.signup '/signup', :controller=>'users', :action=>'new'
 	map.activate '/activate/:activation_code', :controller=>'users',
 		:action=>'activate'
 	map.profile '/people/:id', :controller=>'users', :action=>'profile'
 	map.resources :users, :collection=>{:activate=>:get, :account=>:get}
 	
+	# PAGES
 	# special path: the home page
 	#map.home '', :controller=>'paths', :action=>'show',
 	#	:conditions=>{:method=>:get} #, :url=>nil, :id=>nil
@@ -53,15 +55,20 @@ ActionController::Routing::Routes.draw do |map|
 	map.content_switch '/pages/content_type_switch', :controller=>'pages',
 		:action=>'content_type_switch', :conditions=>{:method=>:post}
 	
+	# DOCUMENTS / FILES
 	map.private_doc '/private/*filename', :controller=>'documents',
 		:action=>'data', :root=>'/private/', :conditions=>{:method=>:get}
 	map.resources :documents
 	
+	# CONTACT MANAGEMENT
 	map.resources :groups do |groups|
 		groups.resources :memberships
 	end
 	map.resources :locations
 	#map.resources :memberships
+	
+	# DEMOCRACY
+	map.resources :weblinks
 	
 	# Install the default routes as the lowest priority.
 	# Note: These default routes make all actions in every controller accessible via GET requests. You should

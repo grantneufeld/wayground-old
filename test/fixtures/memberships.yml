@@ -91,24 +91,6 @@ privateowner:
   blocker: 
   title: Great Leader
 
-blockee:
-  group: private_group
-  position: 
-  user: another
-  location: 
-  is_admin: false
-  can_add_event: false
-  can_invite: false
-  can_moderate: false
-  can_manage_members: false
-  expires_at: 
-  invited_at: 
-  inviter: 
-  blocked_at: <%= 1.day.ago.to_s(:db) %>
-  block_expires_at: <%= 1.day.from_now.to_s(:db) %>
-  blocker: login
-  title: 
-
 private_member:
   group: private_group
   position: 
@@ -125,6 +107,24 @@ private_member:
   blocked_at: 
   block_expires_at: 
   blocker: 
+  title: 
+
+blockee:
+  group: private_group
+  position: 
+  user: another
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: <%= 1.day.ago.to_s(:db) %>
+  block_expires_at: <%= 1.day.from_now.to_s(:db) %>
+  blocker: login
   title: 
 
 invitee:

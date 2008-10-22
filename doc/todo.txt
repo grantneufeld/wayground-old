@@ -20,6 +20,10 @@ http://graticule.rubyforge.org/plugin.html
 http://agilewebdevelopment.com/plugins/googlemaps
 http://gmaps-on-rails.googlecode.com/svn/trunk
 
+OpenSearch
+http://en.wikipedia.org/wiki/Opensearch
+http://www.opensearch.org/
+
 SMS
 http://sms-fu.googlecode.com/svn/trunk/sms_fu/
 http://brendanlim.com/2008/2/28/send-text-messages-from-rails-with-sms-fu

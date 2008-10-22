@@ -24,6 +24,16 @@ class MembershipsControllerTest < ActionController::TestCase
 	# TODO: Test group membership expiry
 	# TODO: Test group membership invitations
 	# TODO: Test group membership blocking
+	# TODO: Test set membership as admin
+	# TODO: Test remove admin status from membership
+	# TODO: Test set access for membership (can_add_event, can_invite, can_moderate, can_manage_members)
+	# TODO: Test set title for membership
+	# TODO: Test set sort (position) for membership
+	# TODO: Test bulk add members to group by email (and optional name)
+	# TODO: Test bulk invite members to group by email (and optional name)
+	# TODO: Test batch select memberships
+	# TODO: Test delete selected batch of memberships
+	# TODO: Test set expiry for selected batch of memberships
 	
 	
 	# INDEX (LIST)

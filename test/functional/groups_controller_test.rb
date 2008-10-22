@@ -24,7 +24,7 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
-		assert_equal 4, assigns(:groups).size
+		assert_equal 5, assigns(:groups).size
 		assert_equal 'Groups', assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
