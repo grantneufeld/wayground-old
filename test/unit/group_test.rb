@@ -72,6 +72,20 @@ class GroupTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
+	def test_group_search_conditions
+		assert_equal ['(groups.is_visible = 1)'], Group.search_conditions
+		assert_equal ['(groups.is_visible = 1)'], Group.search_conditions(true)
+		assert_equal [''], Group.search_conditions(false, users(:admin))
+		assert_equal ['(groups.is_visible = 1)'],
+			Group.search_conditions(true, users(:admin))
+		assert_equal ['(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)',
+				'%keyword%', '%keyword%', '%keyword%'],
+			Group.search_conditions(false, users(:admin), 'keyword')
+		assert_equal ['(groups.is_visible = 1) AND (groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)',
+				'%keyword%', '%keyword%', '%keyword%'],
+			Group.search_conditions(true, nil, 'keyword')
+	end
+	
 	
 	# INSTANCE METHODS
 	

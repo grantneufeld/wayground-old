@@ -1,0 +1,59 @@
+<%
+fields_for :petition do |f|
+%><table cellspacing="0"><tbody>
+<tr><th><label for="petition_title">Title:</label></th>
+	<td><%= f.text_field :title %></td></tr>
+<tr class="alternate"><th><label for="petition_subpath">Path:</label></th>
+	<td><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
+	<br />This permanently sets the subpath (used for the web-link address) for this petition
+	(e.g., “http://website/petitions/<b>subpath</b>”).
+	<br />Only the following characters may be used, no spaces: <b class="nowrap">A-Z a-z 0-9 -</b></td></tr>
+<tr><th><label for="petition_content">Content:</label></th>
+	<td>The content of your petition (“Whereas…”, “We, the undersigned, call on…”).
+	<br /><%= f.text_area :content, :rows=>8 %>
+	</td></tr>
+<tr class="alternate"><th><label for="petition_description">Description:</label></th>
+	<td><%= f.text_field :description %>
+	<br />A brief, one-line, description of the petition.</td></tr>
+<tr><th><label for="petition_goal">Goal:</label></th>
+	<td><%= f.text_field :goal, :size=>8, :class=>'fixed' %>
+	<br />The target number of signatures to gather.
+	</td></tr>
+<tr class="alternate"><th><label for="petition_start_at">Start Date:</label></th>
+	<td><%= f.datetime_select :start_at %>
+	<br />Set this if you don’t want to start gathering signatures until on or after a given start date.</td></tr>
+<tr><th><label for="petition_end_at">End Date:</label></th>
+	<td><%= f.datetime_select :end_at %>
+	<br />Set this if you want to stop gathering signatures after a given end date.</td></tr>
+<tr class="alternate"><th>Settings:</th>
+	<td><%= f.check_box :public_signatures %><label for="petition_public_signatures">Public Signatures:</label> Publicly display the names of people who have signed this petition (unless they have chosen the ‘anonymous’ setting when signing), and their comments (if any). Also show the total number of signatures.
+	<br /><%= f.check_box :allow_comments %><label for="petition_allow_comments">Allow Comments:</label> Let people add a comment when they sign the petition.
+	</td></tr>
+<tr><th><label for="petition_custom_field_label">Custom Field Label:</label></th>
+	<td><%= f.text_field :custom_field_label, :size=>8, :class=>'fixed' %>
+	<br />Optional label for an extra field the signer’s fill in when signing.
+	</td></tr>
+<tr class="alternate"><th><label for="petition_country_restrict">Country Restriction:</label></th>
+	<td><%= f.text_field :country_restrict %>
+	<br />Optionally restrict who can sign to people in this country.
+	</td></tr>
+<tr class="alternate"><th><label for="petition_province_restrict">Province Restriction:</label></th>
+	<td><%= f.text_field :province_restrict %>
+	<br />Optionally restrict who can sign to people in this province.
+	</td></tr>
+<tr class="alternate"><th><label for="petition_city_restrict">City Restriction:</label></th>
+	<td><%= f.text_field :city_restrict %>
+	<br />Optionally restrict who can sign to people in this city.
+	</td></tr>
+<tr class="alternate"><th><label for="petition_restriction_description">Restriction Description:</label></th>
+	<td><%= f.text_field :restriction_description %>
+	<br />Describe any other restrictions for who can sign.
+	</td></tr>
+<tr><th><label for="petition_thanks_message">Thanks Message:</label></th>
+	<td>Message shown to user after signing the petition.
+	<br /><%= f.text_area :thanks_message, :rows=>5 %>
+	</td></tr>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
+</table>
+<% end %>

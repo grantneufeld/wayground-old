@@ -1,0 +1,10 @@
+<div class="steps">
+<h1>New Petition</h1>
+<%= error_messages_for :petition %>
+<div class="step_form">
+<% form_for(:petition, :url=>petitions_path) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

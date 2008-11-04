@@ -1,0 +1,11 @@
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Petition: <%= link_to @petition.title, petition_path(@petition) %></h1>
+<%= error_messages_for :petition %>
+<div class="step_form">
+<% form_for(:petition, :url=>{:action=>'update', :id=>@petition}, :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>
+<%= render :partial=>'standard'%>

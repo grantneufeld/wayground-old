@@ -1,0 +1,31 @@
+<%
+# SEARCH
+render_sidebar do
+	%><h2><img src="/icon/search_24.png" width="24" height="24" alt=" " class="icon" />Search Petitions</h2>
+<%	form_tag petitions_path, :method=>:get do
+		%><p><%= text_field_tag 'key', @key, :id=>'search_key', :size=>16,
+			:title=>'Enter a keyword or keyphrase to search for' %>
+<%= 	submit_tag 'Search', :name=>nil %><%
+		#<br /><%= select_tag 'max',
+		#options_for_select(
+		#	[['10 per page',10],['20 per page',20],['50 per page',50]], @max),
+		#:id=>'search_max'
+		%></p>
+<%	end
+	%><p><a href="/petitions">Browse petitions list</a>.</p><%
+end
+
+# ADMIN
+if !(current_user.nil?) && current_user.staff
+	render_sidebar do
+		%><h2>Admin</h2>
+<p><a href="/petitions/new"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" /> New Petition</a>.</p>
+	<%
+	end
+end
+
+# LEGEND
+if false #render_sidebar do
+	%><%= render :partial=>'layouts/legend' %><%
+end
+%>

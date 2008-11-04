@@ -3,8 +3,8 @@
 one:
   subpath: one
   user: admin
-  start_at: 2008-11-03 02:53:34
-  end_at: 2008-11-03 02:53:34
+  start_at: <%= 1.day.ago.to_s(:db) %>
+  end_at: <%= 1.week.from_now.to_s(:db) %>
   public_signatures: false
   allow_comments: fase
   goal: 1
@@ -17,3 +17,39 @@ one:
   restriction_description: Please sign if you are a test user.
   content: This petition is a test.
   thanks_message: Thanks for supporting this test petition.
+
+searchable:
+  subpath: searchable
+  user: admin
+  start_at: <%= 1.day.ago.to_s(:db) %>
+  end_at: <%= 1.week.from_now.to_s(:db) %>
+  public_signatures: false
+  allow_comments: fase
+  goal: 1
+  title: Searchable Petition
+  description: The only petition to have the keyword.
+  custom_field_label: 
+  country_restrict: 
+  province_restrict: 
+  city_restrict: 
+  restriction_description: 
+  content: This petition is searchable because it has the ‘keyword’.
+  thanks_message: 
+
+update_petition:
+  subpath: update_petition
+  user: admin
+  start_at: <%= 1.day.from_now.to_s(:db) %>
+  end_at: <%= 1.week.from_now.to_s(:db) %>
+  public_signatures: false
+  allow_comments: fase
+  goal: 
+  title: Updatable Petition
+  description: 
+  custom_field_label: 
+  country_restrict: 
+  province_restrict: 
+  city_restrict: 
+  restriction_description: 
+  content: This petition is for testing updating.
+  thanks_message: 

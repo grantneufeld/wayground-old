@@ -69,6 +69,9 @@ ActionController::Routing::Routes.draw do |map|
 	
 	# DEMOCRACY
 	map.resources :weblinks
+	map.resources :petitions do |petitions|
+		petitions.resources :signatures
+	end
 	
 	# Install the default routes as the lowest priority.
 	# Note: These default routes make all actions in every controller accessible via GET requests. You should

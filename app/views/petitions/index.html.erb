@@ -1,0 +1,6 @@
+<ul>
+<% @petitions.each do |petition|
+	row_id = "petition_#{petition.id}"
+	%><li id="<%= row_id %>"></li>
+<% end -%>
+</ul>
