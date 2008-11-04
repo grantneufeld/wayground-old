@@ -201,6 +201,9 @@ XML
 Misc. Add-ons (testing & rake tasks):
  ./script/plugin install http://topfunky.net/svn/plugins/topfunky_power_tools/
 
+Gem access
+ gem sources -a http://gems.github.com
+
 
 Unused
 ------
