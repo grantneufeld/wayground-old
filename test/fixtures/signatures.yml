@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  petition: one
+  user: admin
+  is_public: false
+  allow_followup: false
+  name: First Signer
+  email: test-one@wayground.ca
+  confirmation_code: MyString
+  confirmed_at: 2008-11-03 02:56:34
+  phone: 123-456-7890
+  address: 
+  city: Calgary
+  province: Alberta
+  country: Canada
+  postal_code: 
+  custom_field: custom test entry
+  comment: Just a comment on the test petition.

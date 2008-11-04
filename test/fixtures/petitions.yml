@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  subpath: one
+  user: admin
+  start_at: 2008-11-03 02:53:34
+  end_at: 2008-11-03 02:53:34
+  public_signatures: false
+  allow_comments: fase
+  goal: 1
+  title: Petition One
+  description: The first test petition
+  custom_field_label: Custom Field Test
+  country_restrict: Canada
+  province_restrict: Alberta
+  city_restrict: Calgary
+  restriction_description: Please sign if you are a test user.
+  content: This petition is a test.
+  thanks_message: Thanks for supporting this test petition.
