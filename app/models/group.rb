@@ -16,8 +16,7 @@ class Group < ActiveRecord::Base
 		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'
 	
-	validates_exclusion_of :subpath,
-		:in=>%w(index show list new create edit update destroy delete search about addresses admin archive archives attachments bin blogs boards calendar calendars campaigns candidates categories chunks classified classifieds comments contacts description docs documents elections emails events files forums functions groups images layouts levels links listings locations media members memberships messages news offices pages parties paths petitions photos pics pictures podcasts policies polls ratings replies resources rss rsvp rsvps schedules signatures surveys tag tags topics trash users videos vids votes weblinks welcome wiki),
+	validates_exclusion_of :subpath, :in=>WAYGROUND['RESERVED_SUBPATHS'],
 		:message=>"the subpath %s is reserved and cannot be used for your group"
 	
 	# subpath is globally unique for groups - even if the group has a parent
