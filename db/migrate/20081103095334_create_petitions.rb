@@ -12,6 +12,8 @@ class CreatePetitions < ActiveRecord::Migration
 			t.boolean :public_signatures, :allow_comments
 			# the target number of signatures
 			t.integer :goal
+			# the total number of signatures so far
+			t.integer :signature_count
 			t.string :title # unique
 			# short description of the petition; used when listing petitions
 			t.string :description
@@ -36,6 +38,8 @@ class CreatePetitions < ActiveRecord::Migration
 		
 		create_table :signatures, :force=>true,
 		:options=>'COMMENT="User signatures for Petitions." ENGINE=InnoDB CHARSET=utf8' do |t|
+			# signature number for the petition (starts at 1 for each Petition)
+			t.integer :position
 			t.belongs_to :petition
 			t.belongs_to :user # optional. If set, [petiton, user] must be unique
 			# whether to show the name in public list of signatures, or ‘anonymous’
@@ -51,10 +55,13 @@ class CreatePetitions < ActiveRecord::Migration
 			t.timestamps
 		end
 		change_table :signatures do |t|
-			t.index [:petition_id, :email], :name=>'petition_email', :unique=>true
-			t.index [:petition_id, :user_id, :is_public], :name=>'petition_user'
+			t.index [:email, :petition_id], :name=>'petition_email', :unique=>true
+			t.index [:is_public, :petition_id, :user_id],
+				:name=>'public_petition_user'
 			t.index [:user_id, :petition_id], :name=>'user_petition'
-			t.index [:confirmation_code], :name=>'confirmation_code'
+			t.index [:confirmation_code], :name=>'confirmation_code', :unique=>true
+			t.index [:petition_id, :confirmed_at, :position],
+				:name=>'petition_confirmed'
 		end
 	end
 

@@ -1,6 +1,43 @@
+<h1>Petitions<% unless @key.blank?
+	%>: <%= h @key %><%
+end %></h1>
+<% if @petitions.size > 0 -%>
 <ul>
 <% @petitions.each do |petition|
 	row_id = "petition_#{petition.id}"
-	%><li id="<%= row_id %>"></li>
+	%><li id="<%= row_id %>"><% #img src="/icon/petition.png" width="16" height="16" alt="Petition" class="diricon" /
+		-%>
+<%= link_to petition.title, petition_path(petition) %><%
+	if current_user && current_user.staff
+			%>
+<%=
+		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
+			edit_petition_path(petition),
+			{:title=>"Edit this petition"})
+			%><span class="separator">.</span><%=
+		link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+				' alt="Delete" class="diricon" />',
+			{:url=>{:controller=>'petitions', :action=>'destroy', :id=>petition},
+			:method=>'delete',
+			:loading=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+				" alt=\"Processing…\" class=\"diricon\" />');",
+			:loaded=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+				" alt=\"Delete\" class=\"diricon\" />');",
+			#:success=>"Element.replace('#{row_id}_delete','');",
+			:confirm=>
+				"Are you sure you want to permanently delete the petition “#{petition.name}”?"
+			},
+			{:href=>url_for({:controller=>'petitions', :action=>'destroy', :id=>petition}),
+			:title=>"Permanently delete this petition", :method=>'delete',
+			:id=>"#{row_id}_delete"
+			} %><%
+	end %></li>
 <% end -%>
 </ul>
+<% else -%>
+<p>No petitions found.</p>
+<% end -%>
+<%= will_paginate @petitions, :params=>params %>
+<%= render :partial=>'standard'%>

@@ -5,8 +5,8 @@ one:
   user: admin
   start_at: <%= 1.day.ago.to_s(:db) %>
   end_at: <%= 1.week.from_now.to_s(:db) %>
-  public_signatures: false
-  allow_comments: fase
+  public_signatures: true
+  allow_comments: true
   goal: 1
   title: Petition One
   description: The first test petition
@@ -34,6 +34,24 @@ searchable:
   city_restrict: 
   restriction_description: 
   content: This petition is searchable because it has the ‘keyword’.
+  thanks_message: 
+
+unsigned_petition:
+  subpath: unsigned_petition
+  user: admin
+  start_at: <%= 1.day.from_now.to_s(:db) %>
+  end_at: <%= 1.week.from_now.to_s(:db) %>
+  public_signatures: false
+  allow_comments: fase
+  goal: 
+  title: Unsigned Petition
+  description: 
+  custom_field_label: 
+  country_restrict: 
+  province_restrict: 
+  city_restrict: 
+  restriction_description: 
+  content: This petition is for testing a petition with no signatures.
   thanks_message: 
 
 update_petition:

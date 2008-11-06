@@ -6,6 +6,10 @@ class Petition < ActiveRecord::Base
 	
 	belongs_to :user
 	has_many :signatures, :order=>'signatures.id', :dependent=>:delete_all
+	has_many :confirmed_signatures, :class_name=>'Signature',
+		:foreign_key=>'petition_id',
+		:conditions=>'signatures.confirmed_at IS NOT NULL',
+		:order=>'signatures.position'
 	
 	#validates_presence_of :subpath # covered by validates_format_of below
 	validates_presence_of :user
@@ -40,5 +44,26 @@ class Petition < ActiveRecord::Base
 		end
 		[constraints.join(' AND ')] + values
 	end
-
+	
+	
+	# INSTANCE METHODS
+	
+	# Generates and returns a new Signature on the Petition.
+	# - attributes is a Hash of parameters like would be passed in to Signature.new.
+	# - signer is the User signing (if logged in).
+	def sign(attributes, signer=nil)
+		s = signatures.build(attributes)
+		s.user = signer
+		# set the position
+		s.position = signature_count + 1
+		signature_count += 1
+		# setup confirmation_code
+		s.confirmation_code = Digest::SHA1.hexdigest(
+			"-#{Time.current.to_s}-#{s.email}-#{s.name}-")
+		s.save!
+		# TODO: send confirmation email (throw an error if failed)
+		
+		s
+	end
+	
 end

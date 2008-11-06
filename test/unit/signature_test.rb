@@ -40,6 +40,7 @@ class SignatureTest < ActiveSupport::TestCase
 	def test_signature_dont_set_inaccessible_fields
 		s = Signature.new({
 			:id=>1234,
+			:position=>456,
 			:petition_id=>petitions(:one).id,
 			:user_id=>users(:admin).id,
 			:confirmation_code=>'should not be set',
@@ -47,6 +48,7 @@ class SignatureTest < ActiveSupport::TestCase
 			:created_at=>Time.now,
 			:updated_at=>Time.now})
 		assert_nil s.id
+		assert_nil s.position
 		assert_nil s.petition_id
 		assert_nil s.user_id
 		assert_nil s.confirmation_code
@@ -86,4 +88,51 @@ class SignatureTest < ActiveSupport::TestCase
 	end
 	
 	
+	# CLASS METHODS
+	
+	def test_signature_confirm
+		s = Signature.confirm('confirm_confirmation_code')
+		assert_equal signatures(:confirm), s
+		assert s.confirmed_at > 1.minute.ago
+		assert_nil s.user
+		# now that it has been confirmed, should not be able to re-confirm
+		assert_raise ActiveRecord::RecordNotFound do
+			s = Signature.confirm('confirm_confirmation_code')
+		end
+	end
+	def test_signature_confirm_set_user
+		s = Signature.confirm('confirm_confirmation_code', users(:staff))
+		assert_equal signatures(:confirm), s
+		assert s.confirmed_at > 1.minute.ago
+		assert_equal users(:staff), s.user
+	end
+	def test_signature_confirm_fail_reconfirm
+		# should not be able to re-confirm already confirmed signature
+		assert_raise ActiveRecord::RecordNotFound do
+			s = Signature.confirm('confirmed_confirmation_code')
+		end
+	end
+	
+	def test_signature_confirm_for_user
+		s = Signature.confirm('confirm_user_confirmation_code', users(:admin))
+		assert_equal signatures(:confirm_user), s
+		assert s.confirmed_at > 1.minute.ago
+		assert_equal users(:admin), s.user
+	end
+	def test_signature_confirm_for_user_no_user
+		assert_raise Wayground::UserMismatch do
+			s = Signature.confirm('confirm_user_confirmation_code')
+		end
+	end
+	def test_signature_confirm_for_user_wrong_user
+		assert_raise Wayground::UserMismatch do
+			s = Signature.confirm('confirm_user_confirmation_code', users(:login))
+		end
+	end
+	
+	def test_signature_confirm_invalid_code
+		assert_raise ActiveRecord::RecordNotFound do
+			s = Signature.confirm('invalid code')
+		end
+	end
 end

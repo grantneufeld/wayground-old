@@ -12,7 +12,12 @@ class PetitionTest < ActiveSupport::TestCase
 		assert_equal users(:admin), petitions(:one).user
 		# has_many :signatures
 		assert_equal [signatures(:one)], petitions(:one).signatures
-		
+		# has_many :confirmed_signatures, :class_name=>'Signature',
+		#	:foreign_key=>'petition_id',
+		#	:conditions=>'signatures.confirmed_at IS NOT NULL',
+		#	:order=>'signatures.id'
+		assert_equal [signatures(:one)], petitions(:one).confirmed_signatures
+		assert_equal [], petitions(:unsigned_petition).confirmed_signatures
 	end
 	
 	
@@ -109,5 +114,16 @@ class PetitionTest < ActiveSupport::TestCase
 		assert_equal ['((petitions.start_at IS NULL OR petitions.start_at <= NOW()) AND (petitions.end_at IS NULL OR petitions.end_at > NOW())) AND (petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)',
 				'%keyword%', '%keyword%', '%keyword%'],
 			Petition.search_conditions(users(:admin), 'keyword', true)
+	end
+	
+	
+	# INSTANCE METHODS
+	
+	def test_petition_sign
+		assert true
+		#petitions(:one).sign({:is_public=>true, :name=>'Test Sign',
+		#	:email=>'test-sign@wayground.ca', :city=>'Calgary',
+		#	:province=>'Alberta', :country=>'Canada',
+		#	:comment=>'Testing signing a petition'})
 	end
 end

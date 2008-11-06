@@ -1,1 +1,35 @@
 <h1><%= h @petition.title %></h1>
+<%= h @petition.content
+# TODO: support formatting for content
+%>
+
+<%
+# TODO: display goal and percentage complete
+# FUTURE: a ‘thermometer’ graphic
+#@petition.signatures.size
+#@petition.confirmed_signatures.size
+
+# list signatures
+if @signatures.size > 0
+	%><h2>Confirmed Signatures</h2>
+<ol type="1" start="<%= ((@page - 1) * @per_page) + 1 %>">
+<%	@signatures.each do |signature|
+		%><li value="<%= signature.position %>"><%= signature.is_public ? h(signature.name) : 'anonymous' %><%
+		unless signature.comment.blank?
+			%><br />“<%= h signature.comment %>”<%
+		end %></li>
+<%
+	end
+	%></ol>
+<%
+end
+
+if @petition.restriction_description.blank?
+	# TODO: detail region restriction (if any)
+else
+	%><p><%= h @petition.restriction_description %></p>
+<% end
+
+# TODO: form for adding a signature
+
+%>

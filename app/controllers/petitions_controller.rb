@@ -19,6 +19,15 @@ class PetitionsController < ApplicationController
 	def show
 		@section = 'petitions'
 		@petition = Petition.find(params[:id])
+		@per_page = 25
+		@page = params[:page].blank? ? 1 : params[:page].to_i
+		if @petition.public_signatures
+			@signatures = @petition.confirmed_signatures.paginate(
+				:per_page=>@per_page, :page=>@page
+			)
+		else
+			@signatures = nil
+		end
 		@page_title = "Petition: #{@petition.title}"
 	rescue ActiveRecord::RecordNotFound
 		missing

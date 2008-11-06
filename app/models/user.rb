@@ -1,3 +1,8 @@
+module Wayground
+	# Current User does not match the requested User.
+	class UserMismatch < Exception; end
+end
+
 class User < ActiveRecord::Base
 	
 	# prevents a user from submitting a crafted form that bypasses activation

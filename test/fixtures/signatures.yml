@@ -2,11 +2,12 @@
 
 one:
   petition: one
+  position: 1
   user: admin
   is_public: false
   allow_followup: false
   name: First Signer
-  email: test-one@wayground.ca
+  email: test+one@wayground.ca
   confirmation_code: MyString
   confirmed_at: 2008-11-03 02:56:34
   phone: 123-456-7890
@@ -16,4 +17,62 @@ one:
   country: Canada
   postal_code: 
   custom_field: custom test entry
-  comment: Just a comment on the test petition.
+  comment: Just a comment by the signatory on the first test petition.
+
+confirm:
+  petition: update_petition
+  position: 1
+  user: 
+  is_public: true
+  allow_followup: true
+  name: Confirm Signer
+  email: test+confirm@wayground.ca
+  confirmation_code: confirm_confirmation_code
+  confirmed_at: 
+  phone: 123-456-7890
+  address: 
+  city: Calgary
+  province: Alberta
+  country: Canada
+  postal_code: 
+  custom_field: custom test confirm entry
+  comment: Just a comment by the signatory to be confirmed.
+
+confirmed:
+  petition: update_petition
+  position: 2
+  user: 
+  is_public: true
+  allow_followup: true
+  name: Confirmed Signer
+  email: test+confirmed@wayground.ca
+  confirmation_code: confirmed_confirmation_code
+  confirmed_at: 2008-11-03 02:56:34
+  phone: 123-456-7890
+  address: 
+  city: Calgary
+  province: Alberta
+  country: Canada
+  postal_code: 
+  custom_field: custom test confirmed entry
+  comment: Just a comment by the signatory already confirmed.
+
+confirm_user:
+  petition: update_petition
+  position: 3
+  user: admin
+  is_public: true
+  allow_followup: true
+  name: Confirm Signer User
+  email: test+confirm_user@wayground.ca
+  confirmation_code: confirm_user_confirmation_code
+  confirmed_at: 
+  phone: 123-456-7890
+  address: 
+  city: Calgary
+  province: Alberta
+  country: Canada
+  postal_code: 
+  custom_field: custom test confirm entry
+  comment: Just a comment by the signatory to be confirmed.
+

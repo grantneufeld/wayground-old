@@ -14,7 +14,7 @@ class Signature < ActiveRecord::Base
 		:message=>"invalid email", :allow_nil=>true
 	validates_uniqueness_of :user_id, :scope=>:petition_id,
 		:message=>'you have already signed this petition',
-		:if=>Proc.new {|sig| !(sig.user.nil?)}
+		:if=>Proc.new {|sig| !(sig.user.nil?) }
 	validates_uniqueness_of :email, :scope=>:petition_id,
 		:message=>'invalid signature'
 	validate :valid_email?
@@ -26,6 +26,32 @@ class Signature < ActiveRecord::Base
 			err = domain_error(domain_of(email))
 			errors.add(:email, err) unless err.blank?
 		end
+	end
+	
+	
+	# CLASS METHODS
+	
+	def self.confirm(confirmation_code, user=nil)
+		s = find(:first, :conditions=>[
+				'signatures.confirmation_code = ? AND signatures.confirmed_at IS NULL',
+				confirmation_code],
+			:include=>[:petition, :user])
+		if s.nil?
+			raise ActiveRecord::RecordNotFound
+		elsif s.user.nil? and !(user.nil?)
+			# user wasn’t set when signature was created, so set now
+			s.user = user
+		elsif s.user == user
+			# current user matches signing user
+		else
+			# throw an error because current user isn’t the user that signed
+			raise Wayground::UserMismatch
+		end
+		if s.confirmed_at.nil?
+			s.confirmed_at = Time.now
+		end
+		s.save!
+		s
 	end
 	
 end
