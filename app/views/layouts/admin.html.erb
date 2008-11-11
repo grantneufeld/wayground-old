@@ -1,0 +1,350 @@
+<%
+# SPECIAL VARIABLES:
+#
+# @page_title || @content_for_title: will append to the page title
+# @content_for_description: will set the value of the description meta tag
+# @content_for_keywords: will set the value of the keywords meta tag
+# @content_for_head: extra content to put in the head (meta) of the document
+# @body_attrs: attributes for the body element
+# @content_for_sidebar: will add as the page sidebar if not empty
+# @content_columns: an array of content columns (strings)
+# @page: will use to determine title and other metadata if set
+#
+# Generate the content_for_ variables using the content_for function.
+# E.g.:
+# 	content_for("head") do
+# 		print "<meta />"
+# 	end
+
+
+# CONFIGURATION
+website_title = WAYGROUND['TITLE']
+website_prefix = WAYGROUND['TITLE_PREFIX']
+
+
+# Determine the section
+
+#def section_from_subpath(subpath)
+#	section = nil
+#	case subpath
+#	when '/'
+#		section = 'home'
+#	when 'about'
+#		section = 'about'
+#	when 'contact'
+#		section = 'contact'
+#	when 'events'
+#		section = 'events'
+#	when 'povertytalks'
+#		section = 'povertytalks'
+#	when 'video'
+#		section = 'video'
+#	end	
+#	# help signup account login
+#	section
+#end
+
+@section ||= nil
+#if !@section and @page
+#	@section = section_from_subpath @page.subpath
+#	unless @section
+#		parent_chain = @page.parent_chain
+#		while !@section and (parent = parent_chain.shift)
+#			@section = section_from_subpath parent.subpath
+#		end
+#	end
+#elsif !@section and @controller.class == UsersController
+#	case @controller.action_name
+#	when 'new'
+#		@section = 'signup'
+#	when 'show'
+#		@section = 'account'
+#	end
+#elsif !@section and @controller.class == SessionsController and @controller.action_name == 'new'	
+#	@section = 'login'
+#elsif !@section and @controller.class == PagesController and @controller.action_name == 'index'	
+#	@section = 'sitemap'
+#end
+
+
+# special case this on the front page so that links don't refer to the page they're already on:
+if request.request_uri == "/"
+	website_root_link = nil
+	website_root_title_link = website_title
+	if @page_title.blank?
+		# set the page title to the website title for the front page only
+		@page_title = website_title
+	end
+else
+	if @page_title.blank?
+		if @page and !(@page.title.blank?)
+			@page_title = h @page.title
+			unless @content_for_title.blank?
+				@page_title += ": #{h @content_for_title}"
+			end
+		elsif !(@content_for_title.blank?)
+			@page_title = h @content_for_title
+		else
+			@page_title = controller.controller_name()
+			unless controller.action_name.blank?
+				@page_title = ": #{controller.action_name}"
+			end
+		end
+	end
+	website_root_link = '/'
+	website_root_title_link = '<a href="/">' + website_title + '</a>'
+end
+
+
+-%>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title><%
+if @page_title == website_title or @page_title == website_prefix
+	%><%= @page_title %><%
+else
+	%><%= website_prefix %>: <%= @page_title %><%
+end
+%></title>
+<% #= stylesheet_link_tag 'wg', :cache=>true
+-%>
+<% #= stylesheet_link_tag 'print', :media=>'print'
+-%>
+<%
+# set this tag to the width of the page in pixels.
+# optimizes display on iPhone
+#meta name="viewport" content="width=808" /
+-%>
+<%= javascript_include_tag :defaults, :cache=>true %>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<%= @content_for_head
+	# You can include content for the head (meta) by wrapping it in
+	# a call to: content_for("head") do ... end
+-%>
+<% if false
+	# TODO: if @page and logged_in? and (current_user.admin? || @page.can_edit?)
+	%><link rel="edit" href="/pages/<%= @page.id
+		%>/edit/" title="Edit page <%= @page.id %>" />
+<% end
+unless @content_for_description.blank?
+	%><meta name="description" content="<%=h @content_for_description %>" />
+<% end
+unless @content_for_keywords.blank?
+	%><meta name="keywords" content="<%=h @content_for_keywords %>" />
+<% end -%>
+<link rel="license" href="http://creativecommons.org/licenses/by/2.5/ca/" title="Creative Commons License" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<style type="text/css" title="text/css" media="screen">
+/* <![CDATA[ */
+
+*{font-family:"Lucida Grande", Geneva, Arial, sans-serif;}
+body{margin:0px; padding:0px; background:#DDD; color:black;
+	font-size:10pt;}
+.ruler{background:black; color:white;
+	height:8px; width:800px; margin:0px; padding:0px; border:0px none;}
+
+.separator, .cue{display:none;}
+
+#header, #content, #footer{margin:0px auto; width:800px;}
+
+#top{margin:0px; padding:0px; width:100%;
+	background:#666 url('/icon/hdr-bg.gif') repeat-x left top; color:white;}
+#header{width:784px; padding:0px 8px;}
+#title{margin:0px; float:left;}
+#usernav{float:right; margin:0px; padding:2px 0px;}
+#usernav a{background:transparent; color:white; font-weight:bold; text-decoration:none;
+	padding:2px 4px;}
+#usernav a:hover{background:transparent; color:#CCF; text-decoration:underline;}
+#usernav a:active{background:transparent; color:#F66; outline:0px none;}
+#nav{clear:both; margin:0px; text-align:center;}
+#nav > a{float:left; padding:4px 10px 0px; margin:0px 2px;
+	text-align:center; font-size:12pt; text-decoration:none;
+	background:transparent; color:white;}
+#nav > a:link:hover, #nav > a:visited:hover{color:#CCF;
+	background:transparent url('/icon/icon-hover.png') no-repeat center top;}
+#nav > a:link:active, #nav > a:visited:active{color:#F66; outline:0px none;
+	background:transparent url('/icon/icon-active.png') no-repeat center top;}
+/*
+#nav > a:link:hover > img, #nav > a:visited:hover > img{
+	background:transparent url('icon/icon-hover.png') no-repeat center center;}
+#nav > a:link:active > img, #nav > a:visited:active > img{
+	background:transparent url('icon/icon-active.png') no-repeat center center;}
+*/
+#nav > a > img{border:0px none; padding-top:4px; padding-left:5px;}
+#nav > a.current{background:transparent url('/icon/nav-current.png') repeat-x left top; color:black;}
+#nav-tail{width:1px; height:1px;}
+#header-tail{clear:both; height:1px; margin:0px;}
+
+#content{clear:both; background:white; color:black;
+	border:1px solid #666; border-top:0px none white;
+	padding:12px; width:776px;}
+
+#footer{text-align:center; padding:12px 0px;}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol{margin-top:0px; margin-bottom:0px;}
+h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
+
+
+/* ]]> */
+</style>
+</head>
+<body<%= @body_attrs %>>
+<ul class="cue" id="skiplinks">
+<li><a rel="bookmark" href="#sidebar">Skip to sidebar</a>.</li>
+<li><a rel="bookmark" href="#content">Skip to content</a>.</li>
+</ul>
+
+<div id="top">
+<div id="header">
+<h1 id="title">
+<% if false %>
+	<% if website_root_link
+		%><a href="<%= website_root_link %>" title="<%= h website_title %>"><%
+	end %><img src="/images/wayground-logo-64x39.png" alt=" " width="64" height="39" id="logo" /><% if website_root_link
+		%></a><%
+	end %>
+<% end -%>
+<%= website_root_title_link %></h1>
+<div id="usernav">
+<%
+# ### USER ACCESS LINKS
+if current_user
+	%><%= link_to 'Account', account_users_path, {
+		:class=>(@section == 'account' ? 'current' : nil),
+		:title=>'View your account/registration information for this website'
+		} %><span class="separator">,</span>
+<%=	link_to 'Logout', logout_path, {:title=>'Sign-out from this website'} %><%
+else
+	%><%= link_to 'Sign-up', signup_path, {
+		:class=>(@section == 'signup' ? 'current' : nil),
+		:title=>'Sign-up (register) on this website to access additional functions'
+		} %><span class="separator">,</span>
+<%=	link_to 'Login', login_path, {
+		:class=>(@section == 'login' ? 'current' : nil),
+		:title=>'Registered users can sign-in to this website to access additional functions'
+		} %><%
+end %><span class="separator">.</span>
+</div>
+<div id="nav">
+<%
+#= link_to 'Groups', groups_path, {
+#	:class=>(@section == 'groups' ? 'current' : nil),
+#	:title=>'Groups'
+#	} % ><span class="separator">,</span>
+-%>
+<%= link_to '<img src="/icon/website_32.png" width="32" height="32" alt=" " />
+<br />Websites', '/', {
+	:class=>(@section == 'websites' ? 'current' : nil),
+	:title=>'Arusha’s websites'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/library_32.png" width="32" height="32" alt=" " />
+<br />Library', '/library', {
+	:class=>(@section == 'library' ? 'current' : nil),
+	:title=>'Arusha’s Info-Active Resource Library: Videos, books, periodicals'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/calendar_32.png" width="32" height="32" alt=" " />
+<br />Events', '/events', {
+	:class=>(@section == 'events' ? 'current' : nil),
+	:title=>'Calendar of upcoming events'
+	} %><span class="separator">.</span>
+<% if current_user -%>
+<%= link_to '<img src="/icon/page_32.png" width="32" height="32" alt=" " />
+<br />Pages', pages_path, {
+	:class=>(@section == 'pages' ? 'current' : nil),
+	:title=>'Manage the web pages of Arusha’s websites'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/article_32.png" width="32" height="32" alt=" " />
+<br />Articles', '/articles', {
+	:class=>(@section == 'articles' ? 'current' : nil),
+	:title=>'Manage the articles on Arusha’s websites'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/file_32.png" width="32" height="32" alt=" " />
+<br />Files &amp; Pics', documents_path, {
+	:class=>(@section == 'documents' ? 'current' : nil),
+	:title=>'Manage the files &amp; pictures (documents) for Arusha’s websites'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/contact_32.png" width="32" height="32" alt=" " />
+<br />Contacts', '/crm', {
+	:class=>(@section == 'contacts' ? 'current' : nil),
+	:title=>'Arusha’s Contact management system'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/phonelog_32.png" width="32" height="32" alt=" " />
+<br />Phone Log', '/phonelog', {
+	:class=>(@section == 'phonelog' ? 'current' : nil),
+	:title=>'Arusha’s staff phone log'
+	} %><span class="separator">.</span>
+<% end %>
+<div id="nav-tail"></div>
+</div>
+
+<div id="header-tail"></div>
+</div>
+</div>
+
+<%
+# ### SUB-MENU FOR CURRENT SECTION
+unless @content_for_sectionheader.blank?
+	%><div id="section-header"><%= @content_for_sectionheader %>
+<%	# ### SEARCH FORM
+	%></div>
+<%
+end	%>
+<div id="main">
+
+
+<div id="sidebar">
+<%
+unless @content_for_sidebar.blank?
+	%><%= @content_for_sidebar %><%
+end
+%>
+</div>
+<div id="flash"<%= flash.length <= 0 ? ' style="display:none"' : '' %>><%
+# clear any empty flash messages
+flash.each do |key, msg|
+	if msg.blank?
+		flash.delete(key)
+	end
+end
+if flash.length > 0
+	flash.each do |key, msg|
+		%><p class="<%= key %>"><%= msg %></p>
+<%	end
+end %></div>
+<div id="content">
+<%=
+
+#@content_for_layout
+yield
+
+%>
+</div></div>
+<div id="footer">
+<%
+
+#if logged_in? and current_user.admin
+#	content_for("footermenu") do
+#		% ><%= link_to 'Site Map', {:controller=>'pages', :action=>'index'} % ><%
+#	end
+#end
+
+unless @content_for_footermenu.blank?
+	%><p id="footer-menu">
+<%=	@content_for_footermenu
+	%></p>
+<%
+end
+%><p class="meta"><%
+if params[:debug] == 'y'
+	if params[:debug] == 'y'
+		%>{:controller=&gt;:<%= h params[:controller] %>, :action=&gt;:<%=
+			h params[:action] %>}
+<br /><%
+	end
+end
+%>Page generated at: <%= Time.current.to_s(:time_date) %></p>
+</div>
+</div></body></html>
