@@ -30,7 +30,7 @@ development:
   socket: /tmp/mysql.sock
   encoding: utf8
   session_key: _wayground_session
-	secret: 
+  secret: 
 
 # Warning: The database defined as 'test' will be erased and
 # re-generated from your development database when you run 'rake'.
@@ -44,7 +44,7 @@ test:
   socket: /tmp/mysql.sock
   encoding: utf8
   session_key: _wayground_test
-	secret: 
+  secret: 
   # alternate:
   #adapter: sqlite3
   #database: db/test.sqlite3
