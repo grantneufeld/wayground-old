@@ -28,4 +28,17 @@ class NotifierTest < ActionMailer::TestCase
 		assert_equal @expected.encoded,
 			Notifier.create_activated(users(:login), @expected.date).encoded
 	end
+	
+	def test_signature_confirmation
+		@expected.from = 'Wayground <wayground@wayground.ca>'
+		@expected.to = '"Confirm Signer User" <test+confirm_user@wayground.ca>'
+		@expected.subject = "[WG] Petition signature confirmation: #{petitions(:update_petition).title}"
+		@expected.body    = read_fixture('signature_confirmation')
+		@expected.date    = Time.now
+
+		assert_equal @expected.encoded,
+			Notifier.create_signature_confirmation(petitions(:update_petition),
+				signatures(:confirm_user), users(:admin),
+				@expected.date).encoded
+	end
 end

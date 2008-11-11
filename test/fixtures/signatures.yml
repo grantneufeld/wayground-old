@@ -20,7 +20,8 @@ one:
   comment: Just a comment by the signatory on the first test petition.
 
 confirm:
-  petition: update_petition
+  #petition: update_petition
+  petition_id: 123
   position: 1
   user: 
   is_public: true
@@ -58,7 +59,10 @@ confirmed:
   comment: Just a comment by the signatory already confirmed.
 
 confirm_user:
-  petition: update_petition
+  # using a static id here because notifier fixture files have static content
+  id: 123
+  #petition: update_petition
+  petition_id: 123
   position: 3
   user: admin
   is_public: true

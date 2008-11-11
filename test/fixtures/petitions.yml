@@ -8,6 +8,7 @@ one:
   public_signatures: true
   allow_comments: true
   goal: 1
+  signature_count: 1
   title: Petition One
   description: The first test petition
   custom_field_label: Custom Field Test
@@ -26,6 +27,7 @@ searchable:
   public_signatures: false
   allow_comments: fase
   goal: 1
+  signature_count: 0
   title: Searchable Petition
   description: The only petition to have the keyword.
   custom_field_label: 
@@ -43,7 +45,8 @@ unsigned_petition:
   end_at: <%= 1.week.from_now.to_s(:db) %>
   public_signatures: false
   allow_comments: fase
-  goal: 
+  goal: 1
+  signature_count: 0
   title: Unsigned Petition
   description: 
   custom_field_label: 
@@ -55,13 +58,16 @@ unsigned_petition:
   thanks_message: 
 
 update_petition:
+  # using a static id here because notifier fixture files have static content
+  id: 123
   subpath: update_petition
   user: admin
   start_at: <%= 1.day.from_now.to_s(:db) %>
   end_at: <%= 1.week.from_now.to_s(:db) %>
   public_signatures: false
   allow_comments: fase
-  goal: 
+  goal: 1
+  signature_count: 3
   title: Updatable Petition
   description: 
   custom_field_label: 

@@ -52,16 +52,20 @@ class Petition < ActiveRecord::Base
 	# - attributes is a Hash of parameters like would be passed in to Signature.new.
 	# - signer is the User signing (if logged in).
 	def sign(attributes, signer=nil)
+		# TODO: if user is not logged in, check that the signature email does not belong to a registered user. If it does, don’t sign, but prompt the user to login.
 		s = signatures.build(attributes)
 		s.user = signer
 		# set the position
-		s.position = signature_count + 1
-		signature_count += 1
+		s.position = self.signature_count + 1
+		self.signature_count += 1
 		# setup confirmation_code
 		s.confirmation_code = Digest::SHA1.hexdigest(
 			"-#{Time.current.to_s}-#{s.email}-#{s.name}-")
 		s.save!
-		# TODO: send confirmation email (throw an error if failed)
+		# send email confirmation
+		unless Notifier.deliver_signature_confirmation(self, s, signer)
+			raise Wayground::NotifierSendFailure
+		end
 		
 		s
 	end

@@ -1,0 +1,24 @@
+Petition: “<%= @petition.title %>”
+
+This petition was recently signed using your email address. If you are not the person who signed the petition, you may ignore this message and the signature will not be added. If you do want your signature added, please follow the link below to confirm.
+
+
+IMPORTANT: YOUR SIGNATURE WILL NOT BE INCLUDED UNTIL YOU CONFIRM IT.
+
+To confirm that you want your signature added to the petition, please access this link:
+
+<%= @url %>
+
+(Users registered on the website may have to log-in again to complete the process.)
+
+
+You can review the petition at:
+<%= "#{WAYGROUND['ROOT']}/petitions/#{@petition.id}" %>
+
+Details of your signature:
+Name: <%= @signature.name %>
+Email: <%= @signature.email %>
+Comment: <%= @signature.comment.blank? ? '[none]' : @signature.comment %>
+
+
+Thank-you for supporting this cause.
