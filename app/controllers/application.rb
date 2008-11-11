@@ -19,6 +19,8 @@ class ApplicationController < ActionController::Base
 	session :off, :if=>lambda {|req|
 		req.user_agent == ~/(Google|Slurp|msnbot|Gigabot)/i}
 	
+	layout WAYGROUND['LAYOUT']
+	
 	# Timezone code based on:
 	# http://mad.ly/2008/04/09/rails-21-time-zone-support-an-overview/
 	before_filter :set_time_zone
