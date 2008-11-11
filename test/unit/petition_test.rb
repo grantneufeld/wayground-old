@@ -120,10 +120,19 @@ class PetitionTest < ActiveSupport::TestCase
 	# INSTANCE METHODS
 	
 	def test_petition_sign
-		assert true
-		#petitions(:one).sign({:is_public=>true, :name=>'Test Sign',
-		#	:email=>'test-sign@wayground.ca', :city=>'Calgary',
-		#	:province=>'Alberta', :country=>'Canada',
-		#	:comment=>'Testing signing a petition'})
+		s = petitions(:one).sign({:is_public=>true, :name=>'Test Sign',
+			:email=>'test-sign@wayground.ca', :city=>'Calgary',
+			:province=>'Alberta', :country=>'Canada',
+			:comment=>'Testing signing a petition'})
+		assert_equal 'Test Sign', s.name
 	end
+	def test_petition_sign_no_values
+		assert_raise(ActiveRecord::RecordInvalid) do
+			s = petitions(:one).sign({})
+			debugger
+		end
+	end
+	# TODO: test notifier failure (raises Wayground::NotifierSendFailure)
+	
+	
 end

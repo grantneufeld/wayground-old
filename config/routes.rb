@@ -70,7 +70,7 @@ ActionController::Routing::Routes.draw do |map|
 	# DEMOCRACY
 	map.resources :weblinks
 	map.resources :petitions do |petitions|
-		petitions.resources :signatures
+		petitions.resources :signatures, :member=>{:confirm=>:get}
 	end
 	
 	# Install the default routes as the lowest priority.

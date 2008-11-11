@@ -11,9 +11,9 @@ class CreatePetitions < ActiveRecord::Migration
 			# whether to show signatures on the web; whether to allow signers to add their own comments
 			t.boolean :public_signatures, :allow_comments
 			# the target number of signatures
-			t.integer :goal
+			t.integer :goal, :default=>0, :null=>false
 			# the total number of signatures so far
-			t.integer :signature_count
+			t.integer :signature_count, :default=>0, :null=>false
 			t.string :title # unique
 			# short description of the petition; used when listing petitions
 			t.string :description
