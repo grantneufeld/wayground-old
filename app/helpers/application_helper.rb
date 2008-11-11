@@ -98,16 +98,16 @@ module ApplicationHelper
 	# convert the anchors in a block of html to use rel="nofollow" (anti-spam)
 	def mark_unconfirmed_urls(content)
 		# mark all anchors temporarily
-		content.gsub! /(<)[ \t\r\n]*a([ \t\r\n]+[^>]*href[^>]*>)/, '\1•\2'
+		content.gsub! /(<)[ \t\r\n]*a([ \t\r\n]+[^>]*href)/, '\1•\2'
 		# remove rel="follow" if present
-		content.gsub! /(<•)([^>]*)([ \t\r\n]rel[ \t\r\n]*=)([\"\']?)([^\"\']+[ \t\r\n])?follow([ \t\r\n][^\"\']+)?(\4)/,
-			"\1\2\3\4\5\6\7"
+		content.gsub! /(<•[^>]*[ \t\r\n]rel[ \t\r\n]*=)([\"\']?)([^\"\']+[ \t\r\n])?follow([ \t\r\n][^\"\']+)?(\2)/,
+			"\1\2\3\4\2"
 		# nothing to do for anchors already rel="nofollow"
 		content.gsub! /(<)•([^>]*)([ \t\r\n]rel[ \t\r\n]*=)([\"\']?)([^\"\']+[ \t\r\n])?(nofollow)([ \t\r\n][^\"\']+)?(\4)/,
-			"\1a\2\3\4\5\6\7\8"
+			"\1a\2\3\4\5\6\7\4"
 		# add nofollow to existing rel attributes
 		content.gsub! /(<)•([^>]*)([ \t\r\n]rel[ \t\r\n]*=)([\"\']?)([^\"\']*)(\4)/,
-			"\1a\2\3\4\5 nofollow\6"
+			"\1a\2\3\4\5 nofollow\4"
 		# add rel="nofollow" to anchors without rel attributes
 		content.gsub! /(<)•([^>]*)/, "\1a\2 rel=\"nofollow\""
 		content
