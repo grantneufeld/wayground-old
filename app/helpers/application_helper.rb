@@ -50,7 +50,7 @@ module ApplicationHelper
 	# (that tells search engines to not reference those urls — a useful
 	# anti-spam technique)
 	def process_and_format(content, content_type='text/plain', unconfirmed_urls=false)
-		process_content format_content(content, content_type, unconfirmed_urls)
+		process_content format_content(content, content_type, !unconfirmed_urls)
 	end
 	
 	def format_content(content, content_type, confirmed_urls=true)

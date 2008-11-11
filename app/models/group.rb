@@ -1,5 +1,3 @@
-# TODO: use subpath as the id for route path lookups instead of the integer id
-
 class Group < ActiveRecord::Base
 	# restrict which attributes users can set directly
 	attr_accessible :is_public, :is_visible, :is_invite_only,
