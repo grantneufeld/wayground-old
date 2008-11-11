@@ -92,6 +92,8 @@ class MembershipsController < ApplicationController
 	def set_group
 		@section = 'groups'
 		@group = Group.find(params[:group_id])
+	rescue ActiveRecord::RecordNotFound
+		missing
 	end
 	
 	def group_member_mod_required
