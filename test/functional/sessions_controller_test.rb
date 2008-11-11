@@ -19,7 +19,7 @@ class SessionsControllerTest < ActionController::TestCase
 		
 		#map.resource :session, :controller=>'sessions'
 		# skip new and destroy because they’re handled by custom routes above
-		assert_routing_for_resource 'sessions', ['new','destroy'], [], {}, :session
+		assert_routing_for_resource 'sessions', ['new','destroy'], [], {}, {}, :session
 		
 		# TODO future: open_id routing
 	end
