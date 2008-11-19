@@ -27,11 +27,23 @@ For your convenience, this is a one-line install of all the gems. For more detai
 
 (Note that image_science may not install properly if you don’t have FreeImage http://freeimage.sourceforge.net/ installed.)
 
+Apply the patches in doc/patches/
+
 
 ICONS (public/icon/)
 --------------------
 
 I’m looking into freely redistributable multi-size icon options to replace the copyright-restricted icons I’ve been using. Currently, the code (some views and the public/stylesheets/wg.css file) references icons that are not included with the distribution of this code. Sorry about that.
+
+
+PATCHES
+-------
+
+The ar_mailer gem has to be patched to work with the Wayground code (this will not interfere with how it works with any other ruby code you might run that expects the unpatched ar_mailer):
+On Mac OS X 10.5.x, the file to be patched is found at
+ /Library/Ruby/Gems/1.8/gems/ar_mailer-1.3.1/lib/action_mailer/ar_mailer.rb
+The patch file is in
+ doc/patches/ar_mailer/no_email_class.patch
 
 
 OTHER INSTALLATION & SETUP (Developers Only)
@@ -73,7 +85,7 @@ tmp/**/*
 *.tmproj
 
 Add your files to the new git repository and commit them.
- git add .
+ #git add .
  git commit -a -m "initial import"
 
 
