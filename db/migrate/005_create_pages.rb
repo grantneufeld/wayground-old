@@ -37,15 +37,11 @@ class CreatePages < ActiveRecord::Migration
 
 		# Root Document
 		say "Creating root document ('home page' Page)"
-		Page.reset_column_information
-		root_document = Page.new(:subpath=>'/', :title=>'Home Page',
-			:content=>'Login as an administrative user to be able to edit this page.',
-			:content_type=>'text/plain')
-		root_document.set_sitepath!
-		root_document.save!
-		# Fudge the creator User.
-		# The first user created will end up owning the standard pages
-		execute "UPDATE pages SET user_id=1"
+		execute 'INSERT INTO pages SET user_id=1, ' \
+			'subpath="/", sitepath="/", title="Home Page", ' \
+			'content="Login as an administrator to be able to edit this page.", ' \
+			'content_type="text/plain", ' \
+			'created_at=UTC_TIMESTAMP(), updated_at=UTC_TIMESTAMP();'
 	end
 
 	def self.down

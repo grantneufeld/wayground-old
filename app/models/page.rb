@@ -31,7 +31,12 @@ class Page < ActiveRecord::Base
 	
 	# the home page is a special page
 	def self.find_home
-		@@home_page ||= Path.find_home.item
+		@@home_page ||= nil
+		if @@home_page.nil?
+			home_path = Path.find_home
+			@@home_page = home_path.item unless home_path.nil?
+		end
+		@@home_page
 	end
 	
 	# keyword search
@@ -48,7 +53,8 @@ class Page < ActiveRecord::Base
 	
 	def before_validation
 		if parent.nil?
-			self.class.find_home.children << self
+			home = self.class.find_home
+			home.children << self unless home.nil?
 		end
 		self
 	end
