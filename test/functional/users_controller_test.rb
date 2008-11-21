@@ -152,7 +152,7 @@ class UsersControllerTest < ActionController::TestCase
 		get :activate
 		assert_response :redirect
 		assert_nil assigns(:user)
-		assert flash[:warning]
+		assert flash[:notice]
 		assert_redirected_to login_path
 	end
 	def test_user_activate_invalid_code

@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-	before_filter :login_required, :only=>[:edit, :activate, :account]
+	before_filter :login_required, :only=>[:edit, :account]
 		#, :change_password]
 	before_filter :admin_required, :only=>[:index, :show]
 	
@@ -85,10 +85,11 @@ class UsersController < ApplicationController
 			else
 				flash[:notice] = 'The supplied activation code did not match the one in your user account. Please ensure you are logged in as the correct user, and that you used the complete activation web link.'
 			end
-			redirect_to '/users/account'
+			redirect_to account_users_path
 		else
-			flash[:notice] = 'You must login first to activate your account.'
-			redirect_to '/login'
+			flash[:notice] = 'You must re-login first to activate your account.'
+			store_location
+			redirect_to login_path
 		end
 	end
 	
