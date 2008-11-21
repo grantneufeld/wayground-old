@@ -1,3 +1,8 @@
+module Wayground
+	# A parameter does not match any known option.
+	class UnrecognizedParameter < Exception; end
+end
+
 class Membership < ActiveRecord::Base
 	# restrict which attributes users can set directly
 	attr_accessible :position, :is_admin, :can_add_event, :can_invite,
@@ -118,5 +123,18 @@ class Membership < ActiveRecord::Base
 	
 	def invited?
 		!(invited_at.nil?)
+	end
+	
+	def has_access_to?(s)
+		case s
+		when :member_list
+			self.active? and (self.is_admin or self.can_manage_members or self.group.is_members_visible)
+		when :manage_members
+			self.active? and (self.is_admin or self.can_manage_members)
+		when :inviting
+			self.active? and (self.is_admin or self.can_invite)
+		else
+			raise Wayground::UnrecognizedParameter
+		end
 	end
 end

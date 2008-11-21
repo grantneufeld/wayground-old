@@ -1,14 +1,23 @@
 <h1><%= h @group.name %></h1>
+<% unless @group.parent.nil?
+	%><p class="meta">Member Group of: <%= link_to @group.parent.name, group_path(@group.parent) %>.</p><%
+end -%>
 <%= format_content(@group.description, 'text/plain', false) %>
 <%
 render_sidebar do
 	%><h2>Membership</h2>
-<p><%= link_to("#{@group.active_memberships.count} members",
-	group_memberships_path(@group),
-	{:title=>"View member list for this group"})
-	%><span class="separator">.</span></p>
-<%	if @membership && @membership.active?
-		%><p><%=
+<p><%=
+	member_count_msg = "#{@group.active_memberships.count} members"
+	if @group.is_members_visible or (@membership and (@membership.has_access_to?(:member_list))) or (current_user and ((@group.owner == current_user) or current_user.staff?()))
+		link_to(member_count_msg, group_memberships_path(@group),
+			{:title=>"View member list for this group"})
+	else
+		member_count_msg
+	end
+	%>.</p>
+<p><%
+	if @membership && @membership.active?
+		%><%=
 		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit your membership',
 			edit_group_membership_path(@group, @membership),
 			{:title=>"Change the options for your membership for this group"})
@@ -23,17 +32,31 @@ render_sidebar do
 				:title=>"remove your membership from this group"
 				} %><span class="separator">.</span><%
 		end
-		%></p>
-<%
 	else
-		
-	end
+		%><%= link_to(
+			(@group.is_invite_only ? 'Request an invitation to join this group' :
+				'Join this group'),
+			new_group_membership_path(@group)) %>.<%
+	end %></p>
+<%
+end
+
+render_sidebar do
+	%><h2>Group Details</h2>
+<p>Owner: <%= link_to @group.owner.nickname, user_path(@group.owner) %>
+<br /><% if @group.is_public
+		%><b>Public</b> group.<%
+	else
+		%><b>Private</b> group.<% 
+	end %></p>
+<%
 end
 
 if current_user && current_user.staff
 	render_sidebar do
 		%><h2>Manage This Group</h2>
 <p><%=
+	# TODO: manage members link
 	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit this group',
 		edit_group_path(@group),
 		{:title=>"Edit this group"})

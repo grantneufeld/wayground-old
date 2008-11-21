@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
 	has_many :invited_memberships, :class_name=>'Membership',
 	 	:foreign_key=>'inviter_id', :dependent=>:destroy
 	has_many :blocked_memberships, :class_name=>'Membership',
-	 	:foreign_key=>'blockerer_id', :dependent=>:nullify
+	 	:foreign_key=>'blocker_id', :dependent=>:nullify
 	has_many :weblinks, :as=>:item, :dependent=>:destroy
 	
 	validates_presence_of :fullname

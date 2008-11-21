@@ -78,7 +78,7 @@ class ApplicationController < ActionController::Base
 		respond_to do |format|
 			format.html do
 				store_location
-				flash[:warning] = 'You do not have permission to access the requested action. Please login as a user with sufficient permission.'
+				flash[:warning] = 'You do not have permission to access the requested action.<br />Please login as a user with sufficient permission.'
 				if current_user
 					redirect_to account_users_path
 				else

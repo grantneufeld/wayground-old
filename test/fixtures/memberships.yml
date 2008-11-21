@@ -72,7 +72,6 @@ expired_blockee:
   blocker: login
   title: 
 
-
 privateowner:
   group: private_group
   position: 1

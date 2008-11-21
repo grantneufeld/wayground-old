@@ -100,3 +100,17 @@ private_group:
   description: This a private user owned group that restricts access.
   welcome: Welcome to the Private Group.
 
+invite_only_group:
+  creator: login
+  owner: login
+  is_visible: true
+  is_public: true
+  is_members_visible: true
+  is_invite_only: true
+  is_no_unsubscribe: false
+  subpath: invite_only_group
+  name: Group that can only be joined by invitation
+  url: http://wayground.ca/groups/invite_only_group
+  description: This a regular user owned group that can only be joined by invitation.
+  welcome: Welcome to the Invitation Only Group.
+

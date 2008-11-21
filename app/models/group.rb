@@ -4,6 +4,8 @@ class Group < ActiveRecord::Base
 		:is_members_visible, :is_no_unsubscribe, :subpath, :name, :url,
 		:description, :welcome
 	
+	validates_presence_of :owner
+	validates_presence_of :creator
 	validates_presence_of :subpath
 	validates_presence_of :name
 	

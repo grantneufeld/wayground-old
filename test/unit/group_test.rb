@@ -24,6 +24,7 @@ class GroupTest < ActiveSupport::TestCase
 	
 	def test_group_valid_required_fields
 		g = Group.new({:name=>'Validation', :subpath=>'validation'})
+		g.creator = g.owner = users(:admin)
 		assert g.valid?
 	end
 	def test_group_invalid_required_fields
@@ -38,6 +39,7 @@ class GroupTest < ActiveSupport::TestCase
 	def test_group_valid_url
 		g = Group.new({:name=>'Validation', :subpath=>'validation',
 			:url=>'http://wayground.ca/'})
+		g.creator = g.owner = users(:admin)
 		assert g.valid?
 	end
 	def test_group_invalid_url
@@ -52,6 +54,7 @@ class GroupTest < ActiveSupport::TestCase
 	def test_group_valid_subpath
 		g = Group.new({:name=>'Validation', :subpath=>'validation',
 			:subpath=>'valid-subpath'})
+		g.creator = g.owner = users(:admin)
 		assert g.valid?
 	end
 	def test_group_invalid_subpath

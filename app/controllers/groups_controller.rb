@@ -33,11 +33,13 @@ class GroupsController < ApplicationController
 	def new
 		@section = 'groups'
 		@group = Group.new(params[:group])
+		@group.creator = @group.owner = current_user
 		@page_title = 'New Group'
 	end
 	
 	def create
 		@group = Group.new(params[:group])
+		@group.creator = @group.owner = current_user
 		@group.save!
 		flash[:notice] = 'New group was successfully saved.'
 		redirect_to :action=>'show', :id=>@group
