@@ -132,8 +132,17 @@ class PagesController < ApplicationController
 	# handle switching of content_type within edit form
 	def content_type_switch
 		@old_content_type = params[:old_content_type]
-		@page = Page.new(:content=>params[:content],
-			:content_type=>params[:content_type])
+		@content_type = params[:content_type];
+		if @old_content_type != @content_type
+			@content = render_to_string :partial=>'convert_content',
+				:locals=>{:content=>params[:content],
+					:from_type=>@old_content_type,
+					:to_type=>@content_type}
+		else
+			@content = params[:content]
+		end
+		@page = Page.new(:content=>@content, :content_type=>@content_type)
+		render :layout=>false
 	end
 	
 	# report an error result

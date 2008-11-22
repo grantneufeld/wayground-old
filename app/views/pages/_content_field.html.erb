@@ -7,12 +7,6 @@ field_id ||= 'page_content'
 rows = 20
 cols = 68
 
-# if we’re switching from one content_type to another
-@old_content_type ||= nil
-if @old_content_type && @old_content_type != content_type
-	@page.content = convert_content(@page.content, @old_content_type, content_type)
-end
-
 %><input type="hidden" name="old_content_type" id="old_content_type" value="<%= h content_type %>"/>
 <%
 

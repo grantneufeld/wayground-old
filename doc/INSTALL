@@ -30,6 +30,19 @@ For your convenience, this is a one-line install of all the gems. For more detai
 Apply the patches in doc/patches/
 
 
+OTHER PROGRAMS
+--------------
+
+The html2text function (lib/conversions.rb) uses the lynx command-line web tool which must be downloaded and installed.
+http://lynx.isc.org/current/
+
+Once you download and expand the source archive, it’s a typical unix build:
+ ./configure
+ make
+ sudo make install
+ sudo make install-help
+
+
 ICONS (public/icon/)
 --------------------
 

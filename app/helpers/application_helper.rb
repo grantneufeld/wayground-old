@@ -81,7 +81,7 @@ module ApplicationHelper
 	# if confirmed_urls is false, add ' rel="nofollow"' to anchor elements
 	def format_plain_text(content, confirmed_urls=true)
 		# format content
-		content = simple_format(h(content))
+		content = text2html(h(content))
 		auto_link_with_confirmed(content, confirmed_urls)
 	end
 	
