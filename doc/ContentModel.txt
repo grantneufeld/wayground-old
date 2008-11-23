@@ -23,44 +23,144 @@ ITEM ATTRIBUTE MODELS
 
 There are models for attributes that almost any of the items can have:
 
-Access: Security/privilege restriction for specific Users to access items.
-Category: An arbitrary string that groups items (“by category”).
-Comment: A (optionally) titled comment on an item by a User.
-Path: Used to determine custom urls for the item.
-Rating: User numeric ratings (with optional comments) for items.
-Tag: Used for Users to add tags/keywords to items. “Folksonomy”.
-Weblink: Mostly linked to Events and Democracy items (generally not relevant for other items).
+Access
+Security/privilege restriction/override for specific Users to access items.
+- item:belongs_to: The item the Access applies to.
+- user:belongs_to: The User who has the Access.
+- access: admin, edit, contribute, comment, view, block,...
+- start_at, end_at: [optional] The period during which the Access applies.
+
+(Category dropped - will just rely on Tags.)
+
+Comment
+A (optionally) titled comment on an item by a User.
+- item:belongs_to: The item the comment applies to.
+- user:belongs_to: The User who made the comment.
+- title: [optional]
+- content: (always text/plain)
+
+Path
+Used to determine custom urls for the item.
+- item:belongs_to: The item the Path links to.
+- sitepath: The root-relative url defining the Path.
+- redirect: [optional] The url to redirect to when accessing this Path.
+
+Rating
+User numeric ratings (with optional comments) for items.
+- item:belongs_to: The item the Rating is for.
+- user:belongs_to: The User who gave the Rating.
+- value: The numeric Rating value.
+- comment: [optional] A comment made by the user to go with the rating.
+
+Tag
+Used for Users to add tags/keywords to items. “Folksonomy”.
+- item:belongs_to: The item the Tag applies to.
+- user:belongs_to: The User who added the Tag.
+- tag: Short alphanumeric string (no punctuation or spaces, all lower-case) defining the tag.
+- title: Textual representation of the tag.
+E.g., a user might add the tag “Example Tag” (which would be the title) and generates the tag “exampletag”.
+
+Weblink
+Mostly linked to Events and democracy items (generally not relevant for other items).
+- item:belongs_to: [optional] The item the Weblink applies to.
+- user:belongs_to: The User who added the Weblink.
+- is_confirmed:boolean: urls submitted by regular Users need to be confirmed by a moderator/admin.
+- position
+- category: [optional]
+- title: [optional]
+- site: abbreviation of website domain name for the link, primarily used for css rendering of the link with a site-specific icon.
+- url
+- description: [optional]
 
 
-CONTAINERS
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Containers reference bunches of items. They specify constraints (class, containment, user, date, category, tag) for selecting items, an optional Template for formatting the items, and a Layout for the display of the container (as sort of a page). You might use a Container to define a Blog or Calendar, for example.
+CONTENT DISPLAY
 
-Layouts are kind of like Templates. They define the overall page layout (within the constraints of the site layout) for a Container.
+
+Page
+A container for the display of arbitrary content.
+- owner:belongs_to: User.
+- editor:belongs_to: User who last edited the Page.
+- parent
+- subpath
+- title
+- description
+- content_type
+- content
 
 
 CHUNKS
 
-Page objects can have multiple chunks that make up part or all of the page’s content.
+Chunks are not part of the data storage — the data is stored using extended markup in the Page.content. (e.g., <wg:chunk …> <wg:sidebar …> etc.)
 
-Chunk is an abstract class. The common attributes are:
+Page objects can have multiple Chunks that make up part or all of the Page’s content. Chunks are contained in blocks of the Page’s layout (content, column1, column2, sidebar).
+
+Chunk
+An abstract class. The common attributes are:
 - page: the page this is a ‘chunk’ of.
-- section: The part of the page content this chunk goes in (e.g, ‘’ default, ‘sidebar’, ‘column1’, etc.).
-- position: The numeric ordering of the chunk relative to other chunks in the same section.
+- block: The part of the page content this chunk goes in (e.g, ‘’ default, ‘sidebar’, ‘column1’, etc.).
+- position: The numeric ordering of the chunk relative to other chunks in the same block.
 - flavour: Special attributes of the chunk (e.g., ‘feature’, ‘video’, etc.). Typically used to set the class (for CSS) of the chunk’s wrapper.
 
-RawChunk just has some content (and a content_type).
+RawChunk
+Displays simple content.
+- content
+- content_type
 
-ItemChunk links to an item. It can optionally link to a custom Template for formatting the display of the linked item’s values.
+ItemChunk
+Displays an item.
+- item:belongs_to: any Object that is displayable.
+- template:belongs_to: [optional] the Template to use for formatting the display of the linked item’s values.
 
-ContainerChunk links to a Container (list of items). It specifies additional constraints on the items to be selected (user, date). It can also specify a custom maximum number of items to include. Like ItemChunk, a Template may be applied to the linked items.
+ListChunk
+Displays a list of items.
+- item_type: the type of Object to show.
+- parent_id: [optional] show only items belonging to the parent item.
+- user_id: [optional] show only items belonging to the user.
+- before_date, after_date: [optional] show only items applicable to the date range (for events, active during those dates; for other types, created during those dates)
+- tag: [optional] show only items having the tag. (maybe allow comma separated list of tags to match?)
+- key: [optional] show only items matching the search key.
+- max: [optional] show up to the max number of items. Uses a default limit amount if max is not set.
+- paginate:boolean: show pagination links if this is true and there are more than max/default-limit items.
+- template:belongs_to: [optional] the Template to use for formatting the display of the shown items’.
 
-Template specifies formatting options for the values of objects of a given item model.
+
+TEMPLATES
+
+Template
+A Template specifies formatting options for the values of objects of a given item model.
+- item_type
+- display_type: Page, Chunk or ListChunk
+- content_type
+- content
+- code: The content processed into erb code
+
+Layout
+Layouts are kind of like Templates, except for the whole html result. They define the overall page layout.
+
+Site
+If multiple websites are being managed from one Wayground instance/database, a Site object is used to configure the settings for a given website, and to link items that are to be shown on that website.
+(see config/config.yml for probable attributes for this model)
 
 
 WIKI
 
+WikiEdit
 Page objects may have WikiEdits which track user edits of the Page.
+- page:belongs_to
+- editor:belongs_to: User who made the edit.
+- comment: A short comment describing the edit.
+These are the fields recorded for WikiEdits
+- title
+- description
+- content_type
+- content
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+CALENDAR, SCHEDULING
 
 
 EVENTS
@@ -72,21 +172,30 @@ A Schedule specifies the date & time range, and optional recurrence (repeating e
 An Rsvp defines a relationship between a User and an Event (i.e., confirmed, maybe, not attending, invited).
 
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 DEMOCRACY / POLITICS
+
 
 There are a number of items specifically for information about governments, elections, candidates, parties, etc.
 
-Level: The level of government (e.g., federal/national, provincial/state, municipal, etc.). Users will generally not interact with Level objects directly — they act mainly as a sort of container for other political objects.
+Level
+The level of government (e.g., federal/national, provincial/state, municipal, etc.). Users will generally not interact with Level objects directly — they act mainly as a sort of container for other political objects.
 
-Office: A given elected position (e.g., federal Senator for Alberta, Mayor of Calgary, trustee for the Calgary Public School Board, …).
+Office
+A given elected position (e.g., federal Senator for Alberta, Mayor of Calgary, trustee for the Calgary Public School Board, …).
 
-Election: An election for one or more Offices at a given Level of government.
+Election
+An election for one or more Offices at a given Level of government.
 
-Party: A political party, a grouping of candidate campaigns.
+Party
+A political party, a grouping of candidate campaigns.
 
-Candidate: A person who runs in one or more elections.
+Candidate
+A person who runs in one or more elections.
 
-Campaign: A specific Election campaign for a specific Office by a given Candidate, often for a political Party.
+Campaign
+A specific Election campaign for a specific Office by a given Candidate, often for a political Party.
 
 Most of the item attribute models apply to the above models (except Level which has few attributes).
 
@@ -96,6 +205,7 @@ There are some other models I haven’t explored in detail: Petition (with Petit
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MESSAGING
+
 
 Forums contain Topics which can have multiple Replies.
 
@@ -111,6 +221,7 @@ The User model contains the basic info needed for the user’s interaction with 
 The Contact model contains information about a person (address, phone, email, etc.).
 
 A Contact record can be linked to a single User. A User may have multiple Contact records associated with them.
+
 
 MEMBERSHIPS
 

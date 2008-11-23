@@ -22,7 +22,7 @@ For unit tests:
 For functional tests:
 • Test routing for the controller with the assert_routing_for_resource method (test/test_helper.rb), and the assert_generates and assert_recognizes methods. See the existing controller tests for examples.
 
-• use *_test@wayground.ca for email addresses in test cases (where ‘*’ is some phrase relevant to the tests you are using the address in).
+• use test+*@wayground.ca for email addresses in test cases (where ‘*’ is some phrase relevant to the tests you are using the address in).
 
 
 EMAIL
