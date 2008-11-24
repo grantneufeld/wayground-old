@@ -24,9 +24,27 @@ class Path < ActiveRecord::Base
 	
 	# keyword search
 	def self.find_by_key(key) #, parent=nil)
-		key_arg = "%#{key}%"
-		find(:all, :conditions=>['paths.sitepath like ?', key_arg],
-			:order=>'paths.sitepath', :include=>:item)
+		find(:all, :conditions=>search_conditions(false, nil, key),
+			:order=>default_order, :include=>default_include)
+	end
+	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
+	# u is ignored (used in some other classes)
+	# key is a search restriction key
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
+		s = []
+		unless key.blank?
+			s << 'paths.sitepath like ?'
+			s << "%#{key}%"
+		end
+		s
+	end
+	def self.default_order
+		'paths.sitepath'
+	end
+	def self.default_include
+		:item
 	end
 	
 	# Certain paths should not be created.

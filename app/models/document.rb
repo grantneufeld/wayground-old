@@ -111,7 +111,8 @@ class Document < ActiveRecord::Base
 	# return a conditions string for find.
 	# u is the current_user to use to determine access to private documents.
 	# key is a search restriction key
-	def self.search_conditions(only_public=false, u=nil, key=nil)
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
 		s = ['(documents.thumbnail IS NULL OR documents.thumbnail = "")']
 		if only_public or u.nil?
 			# only public or no user
@@ -129,6 +130,12 @@ class Document < ActiveRecord::Base
 			s << "%#{key}%"
 		end
 		s
+	end
+	def self.default_order
+		'documents.filename'
+	end
+	def self.default_include
+		nil
 	end
 	
 	

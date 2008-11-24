@@ -29,9 +29,11 @@ class Petition < ActiveRecord::Base
 	# CLASS METHODS
 
 	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
 	# u is the current_user to use to determine private access. [currently ignored]
 	# key is a search restriction key
-	def self.search_conditions(u=nil, key=nil, only_active=false)
+	# only_active - only petitions that have started and not ended
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
 		constraints = []
 		values = []
 		if only_active
@@ -43,6 +45,12 @@ class Petition < ActiveRecord::Base
 			values += ["%#{key}%"] * 3
 		end
 		[constraints.join(' AND ')] + values
+	end
+	def self.default_order
+		'petitions.title'
+	end
+	def self.default_include
+		nil
 	end
 	
 	

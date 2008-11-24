@@ -31,6 +31,31 @@ class Signature < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
+	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
+	# u is the current_user to use to determine private access. [currently ignored]
+	# key is a search restriction key
+	# only_confirmed - only show signatures that have been confirmed
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_confirmed=true)
+		constraints = []
+		values = []
+		if only_confirmed
+			# only signatures that have been confirmed
+			constraints << 'signatures.confirmed_at IS NOT NULL'
+		end
+		unless key.blank?
+			constraints << 'signatures.name LIKE ?'
+			values += ["%#{key}%"] * 3
+		end
+		[constraints.join(' AND ')] + values
+	end
+	def self.default_order
+		'signatures.id'
+	end
+	def self.default_include
+		nil
+	end
+	
 	def self.confirm(confirmation_code, user=nil)
 		s = find(:first, :conditions=>[
 				'signatures.confirmation_code = ? AND signatures.confirmed_at IS NULL',
@@ -53,5 +78,6 @@ class Signature < ActiveRecord::Base
 		s.save!
 		s
 	end
+	
 	
 end

@@ -41,10 +41,27 @@ class Page < ActiveRecord::Base
 	
 	# keyword search
 	def self.find_by_key(key) #, parent=nil)
-		key_arg = "%#{key}%"
-		find(:all, :conditions=>[
-			'pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?',
-			key_arg, key_arg, key_arg, key_arg], :order=>'pages.title')
+		find(:all, :conditions=>search_conditions(false, nil, key),
+			:order=>default_order)
+	end
+	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
+	# u is ignored (used in some other classes)
+	# key is a search restriction key
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
+		s = []
+		unless key.blank?
+			s << '(pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?)'
+			s += (["%#{key}%"] * 4)
+		end
+		s
+	end
+	def self.default_order
+		'pages.title'
+	end
+	def self.default_include
+		nil
 	end
 	
 	

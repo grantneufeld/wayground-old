@@ -21,6 +21,32 @@ class Weblink < ActiveRecord::Base
 		set_site
 	end
 	
+	
+	# CLASS METHODS
+	
+	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
+	# u is the current_user to use to determine private access. [currently ignored]
+	# key is a search restriction key
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
+		s = []
+		unless key.blank?
+			s << '(weblinks.title LIKE ? OR weblinks.url LIKE ?)'
+			s += ["%#{key}%"] * 2
+		end
+		s
+	end
+	def self.default_order
+		'weblinks.category, weblinks.position, weblinks.title'
+	end
+	def self.default_include
+		nil
+	end
+	
+	
+	# INSTANCE METHODS
+	
 	# weblinks saved by admin users are always confirmed
 	def set_confirmation
 		unless is_confirmed?

@@ -49,7 +49,8 @@ class Group < ActiveRecord::Base
 	# return a conditions string for find.
 	# u is the current_user to use to determine access to private groups. [currently ignored]
 	# key is a search restriction key
-	def self.search_conditions(only_visible=false, u=nil, key=nil)
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_visible=false, u=nil, key=nil, only_active=false)
 		constraints = []
 		values = []
 		if only_visible or u.nil?
@@ -61,6 +62,12 @@ class Group < ActiveRecord::Base
 			values += ["%#{key}%"] * 3
 		end
 		[constraints.join(' AND ')] + values
+	end
+	def self.default_order
+		'groups.name'
+	end
+	def self.default_include
+		nil
 	end
 	
 	# override the default find to allow first argument to be a string -

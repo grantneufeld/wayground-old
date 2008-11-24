@@ -53,10 +53,35 @@ class User < ActiveRecord::Base
 	end
 	
 	
+	# CLASS METHODS
+	
+	# return a conditions string for find.
+	# only_public is ignored (used in some other classes)
+	# u is the current_user to use to determine private access. [currently ignored]
+	# key is a search restriction key
+	# only_active is ignored (used in some other classes)
+	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
+		s = []
+		unless key.blank?
+			s << 'users.nickname like ?'
+			s << "%#{key}%"
+		end
+		s
+	end
+	def self.default_order
+		'users.nickname, users.id'
+	end
+	def self.default_include
+		nil
+	end
+	
 	# Encrypts some data with the salt.
 	def self.encrypt(pass, salt)
 		Digest::SHA1.hexdigest("--#{salt}--#{pass}--")
 	end
+	
+	
+	# INSTANCE METHODS
 	
 	# Finds a user login by their email and unencrypted password.
 	# Returns the user or nil.

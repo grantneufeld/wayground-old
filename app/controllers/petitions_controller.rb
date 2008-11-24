@@ -8,7 +8,7 @@ class PetitionsController < ApplicationController
 		@key = params[:key]
 		@petitions = Petition.paginate(
 			:per_page=>10, :page=>params[:page], :order=>'petitions.title',
-			:conditions=>Petition.search_conditions(current_user, @key)
+			:conditions=>Petition.search_conditions(false, current_user, @key)
 			)
 		@page_title = 'Petitions'
 		unless @key.blank?
