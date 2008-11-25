@@ -132,7 +132,7 @@ class SessionsControllerTest < ActionController::TestCase
 		assert_nil session[:user]
 		assert_equal @response.cookies["auth_token"], []
 		assert flash[:notice]
-		assert_redirected_to new_session_path
+		assert_redirected_to login_path
 	end
 	
 	# TODO: test use of remember_me token
