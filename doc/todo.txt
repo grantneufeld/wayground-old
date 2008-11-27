@@ -4,6 +4,17 @@ from the project root.
 
 
 ==============================================================
+CODE IMPROVEMENTS
+
+Rails 2.2 Features:
+* ETag support
+http://guides.rubyonrails.org/2_2_release_notes.html#_better_integration_with_http_out_of_the_box_etag_support
+* Memoization
+Go through the code and apply the new memoize declaration where applicable.
+http://guides.rubyonrails.org/2_2_release_notes.html#_memoization
+
+
+==============================================================
 NEW FEATURES
 
 Captcha
