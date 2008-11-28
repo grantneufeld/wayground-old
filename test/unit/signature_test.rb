@@ -38,23 +38,25 @@ class SignatureTest < ActiveSupport::TestCase
 		assert_equal 'value', s.comment
 	end
 	def test_signature_dont_set_inaccessible_fields
-		s = Signature.new({
-			:id=>1234,
-			:position=>456,
-			:petition_id=>petitions(:one).id,
-			:user_id=>users(:admin).id,
-			:confirmation_code=>'should not be set',
-			:confirmed_at=>Time.now,
-			:created_at=>Time.now,
-			:updated_at=>Time.now})
-		assert_nil s.id
-		assert_nil s.position
-		assert_nil s.petition_id
-		assert_nil s.user_id
-		assert_nil s.confirmation_code
-		assert_nil s.confirmed_at
-		assert_nil s.created_at
-		assert_nil s.updated_at
+		assert_raise(Wayground::AssignToProtectedAttribute) do
+			s = Signature.new({
+				:id=>1234,
+				:position=>456,
+				:petition_id=>petitions(:one).id,
+				:user_id=>users(:admin).id,
+				:confirmation_code=>'should not be set',
+				:confirmed_at=>Time.now,
+				:created_at=>Time.now,
+				:updated_at=>Time.now})
+		end
+		#assert_nil s.id
+		#assert_nil s.position
+		#assert_nil s.petition_id
+		#assert_nil s.user_id
+		#assert_nil s.confirmation_code
+		#assert_nil s.confirmed_at
+		#assert_nil s.created_at
+		#assert_nil s.updated_at
 	end
 	
 	

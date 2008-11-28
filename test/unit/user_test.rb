@@ -91,10 +91,11 @@ class UserTest < ActiveSupport::TestCase
 			:remember_token_expires_at=>Time.now, :login_at=>Time.now,
 			:created_at=>Time.now, :updated_at=>Time.now}
 		dont_set_attrs.each_pair do |k,v|
-			u = User.new({k=>v})
-			#assert_nil(u,
-			assert_nil(u[k],
-				:message=>"Should not allow parameter setting of #{k}")
+			assert_raise(Wayground::AssignToProtectedAttribute) do
+				u = User.new({k=>v})
+			end
+			#assert_nil(u[k],
+			#	:message=>"Should not allow parameter setting of #{k}")
 		end
 	end
 	

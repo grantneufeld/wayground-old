@@ -38,3 +38,15 @@ begin
 	require 'ruby-debug'
 rescue
 end
+
+# for testing assignment to protected attributes.
+# based on http://almosteffortless.com/2008/11/27/raising-protected-attribute-assignment-errors/
+module Wayground
+	# Assignment attempted to protected attribute(s).
+	class AssignToProtectedAttribute < Exception; end
+end
+ActiveRecord::Base.class_eval do
+	def log_protected_attribute_removal(*attributes)
+		raise Wayground::AssignToProtectedAttribute.new("Can't mass-assign these protected attributes: #{attributes.join(', ')}")
+	end
+end

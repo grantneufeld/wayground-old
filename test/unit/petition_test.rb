@@ -48,14 +48,16 @@ class PetitionTest < ActiveSupport::TestCase
 		assert_equal 'value', p.thanks_message
 	end
 	def test_petition_dont_set_inaccessible_fields
-		p = Petition.new({:id=>1234,
-			:user_id=>users(:admin).id,
-			:created_at=>Time.now,
-			:updated_at=>Time.now})
-		assert_nil p.id
-		assert_nil p.user_id
-		assert_nil p.created_at
-		assert_nil p.updated_at
+		assert_raise(Wayground::AssignToProtectedAttribute) do
+			p = Petition.new({:id=>1234,
+				:user_id=>users(:admin).id,
+				:created_at=>Time.now,
+				:updated_at=>Time.now})
+		end
+		#assert_nil p.id
+		#assert_nil p.user_id
+		#assert_nil p.created_at
+		#assert_nil p.updated_at
 	end
 	
 	
