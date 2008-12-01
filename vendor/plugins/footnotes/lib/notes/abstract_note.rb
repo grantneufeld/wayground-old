@@ -6,18 +6,42 @@ module Footnotes
 
       class << self
         # Returns the symbol that represents this note.
+        # It's the name of the class, underscored and without _note.
+        #
+        # For example, for ControllerNote it will return :controller.
         #
         def to_sym
-          :abstract
+          @note_sym ||= self.title.underscore.to_sym
         end
 
-        # Return if Note is included in notes array.
+        # Returns the title that represents this note.
+        # It's the name of the class without Note.
+        #
+        # For example, for ControllerNote it will return Controller.
+        #
+        def title
+          @note_title ||= self.name.match(/^Footnotes::Notes::(\w+)Note$/)[1]
+        end
+
+        # Return true if Note is included in notes array.
         #
         def included?
           Footnotes::Filter.notes.include?(self.to_sym)
         end
+
+        # Action to be called to start the Note.
+        # This is applied as a before_filter.
+        #
+        def start!(controller = nil)
+        end
+
+        # Action to be called after the Note was used.
+        # This is applied as an after_filter.
+        #
+        def close!(controller = nil)
+        end
       end
-      
+
       # Initialize notes.
       # Always receives a controller.
       #
@@ -31,26 +55,31 @@ module Footnotes
       end
 
       # Specifies in which row should appear the title.
-      # The default is show.
+      # The default is :show.
       #
       def row
         :show
       end
 
-      # If not nil, append the value returned in the specified row.
+      # If valid?, create a tab on Footnotes Footer with the title returned.
+      # By default, returns the title of the class (defined above).
       #
       def title
+        self.class.title
       end
 
-      # If not nil, create a fieldset with the value returned as legend.
+      # If fieldset?, create a fieldset with the value returned as legend.
+      # By default, returns the title of the class (defined above).
       #
       def legend
+        self.class.title
       end
 
-      # When title is specified, this will be the content of the fieldset.
+      # If content is defined, fieldset? returns true and the value of content
+      # is displayed when the Note is clicked. See fieldset? below for more info.
       #
-      def content
-      end
+      # def content
+      # end
 
       # Set href field for Footnotes links.
       # If it's nil, Footnotes will use '#'.
@@ -76,22 +105,17 @@ module Footnotes
       def javascript
       end
 
-      # Action to be called after the Note was used.
-      #
-      def reset!
-      end
-
       # Specifies when should create a note for it.
-      # By default, if title exists, it's valid.
+      # By default, it's valid.
       #
       def valid?
-        self.title
+        true
       end
 
       # Specifies when should create a fieldset for it, considering it's valid.
       #
       def fieldset?
-        self.legend
+        self.respond_to?(:content)
       end
 
       # Return if this note is incuded in Footnotes::Filter.notes.
@@ -119,7 +143,7 @@ module Footnotes
         # Gets a bidimensional array and create a table.
         # The first array is used as label.
         #
-        def mount_table(array)
+        def mount_table(array, options = {})
           header = array.shift
           return '' if array.empty?
 
@@ -127,11 +151,15 @@ module Footnotes
           rows = array.collect{|i| "<tr><td>#{i.join('</td><td>')}</td></tr>" }
 
           <<-TABLE
-          <table>
+          <table #{hash_to_xml_attributes(options)}>
             <thead><tr><th>#{header.join('</th><th>')}</th></tr></thead>
             <tbody>#{rows.join}</tbody>
           </table>
           TABLE
+        end
+
+        def hash_to_xml_attributes(hash)
+          return hash.collect{ |key, value| "#{key.to_s}=\"#{value.gsub('"','\"')}\"" }.join(' ')
         end
     end
   end

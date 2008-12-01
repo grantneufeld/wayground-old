@@ -4,19 +4,7 @@ module Footnotes
   module Notes
     class SessionNote < AbstractNote
       def initialize(controller)
-        @session = controller.session.instance_variable_get("@data").symbolize_keys
-      end
-
-      def self.to_sym
-        :session
-      end
-
-      def title
-        'Session'
-      end
-
-      def legend
-        'Session'
+        @session = (controller.session.instance_variable_get("@data") || {}).symbolize_keys
       end
 
       def content

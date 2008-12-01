@@ -5,15 +5,7 @@ module Footnotes
     class FiltersNote < AbstractNote
       def initialize(controller)
         @controller = controller
-        @parsed_filters = parse_filters()
-      end
-
-      def self.to_sym
-        :filters
-      end
-
-      def title
-        'Filters'
+        @parsed_filters = parse_filters
       end
 
       def legend
@@ -21,7 +13,7 @@ module Footnotes
       end
 
       def content
-        "<pre>#{mount_table(@parsed_filters.unshift([:name, :type, :actions]))}</pre>"
+        mount_table(@parsed_filters.unshift([:name, :type, :actions]))
       end
 
       protected
@@ -29,7 +21,7 @@ module Footnotes
         #
         def parse_filters
           return @controller.class.filter_chain.collect do |filter|
-            [filter.method.inspect, filter.type.inspect, controller_filtered_actions(filter).inspect]
+            [parse_method(filter.method), filter.type.inspect, controller_filtered_actions(filter).inspect]
           end
         end
 
@@ -45,12 +37,16 @@ module Footnotes
             #remove conditions (this would call a Proc on the mock_controller)
             filter.options.merge!(:if => nil, :unless => nil) 
 
-            filter.send!(:should_run_callback?, mock_controller)   
+            filter.__send__(:should_run_callback?, mock_controller)   
           }.map(&:to_sym)
+        end
+        
+        def parse_method(method = '')
+          escape(method.inspect.gsub(RAILS_ROOT, ''))
         end
     end
   end
-  
+
   module Extensions
     class MockController < Struct.new(:action_name); end
   end

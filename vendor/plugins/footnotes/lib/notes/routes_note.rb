@@ -7,23 +7,15 @@ module Footnotes
         @controller = controller
         @parsed_routes = parse_routes
       end
-      
-      def self.to_sym
-        :routes
-      end
-
-      def title
-        'Routes'
-      end
 
       def legend
         "Routes for #{@controller.class.to_s}"
       end
-      
+
       def content
-        "<pre>#{mount_table(@parsed_routes.unshift([:path, :name, :options, :requirements]))}</pre>"
+        mount_table(@parsed_routes.unshift([:path, :name, :options, :requirements]))
       end
-      
+
       protected
         def parse_routes
           routes_with_name = ActionController::Routing::Routes.named_routes.to_a.flatten
@@ -45,7 +37,7 @@ module Footnotes
         end
     end
   end
-  
+
   module Extensions
     module Routes
       # Filter routes according to the filter sent
@@ -63,5 +55,5 @@ module Footnotes
 end
 
 if Footnotes::Notes::RoutesNote.included?
-  ActionController::Routing::RouteSet.send :include, Footnotes::Extensions::Routes
+  ActionController::Routing::RouteSet.__send__ :include, Footnotes::Extensions::Routes
 end

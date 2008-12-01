@@ -14,4 +14,4 @@ public/pic/*
 public/pic/**/*
 tmp/*
 tmp/**/*
-wg.tmproj
+*.tmproj

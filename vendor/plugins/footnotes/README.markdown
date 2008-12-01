@@ -1,4 +1,4 @@
-Footnotes plugin for Rails (v3.2.1)
+Footnotes plugin for Rails (v3.3)
 -----------------------------------
 
 If you are developing in Rails you should know the plugin!
@@ -10,7 +10,7 @@ Even more, it contains links to open files directly in textmate. And if Rails ge
 Installation
 ============
 
-The newest versions of the plugin only works in Rails 2.1 and above. Scroll down to check how to install early versions.
+The current version is only Rails Edge (aka Rails 2.2) compatible. Scroll down to check how to install early versions.
 
 If you just want a static copy of the plugin:
 
@@ -23,6 +23,14 @@ If you are using Git for your own app, then you could use Git sub-modules or the
 Early versions
 ==============
 
+If you are running on Rails 2.1.x, you should use Footnotes v3.2.2:
+
+    cd myapp
+    git clone git://github.com/drnic/rails-footnotes.git vendor/plugins/footnotes
+    cd vendor/plugins/footnotes
+    git checkout v3.2.2
+    rm -rf ./.git
+
 If you are running on Rails 2.0.x or Rails 1.x, you should use Footnotes v3.0:
 
     cd myapp
@@ -33,16 +41,17 @@ If you are running on Rails 2.0.x or Rails 1.x, you should use Footnotes v3.0:
 
 Remember that in Rails 1.x, after filters appear first than before filters in the Filters tab.
 
-Usage notes
-===========
+Usage
+=====
 
-* Footnotes are applied in all actions under development. If You want to change this behaviour, check the initializer.rb file.
+* Footnotes are applied in all actions under development. If You want to change this behaviour, check the loader.rb file.
 
-* Some features only work if you are under MacOSX. But if your editor support opening files like Textmate, e.g. txmt://open?url=file://, you can put in your environment file the following line:
+* Some features only work by default if you are under MacOSX and using Textmate.
+  If your editor supports out-of-the-box opening files like Textmate, e.g. txmt://open?url=file://path/to/file, you can put in your environment file the following line:
 
   Footnotes::Filter.prefix = "editor://open?file://"
 
-  Another option is to automatically register the protocol in your browser and/or OS. More information [here](http://kb.mozillazine.org/Register_protocol).
+  If it doesn't, you can enable this behavior in few steps. I've written a post about it [here](http://josevalim.blogspot.com/2008/06/textmate-protocol-behavior-on-any.html).
 
 * If you want to use your own stylesheet, you can disable the Footnotes stylesheet with:
 
@@ -50,7 +59,9 @@ Usage notes
 
 * Footnotes are appended at the end of the page, but if your page has a div with id "footnotes_holder", Footnotes will be inserted into this div.
 
-* If you want to open multiple notes at the same time, set Footnotes::Filter.multiple_notes = true
+* If you want to open multiple notes at the same time, just put in your enviroment:
+
+  Footnotes::Filter.multiple_notes = true
 
 * Finally, you can cherry pick which notes you want to use, simply doing:
 
@@ -80,25 +91,12 @@ To create a note that shows info about the user logged in your application (@cur
         @current_user = controller.instance_variable_get("@current_user")
       end
 
-      # Specifies the symbol that represent this note
-      # This is the one you will have to add to Footnotes::Filter.notes
-      #
-      def self.to_sym
-        :current_user
-      end
-
-      # The name that will appear as link
-      #
-      def title
-        'Current User'
-      end
-
       # The name that will appear as legend in fieldsets
       #
       def legend
         "Current user: #{@current_user.name}"
       end
-      
+
       # This Note is only valid if we actually found an user
       # If it's not valid, it won't be displayed
       #
