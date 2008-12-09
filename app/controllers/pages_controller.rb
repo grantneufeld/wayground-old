@@ -2,7 +2,6 @@ class PagesController < ApplicationController
 	protect_from_forgery :except=>:content_type_switch
 	before_filter :staff_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
-	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
 	
 	# site page index (page tree?)
 	def index

@@ -21,6 +21,10 @@ class ApplicationController < ActionController::Base
 	
 	layout WAYGROUND['LAYOUT']
 	
+	verify :method=>:post, :only=>[:create], :redirect_to=>{:action=>:new}
+	verify :method=>:put, :only=>[:update], :redirect_to=>{:action=>:edit}
+	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
+	
 	# Timezone code based on:
 	# http://mad.ly/2008/04/09/rails-21-time-zone-support-an-overview/
 	before_filter :set_time_zone

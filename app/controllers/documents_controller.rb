@@ -4,8 +4,6 @@ class DocumentsController < ApplicationController
 	#before_filter :admin_required, :only=>[:index, :show]
 	before_filter :setup
 	
-	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
-	
 	# TODO: support private (restricted access) documents
 	
 	# return the document’s data (content)

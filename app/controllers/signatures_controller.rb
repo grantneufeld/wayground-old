@@ -1,6 +1,5 @@
 class SignaturesController < ApplicationController
 	before_filter :set_petition
-	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
 	
 	# TODO: mostly everything
 	

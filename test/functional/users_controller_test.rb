@@ -128,6 +128,28 @@ class UsersControllerTest < ActionController::TestCase
 			end
 		end
 	end
+	def test_user_create_invalid_method_get
+		new_email = 'test+user_create_invalid_method_get@wayground.ca'
+		assert_difference(User, :count, 0) do
+			get :create, :user=>{ :email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Test', :nickname=>'Create Invalid Method'}
+		end
+		assert_response :redirect
+		assert_nil assigns(:user)
+		assert_redirected_to({:action=>'new'})
+	end
+	def test_user_create_invalid_method_put
+		new_email = 'test+user_create_invalid_method_put@wayground.ca'
+		assert_difference(User, :count, 0) do
+			put :create, :user=>{ :email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Test', :nickname=>'Create Invalid Method'}
+		end
+		assert_response :redirect
+		assert_nil assigns(:user)
+		assert_redirected_to({:action=>'new'})
+	end
 	
 	
 	# ACTIVATE
@@ -386,7 +408,7 @@ class UsersControllerTest < ActionController::TestCase
 		new_about = 'User updated self from users/update'
 		c = users(:login).locations.count
 		#assert_difference(users(:login).locations, :count, 1) do
-			post :update, {:id=>users(:login).id,
+			put :update, {:id=>users(:login).id,
 				:user=>{:about=>new_about},
 				:location=>{'0'=>{:name=>'new location from users/update'}}},
 				{:user=>users(:login).id}
@@ -400,6 +422,30 @@ class UsersControllerTest < ActionController::TestCase
 	end
 	# TODO test user update
 	
+	def test_user_update_invalid_method_get
+		new_about = 'Invalid user update method get'
+		assert_difference(Location, :count, 0) do
+			get :update, {:id=>users(:login).id,
+				:user=>{:about=>new_about},
+				:location=>{'0'=>{:name=>'new location from users/update'}}},
+				{:user=>users(:login).id}
+		end
+		assert_response :redirect
+		assert_nil assigns(:user)
+		assert_redirected_to({:action=>'edit', :id=>users(:login).id})
+	end
+	def test_user_update_invalid_method_post
+		new_about = 'Invalid user update method post'
+		assert_difference(Location, :count, 0) do
+			post :update, {:id=>users(:login).id,
+				:user=>{:about=>new_about},
+				:location=>{'0'=>{:name=>'new location from users/update'}}},
+				{:user=>users(:login).id}
+		end
+		assert_response :redirect
+		assert_nil assigns(:user)
+		assert_redirected_to({:action=>'edit', :id=>users(:login).id})
+	end
 	
 	# CHANGE PASSWORD
 	# TODO test user change password

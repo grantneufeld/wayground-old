@@ -2,7 +2,6 @@ class WeblinksController < ApplicationController
 	before_filter :activation_required, :only=>['new', 'create']
 	before_filter :staff_required, :only=>['edit', 'update', 'destroy']
 	before_filter :shared
-	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
 	
 	# common initialization
 	def shared

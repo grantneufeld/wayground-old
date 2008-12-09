@@ -1,7 +1,6 @@
 class PetitionsController < ApplicationController
 	before_filter :staff_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
-	verify :method=>:delete, :only=>[:destroy], :redirect_to=>{:action=>:show}
 	
 	def index
 		@section = 'petitions'
