@@ -36,7 +36,9 @@ ActionController::Routing::Routes.draw do |map|
 
 	# SESSION
 	map.login '/login', :controller=>'sessions', :action=>'new'
-	map.logout '/logout', :controller=>'sessions', :action=>'destroy'
+	map.logout '/logout', :controller=>'sessions', :action=>'destroy',
+		:conditions=>{:method=>:delete}
+	# TODO: map a get route for /logout that has a logout form with method=delete
 	map.resource :session, :controller=>'sessions'
 	# USER
 	map.signup '/signup', :controller=>'users', :action=>'new'

@@ -110,6 +110,7 @@ else
 end
 %></title>
 <%= stylesheet_link_tag 'wg', :cache=>true %>
+<%= stylesheet_link_tag 'way', :cache=>true %>
 <% #= stylesheet_link_tag 'print', :media=>'print'
 -%>
 <%
@@ -169,7 +170,8 @@ if current_user
 		:class=>(@section == 'account' ? 'current-tab' : nil),
 		:title=>'View your account/registration information for this website'
 		} %><span class="separator">,</span>
-<%=	link_to 'Logout', logout_path, {:title=>'Sign-out from this website'} %><%
+<%=	link_to 'Logout', logout_path, {:method=>'delete', :href=>logout_path,
+	:title=>'Sign-out from this website'} %><%
 else
 	%><%= link_to 'Sign-up', signup_path, {
 		:class=>(@section == 'signup' ? 'current-tab' : nil),

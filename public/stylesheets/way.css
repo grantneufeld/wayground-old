@@ -1,0 +1,57 @@
+h1, h2, h3, h4, h5, h6{background:transparent; color:#593B00;}
+
+/* HEADER */
+#header{background:#593B00 url('/images/shadow-up.png') repeat-x left bottom; color:#DCCEB2; width:100%; margin:0em; padding:0em; outline-color:yellow;}
+#logo{float:left; margin:0px 10px 0px 0px; border:0px none;}
+#title{background:transparent; color:#DCCEB2; margin:0em; padding:1em 2em 0em; text-shadow:2px 2px 1px black; outline-color:black;}
+#header a{text-decoration:none;}
+#header a:link{background-color:transparent; color:#BFE0E1;}
+#header a:visited{background-color:transparent; color:#D9BFDC;}
+#header a:link:hover, #header a:visited:hover{color:#80C2C4;}
+#header a:link:active, #header a:visited:active{color:red;}
+#menu{padding:0em; margin:1em 2em 0em; min-height:17px; outline-color:blue;}
+#menu > a{background:transparent url('/images/menu-bg-tl.png') no-repeat left top; padding:0.2em 0.5em; font-size:110%; font-weight:bold; min-height:20px; white-space:nowrap; text-shadow:2px 2px 2px black;}
+#menu > a + a{margin-left:0.5em;}
+.current-tab, #menu .current-tab, #menu > a.current-tab{background:white; color:black; border:1px solid black; border-bottom:0px none; text-shadow:1px 1px 2px #C36824;}
+
+#main{background:white; color:black; margin:0em auto; padding:0em; width:760px;/* border:1px solid white;*/ text-align:center;}
+
+#content{background:white; color:black; text-align:left; margin:0em 16px 0em 0em; padding:2em 0em; width:502px; top:0px;}
+#content > h1{border-top:1px dotted #593B00; padding-top:0.5em;}
+#content > h1:first-child{border-top:0px none; padding-top:0em;}
+#content * + h1{margin-top:1.5em;}
+
+#content .overflow{max-width:500px;}
+#sidebar .overflow{max-width:240px;}
+
+#sidebar{background:#ECD0BA; color:black; border-bottom:1px solid #ECD0BA; text-align:left; margin:0em; padding:2em 0em; width:242px; min-height:200px; float:right; -moz-border-radius:8px; -webkit-border-radius:8px;}/*top:0px; right:0px; position:relative;}*/
+.sidebar-section, #sidebar > .sidebar-section{margin:0em; padding:0em;}
+#sidebar > .sidebar-section:first-child{margin-top:0em;}
+.sidebar-section + .sidebar-section, #sidebar > .sidebar-section + .sidebar-section{/*border-top:1px solid #999;*/ margin:8px 0px 0px;}
+#sidebar > *, .sidebar-section > *{margin-left:16px; margin-right:16px;}
+#sidebar > *:first-child, .sidebar-section:first-child > *:first-child{margin-top:0em;}
+#sidebar > h1, .sidebar-section > h1{margin:0em 0em 0.5em 0em; padding:0em 16px;}
+#sidebar > h1, #sidebar > h2, .sidebar-section > h1, .sidebar-section > h2{border-top:1px solid #662B00; border-bottom:1px solid #FFECB5; margin:1.5em 0em 0em; padding:1em 1em 0.2em; -moz-border-radius-topleft:8px; -moz-border-radius-topright:8px; -webkit-border-top-left-radius:8px; -webkit-border-top-right-radius:8px;}
+#sidebar > h1:first-child, #sidebar > h2:first-child, .sidebar-section:first-child > h1:first-child, .sidebar-section:first-child > h2:first-child{border-top:0px none; padding-top:0em;}
+#sidebar > h2 + *, .sidebar-section > h2 + *{margin-top:0.5em;}
+#sidebar h1, #sidebar h2, #sidebar h3{clear:left;}
+
+#footer{background:#005659 url('/images/shadow-down.png') repeat-x left top; color:white; clear:both; margin:0em; padding:0em; text-align:center; width:100%;}
+#footer > *{max-width:512px;}
+#footer p{font-size:95%; margin:0em 4em; padding:1em 0em; text-shadow:-1px -1px 2px black;}
+#footer p + p{padding-top:0.25em;}
+#footer a{text-decoration:none;}
+#footer a:link{background:transparent; color:#BFE0E1;}
+#footer a:visited{background:transparent; color:#D9BFDC;}
+#footer a:link:hover{background-color:#FFECB5; color:#00858A; text-shadow:none;}
+#footer a:visited:hover{background-color:#FFECB5; color:#6E0A78; text-shadow:none;}
+#footer a:link:active, #footer a:visited:active{color:red; text-shadow:none;}
+
+/* FLASH */
+#flash{background:#FFD url("/images/bg-flash.gif") repeat-x left bottom; color:#000; border:1px outset #999; margin:0px 8px 0px 0px; padding:8px; width:486px; /*max-width:777px;*/}
+#flash > p{margin:0em; font-size:13px;}
+#flash > p + p{margin-top:0.5em;}
+p.warning, p.error{font-weight:bold;}
+p.error{color:#600;}
+#flash > p.warning{background:transparent url("/icon/warning_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}
+#flash > p.error{background:transparent url("/icon/error_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}

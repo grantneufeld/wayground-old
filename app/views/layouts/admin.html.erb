@@ -109,14 +109,14 @@ else
 	%><%= website_prefix %>: <%= @page_title %><%
 end
 %></title>
-<% #= stylesheet_link_tag 'wg', :cache=>true
--%>
-<% #= stylesheet_link_tag 'print', :media=>'print'
--%>
 <%
 # set this tag to the width of the page in pixels.
 # optimizes display on iPhone
-#meta name="viewport" content="width=808" /
+-%>
+<meta name="viewport" content="width=800" />
+<%= stylesheet_link_tag 'wg' %>
+<%= stylesheet_link_tag 'admin', :media=>'screen' %>
+<% #= stylesheet_link_tag 'print', :media=>'print'
 -%>
 <%= javascript_include_tag :defaults, :cache=>true %>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -137,59 +137,6 @@ unless @content_for_keywords.blank?
 <% end -%>
 <link rel="license" href="http://creativecommons.org/licenses/by/2.5/ca/" title="Creative Commons License" />
 <meta name="MSSmartTagsPreventParsing" content="true" />
-<style type="text/css" title="text/css" media="screen">
-/* <![CDATA[ */
-
-*{font-family:"Lucida Grande", Geneva, Arial, sans-serif;}
-body{margin:0px; padding:0px; background:#DDD; color:black;
-	font-size:10pt;}
-.ruler{background:black; color:white;
-	height:8px; width:800px; margin:0px; padding:0px; border:0px none;}
-
-.separator, .cue{display:none;}
-
-#header, #content, #footer{margin:0px auto; width:800px;}
-
-#top{margin:0px; padding:0px; width:100%;
-	background:#666 url('/icon/hdr-bg.gif') repeat-x left top; color:white;}
-#header{width:784px; padding:0px 8px;}
-#title{margin:0px; float:left;}
-#usernav{float:right; margin:0px; padding:2px 0px;}
-#usernav a{background:transparent; color:white; font-weight:bold; text-decoration:none;
-	padding:2px 4px;}
-#usernav a:hover{background:transparent; color:#CCF; text-decoration:underline;}
-#usernav a:active{background:transparent; color:#F66; outline:0px none;}
-#nav{clear:both; margin:0px; text-align:center;}
-#nav > a{float:left; padding:4px 10px 0px; margin:0px 2px;
-	text-align:center; font-size:12pt; text-decoration:none;
-	background:transparent; color:white;}
-#nav > a:link:hover, #nav > a:visited:hover{color:#CCF;
-	background:transparent url('/icon/icon-hover.png') no-repeat center top;}
-#nav > a:link:active, #nav > a:visited:active{color:#F66; outline:0px none;
-	background:transparent url('/icon/icon-active.png') no-repeat center top;}
-/*
-#nav > a:link:hover > img, #nav > a:visited:hover > img{
-	background:transparent url('icon/icon-hover.png') no-repeat center center;}
-#nav > a:link:active > img, #nav > a:visited:active > img{
-	background:transparent url('icon/icon-active.png') no-repeat center center;}
-*/
-#nav > a > img{border:0px none; padding-top:4px; padding-left:5px;}
-#nav > a.current{background:transparent url('/icon/nav-current.png') repeat-x left top; color:black;}
-#nav-tail{width:1px; height:1px;}
-#header-tail{clear:both; height:1px; margin:0px;}
-
-#content{clear:both; background:white; color:black;
-	border:1px solid #666; border-top:0px none white;
-	padding:12px; width:776px;}
-
-#footer{text-align:center; padding:12px 0px;}
-
-h1, h2, h3, h4, h5, h6, p, ul, ol{margin-top:0px; margin-bottom:0px;}
-h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
-
-
-/* ]]> */
-</style>
 </head>
 <body<%= @body_attrs %>>
 <ul class="cue" id="skiplinks">
@@ -212,11 +159,14 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 <%
 # ### USER ACCESS LINKS
 if current_user
-	%><%= link_to 'Account', account_users_path, {
+	%><%= link_to 'Your Account', account_users_path, {
 		:class=>(@section == 'account' ? 'current' : nil),
-		:title=>'View your account/registration information for this website'
+		:title=>'View your account/login/registration information for this website'
 		} %><span class="separator">,</span>
-<%=	link_to 'Logout', logout_path, {:title=>'Sign-out from this website'} %><%
+<%=	link_to 'Logout', logout_path, {:method=>'delete', :href=>logout_path,
+	:title=>'Sign-out from this website'} %>
+<% #=	link_to 'Logout', logout_path, {:title=>'Sign-out from this website'} 
+%><%
 else
 	%><%= link_to 'Sign-up', signup_path, {
 		:class=>(@section == 'signup' ? 'current' : nil),
@@ -294,14 +244,14 @@ unless @content_for_sectionheader.blank?
 end	%>
 <div id="main">
 
-
-<div id="sidebar">
 <%
 unless @content_for_sidebar.blank?
-	%><%= @content_for_sidebar %><%
+	%><div id="sidebar">
+<%= @content_for_sidebar %>
+</div><%
 end
-%>
-</div>
+-%>
+<div id="content">
 <div id="flash"<%= flash.length <= 0 ? ' style="display:none"' : '' %>><%
 # clear any empty flash messages
 flash.each do |key, msg|
@@ -314,14 +264,14 @@ if flash.length > 0
 		%><p class="<%= key %>"><%= msg %></p>
 <%	end
 end %></div>
-<div id="content">
 <%=
 
 #@content_for_layout
 yield
 
 %>
-</div></div>
+</div>
+<div id="tail"></div></div>
 <div id="footer">
 <%
 
@@ -347,4 +297,4 @@ if params[:debug] == 'y'
 end
 %>Page generated at: <%= Time.current.to_s(:time_date) %></p>
 </div>
-</div></body></html>
+</body></html>
