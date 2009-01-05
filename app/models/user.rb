@@ -86,6 +86,8 @@ class User < ActiveRecord::Base
 	# Finds a user login by their email and unencrypted password.
 	# Returns the user or nil.
 	def self.authenticate(email, pass)
+		# append the default email domain if user didn’t enter their full email address
+		email += "@#{WAYGROUND['DEFAULT_DOMAIN']}" unless email.match /.*@.*/
 		u = find(:first, :conditions=>['email = ? AND crypted_password IS NOT NULL', email])
 			#' and activated_at IS NOT NULL', email]) # need to get the salt
 		u && u.password_matches?(pass) ? u : nil

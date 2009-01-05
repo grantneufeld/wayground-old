@@ -6,13 +6,14 @@ production: &production_settings
   ROOT: 'http://wayground.ca'
   FILE_ROOT: '/file/'
   IMAGE_ROOT: '/pic/'
-  LAYOUT: 'wayground'
+  LAYOUT: 'admin'
   TITLE: 'Wayground'
   TITLE_PREFIX: 'Wayground'
   TITLE_SHORT: 'WG'
   TITLE_LIBRARY: TITLE + ' Library'
   SENDER: 'Wayground <wayground@wayground.ca>'
   EMAIL: 'wayground@wayground.ca'
+  DEFAULT_DOMAIN: 'wayground.ca'
   # displayed in the registration form:
   REGISTER_EXTRA: ''
   # displayed after registration is complete
