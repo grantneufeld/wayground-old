@@ -79,6 +79,13 @@ class PageTest < ActiveSupport::TestCase
 		assert_equal [pages(:one), pages(:two)], pages(:three).parent_chain
 	end
 	
+	def test_page_is_home
+		assert pages(:one).is_home?
+	end
+	def test_page_is_home_not
+		assert !(pages(:two).is_home?)
+	end
+	
 	def test_page_css_class
 		assert_equal 'root', pages(:one).css_class
 		assert_equal 'dir-page', pages(:two).css_class('dir-')

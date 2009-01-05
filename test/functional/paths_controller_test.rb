@@ -121,7 +121,7 @@ class PathsControllerTest < ActionController::TestCase
 		assert_response :success
 		assert assigns(:path)
 		assert assigns(:item)
-		assert_equal paths(:one).item.title, assigns(:page_title)
+		assert_nil assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'show'

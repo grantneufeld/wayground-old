@@ -42,7 +42,7 @@ class PagesController < ApplicationController
 	def show
 		@page = Page.find(params[:id])
 		if @page
-			@page_title = @page.title
+			@page_title = @page.is_home? ? nil : @page.title
 			@content_for_description = @page.description
 			respond_to do |format|
 				format.html # show.rhtml

@@ -40,7 +40,7 @@ class PathsController < ApplicationController
 				@item = @path.item
 				# TODO: handle security-access for private items
 				if @item.is_a? Page
-					@page_title = @item.title
+					@page_title = @item.is_home? ? nil : @item.title
 					@content_for_description = @item.description
 					@page = @item
 					respond_to do |format|

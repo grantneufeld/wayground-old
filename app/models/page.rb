@@ -112,6 +112,7 @@ class Page < ActiveRecord::Base
 		workpath = old_subpath
 		if workpath.blank?
 			# TODO? deal with blank subpath when setting sitepath?
+			self.sitepath = ''
 		elsif workpath == '/'
 			self.sitepath = '/'
 		else
@@ -147,6 +148,11 @@ class Page < ActiveRecord::Base
 	# and ending with the direct parent of this page
 	def parent_chain
 		parent.nil? ? [] : parent.parent_chain << parent
+	end
+	
+	# Returns true if this Page is the home page (sitepath == "/")
+	def is_home?
+		sitepath == '/'
 	end
 	
 	def css_class(prefix='')
