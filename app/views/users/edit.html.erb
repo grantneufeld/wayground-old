@@ -7,7 +7,7 @@
 <h2>Private Info</h2>
 <p>This personal information is only available to you and the website administrators.</p>
 <div class="step_form"><table cellspacing="0"><tbody>
-<tr><th><label for="screen_name">Real Name:<br/>(nickname)</label><br/></th>
+<tr><th><label for="screen_name">Real Name:</label><br/></th>
 <td><b><%= h @user.fullname %></b></td></tr>
 <tr class="alternate"><th><label for="user_time_zone">Time zone:</label><br/></th>
 <td><%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.ca_zones, :default=>Time.zone.name %></td></tr>
@@ -18,7 +18,16 @@
 <div class="step_form"><table cellspacing="0"><tbody>
 <tr><th><label for="screen_name">Screen Name:<br/>(nickname)</label><br/></th>
 <td><b><%= h @user.nickname %></b> (You cannot change your screen name.)</td></tr>
-<tr class="alternate"><th><label for="user_about">About You:</label><br/></th>
+<tr class="alternate"><th><label for="user_subpath">Profile Link:</label><br/></th>
+<td><%
+if @user.subpath.blank?
+	%>You can permanently set a text link for your profile, instead of the default id number (<%= @user.id %>). Please note that this is permanent and cannot be changed later.
+<br />Must begin with a letter, and can only contain letters, numbers, dashes (‘-’) and underscores (‘_’).
+<br /><%= f.text_field :subpath, :size=>32, :maxlength=>31, :class=>'fixed' %><%
+else
+	%><b><%= link_to @user.subpath, @user.profile_path %></b> (Your profile link has been set and cannot be changed.)<%
+end %></td></tr>
+<tr><th><label for="user_about">About You:</label><br/></th>
 <td>A brief profile about who you are. Please keep it appropriate for all-ages. You may include a few of your personal or favorite web-links.
 <br /><%= f.text_area :about, :rows=>4 %></td></tr>
 </tbody></table></div>

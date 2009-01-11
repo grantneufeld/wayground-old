@@ -2,24 +2,23 @@
 # Expects:
 # @user
 
-subpath = @user.subpath.blank? ? @user.id : h(@user.subpath)
-
 -%>
 <h1>Your Account: <%= h @user.nickname %></h1>
 
 <p><%= link_to "Edit Your Account", {:controller=>'users', :action=>'edit', :id=>@user} %></p>
 
 <h2>Private Registration Information</h2>
-<p>The following information is included in your registration, but is not displayed publicly. It is accessible only to you and the system administrators.</p>
+<p>The following information is included in your registration, but is not displayed publicly.
+<br />It is accessible only to you and the system administrators.</p>
 <p>Real name: <%= h @user.fullname %>
 <br />Email: <%= h @user.email %><%=
 @user.admin ? '<br />You have Administrator access on this website.' : nil %><%=
 @user.staff ? '<br />You have Staff access on this website' : nil %></p>
 
 <h2>Public Profile</h2>
-<p><a href="/people/<%= subpath %>">View Your Profile</a>.</p>
+<p><a href="<%= h @user.profile_path %>">View Your Profile</a>.</p>
 <p>Screen Name: <%= @user.nickname.blank? ? @user.id : h(@user.nickname) %>
-<br />Subpath: <a href="/people/<%= subpath %>"><%= subpath %></a> (for the web-link to your profile)</p>
+<br />Subpath: <a href="<%= h @user.profile_path %>"><%= @user.subpath.blank? ? '<i>NOT SET</i>' : h(@user.subpath) %></a> (for the web-link to your profile)</p>
 <% unless @user.about.blank? %>
 <h3>About You</h3>
 <%= process_and_format @user.about, 'text/plain', (not @user.admin?) %>

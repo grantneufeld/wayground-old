@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
 		:with=>/\A(\w[\w_\.\+\-]*@(?:\w[\w\-]*\.)+[a-z]{2,})?\z/i,
 		:message=>"invalid email", :allow_nil=>true
 	validates_format_of :subpath,
-		:with=>/\A([\w_\-]*\w[\w_\-]*)*\z/,
+		:with=>/\A[A-Za-z]([\w_\-]*\w)*\z/,
 		:allow_nil=>true,
 		:message=>'invalid url subpath - only lowercase letters, numbers, dashes ‘-’ and underscores ‘_’ are permitted, and there must be at least one letter'
 	validates_uniqueness_of :subpath, :email, :allow_nil=>true,
@@ -167,6 +167,11 @@ class User < ActiveRecord::Base
 		else
 			nickname
 		end
+	end
+	
+	# root-relative url pointing to the user’s profile page
+	def profile_path
+		"/people/#{(subpath.blank? ? id : subpath)}"
 	end
 	
 	# ########################################################
