@@ -69,9 +69,11 @@ if current_user && current_user.admin
 <%
 end
 
-%><ul id="<%= row_id %>_pages"><%
 #page_path(page)
 if pages.size > 0
-	%><%= render :partial=>'page', :collection=>pages %><%
+%><ul id="<%= row_id %>_pages">
+<%= render :partial=>'page', :collection=>pages %>
+</ul><%
 end
-%></ul></li>
+
+%></li>

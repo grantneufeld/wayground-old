@@ -16,10 +16,15 @@ render_sidebar do
 end
 
 # ADMIN
+#render_sidebar do
+#	% ><h2>Admin</h2>
+#<p><a href="/pages/new" class="button"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" align="top" /> New Page</a><span class="separator">.</span></p>
+#<%
+#end
+
+# ADMIN - UPLOAD
 render_sidebar do
-	%><h2>Admin</h2>
-<p><a href="/pages/new"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" /> New Page</a>.</p>
-<%
+	%><%= render :partial=>'documents/upload_form' %><%
 end
 
 # LEGEND
