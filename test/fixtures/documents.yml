@@ -13,7 +13,7 @@ subtext:
   filename: subtext.txt
   size: 96
   type: DocFile
-  subfolder: arusha
+  site: arusha
 
 pdf:
   user: login
@@ -68,7 +68,7 @@ private_subtext:
   filename: private_subtext.txt
   size: 21
   type: DocPrivate
-  subfolder: arusha
+  site: arusha
 
 private_pdf:
   db_file_id: 3

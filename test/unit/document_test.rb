@@ -192,8 +192,8 @@ class DocumentTest < ActiveSupport::TestCase
 		assert !(File.exist? 'public/file/arusha/upload.jpg')
 		# ‘upload’ (create) a new document
 		file_data = fixture_file_upload('/files/upload.jpg','image/jpeg')
-		params = {:uploaded_data=>file_data, :subfolder=>'arusha'}
-		doc = Document.new_doc(params, users(:login))
+		params = {:uploaded_data=>file_data, :site_select=>sites(:arusha).id}
+		doc = Document.new_doc(params, users(:staff))
 		doc.save!
 		# test that the file was saved to the expected directory
 		assert File.exist?('public/file/arusha/upload.jpg')

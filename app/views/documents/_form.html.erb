@@ -4,10 +4,8 @@ is_update ||= false
 
 fields_for :document do |f|
 	%><tr><th><label for="document_subfolder">Site:</label></th>
-<td><%= f.select :subfolder,
-	[['Arusha','arusha'], ['Action Films','actionfilms'],
-		['Calgary Dollars','caldol']],
-	{:title=>'Set the sub-folder for the document'} %></td></tr>
+<td><%= f.select :site_select, Site.select_list, {},
+	{:title=>'Select the website that will host the document. You will be able to link to the document from other websites, so you don’t need to upload it more than once.'} %></td></tr>
 <%	if is_update
 		%><tr><th><label for="document_filename">Filename:</label></th>
 <td><%= f.text_field :filename, :title=>'Set the filename for the document' %></td></tr>

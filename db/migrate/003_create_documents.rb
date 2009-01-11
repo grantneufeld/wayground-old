@@ -9,9 +9,9 @@ class CreateDocuments < ActiveRecord::Migration
 			:options=>'COMMENT="Metadata for files." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.integer :db_file_id
 			t.integer :user_id, :null=>false
+			t.integer :site_id
 			t.integer :parent_id
 			t.string :type
-			t.string :subfolder
 			t.string :content_type, :null=>false
 			t.string :filename, :null=>false
 			t.string :thumbnail

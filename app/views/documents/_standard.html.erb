@@ -17,25 +17,7 @@ end
 
 # ADMIN - UPLOAD
 render_sidebar do
-	%><h2><img src="/icon/upload.png" width="16" height="16" alt=" " class="icon" />Upload a Document</h2>
-<%
-	if current_user && current_user.activated?
-	#remote_form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :action=>documents_path}, :loading=>"Element.hide('flash'); Element.show('upload_progress'); Element.hide('upload_submit');", :loaded=>"Element.show('upload_submit'); Element.hide('upload_progress');") do |f|
-		form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :onsubmit=>"Element.show('upload_progress'); return true;"}) do |f|
-			%><p><img src="/icon/warning.png" width="16" height="16" alt=" " class="icon" />Please keep file sizes small. Extremely large files (>20MB) will cause errors. Also, my bandwidth isn’t free, so very large files could cost me money to share on the web.</p>
-<p><label for="document_filename">Primary Site:</label><%= f.select :subfolder,
-Wayground::SITES.sort.collect {|site| [site[1][:name], site[1][:abbrev]]}, #[['Arusha','arusha'], ['Action Films','actionfilms'], ['Calgary Dollars','caldol']],
-{}, {:title=>'Select the folder that will contain the document'} %>
-<br /><%= f.file_field :uploaded_data, :size=>16, :title=>'Specify a document on your local computer to upload' %>
-<br /><span title="Check this if you want to restrict access for this document. Leave it unchecked if you want anyone to be able to access it."><input type="checkbox" name="private" id="upload_private" value="1" /><label for="upload_private">Private</label></span></p>
-<p><%= submit_tag 'Upload Now', :id=>'upload_submit' %>
-<span id="upload_progress" style="display:none" onclick="Element.show('upload_submit'); Element.hide('upload_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Uploading…</span></p>
-<%		end #form_for
-	elsif current_user
-		%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must confirm your registration to be able to upload documents.</p>
-<%	else
-		%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must <%= link_to 'login', login_path, {:title=>'Registered users can sign-in to the website to access additional functions'} %> to be able to upload documents.</p>
-<%	end
+	%><%= render :partial=>'upload_form' %><%
 end
 
 # LEGEND

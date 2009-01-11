@@ -76,7 +76,7 @@ class DocumentsController < ApplicationController
 		render :action=>:new
 	end
 	
-	# TODO: updating of document info, such as filename and subfolder
+	# TODO: updating of document info, such as filename
 	## EDIT
 	#def edit
 	#	@document = Document.find_for_user(current_user, params[:id])
@@ -101,9 +101,6 @@ class DocumentsController < ApplicationController
 	#		debugger
 	#		unless params[:document][:filename].nil?
 	#			@document.change_filename(params[:document][:filename])
-	#		end
-	#		unless params[:document][:subfolder].nil?
-	#			@document.change_subfolder(params[:document][:subfolder])
 	#		end
 	#		if @document.save
 	#			flash[:notice] = "Updated information for #{@document.filename}."

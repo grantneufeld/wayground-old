@@ -23,9 +23,11 @@ end %><%= link_to document.filename, document.siteurl, :title=>"Load the documen
 <tr><th align="right">Height:</th>
 	<td><%=h document.height %></td></tr>
 <% end
-%><tr class="alternate"><th align="right">Site:</th>
-	<td><%= h document.subfolder %></td></tr>
-<tr><th align="right">Privacy:</th>
+unless document.site.nil?
+	%><tr class="alternate"><th align="right">Site:</th>
+	<td><%= h document.site.title %></td></tr>
+<% end
+%><tr><th align="right">Privacy:</th>
 	<td><%
 		if @document.is_private?
 			%><img src="/icon/private.png" width="16" height="16" alt=" " class="diricon" align="top" /> Private<%

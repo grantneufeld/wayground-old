@@ -14,7 +14,7 @@ class DocImageTest < ActiveSupport::TestCase
 		doc = nil
 		assert_difference(Document, :count, 2) do
 			file_data = fixture_file_upload('/files/upload.jpg','image/jpeg')
-			doc = DocImage.new({:uploaded_data=>file_data, :subfolder=>'arusha'})
+			doc = DocImage.new({:uploaded_data=>file_data, :site_select=>sites(:arusha).id})
 			doc.user = users(:login)
 			assert doc.save
 		end
@@ -32,7 +32,7 @@ class DocImageTest < ActiveSupport::TestCase
 		assert_equal 74, thumb.width
 		assert_equal 100, thumb.height
 		#assert_equal 'upload_t.jpg', thumb.filename
-		assert_equal 'arusha', thumb.subfolder
+		assert_equal sites(:arusha), thumb.site
 		assert_equal users(:login), thumb.user
 		assert(thumb.size > 0)
 		assert(thumb.content.size > 0)
@@ -45,7 +45,7 @@ class DocImageTest < ActiveSupport::TestCase
 		doc = nil
 		assert_difference(Document, :count, 2) do
 			file_data = fixture_file_upload('/files/upload64.jpg','image/jpeg')
-			doc = DocImage.new({:uploaded_data=>file_data, :subfolder=>'arusha'})
+			doc = DocImage.new({:uploaded_data=>file_data, :site_select=>sites(:arusha).id})
 			doc.user = users(:login)
 			assert doc.save
 		end
@@ -63,7 +63,7 @@ class DocImageTest < ActiveSupport::TestCase
 		assert_equal 64, thumb.width
 		assert_equal 64, thumb.height
 		#assert_equal 'upload64_t.jpg', thumb.filename
-		assert_equal 'arusha', thumb.subfolder
+		assert_equal sites(:arusha), thumb.site
 		assert_equal users(:login), thumb.user
 		assert(thumb.size > 0)
 		assert(thumb.content.size > 0)

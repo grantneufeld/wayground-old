@@ -13,7 +13,7 @@ class DocImage < Document
 	before_thumbnail_saved do |thumbnail|
 		record = thumbnail.parent
 		thumbnail.user = record.user
-		thumbnail.subfolder = record.subfolder
+		thumbnail.site = record.site
 	end
 	
 	def destroy

@@ -1,0 +1,31 @@
+<h2><img src="/icon/file.png" width="16" height="16" alt=" " align="top" class="icon" />
+Upload a New Document</h2>
+<%
+
+if current_user && current_user.activated?
+#remote_form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :action=>documents_path}, :loading=>"Element.hide('flash'); Element.show('upload_progress'); Element.hide('upload_submit');", :loaded=>"Element.show('upload_submit'); Element.hide('upload_progress');") do |f|
+	form_for(:document, :url=>documents_path, :html=>{:multipart=>true, :onsubmit=>"Element.show('upload_progress'); return true;"}) do |f|
+		%><p class="help">You can upload pictures, graphics, PDFs, etc.</p>
+<p class="warning">Please keep file sizes small. Extremely large files (>20MB) will cause errors. This is particularly important for graphics to be displayed on pages as large graphics will make the page take too long to load.</p>
+<p><label for="document_filename">Host Website:</label>
+<%= f.select :site_select, Site.select_list, {},
+	{:title=>'Select the website that will host the document. You will be able to link to the document from other websites, so you don’t need to upload it more than once.'} %>
+<br /><label for="uploaded_data">Your Document:</label>
+<br /><%= f.file_field :uploaded_data, :size=>16, :title=>'Specify a document on your local computer to upload' %>
+<%
+#<br /><span title="Check this if you want to restrict access for this document. Leave it unchecked if you want anyone to be able to access it."><input type="checkbox" name="private" id="upload_private" value="1" /><label for="upload_private">Private</label></span>
+%></p>
+<p><%= submit_tag 'Upload Now', :id=>'upload_submit' %>
+<span id="upload_progress" style="display:none" onclick="Element.show('upload_submit'); Element.hide('upload_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Uploading…</span></p>
+<%	end #form_for
+
+elsif current_user
+	%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must confirm your registration to be able to upload documents.</p>
+<%
+
+else
+	%><p><img src="/icon/warning_24.png" width="24" height="24" alt=" " class="icon" align="left" />You must <%= link_to 'login', login_path, {:title=>'Registered users can sign-in to the website to access additional functions'} %> to be able to upload documents.</p>
+<%
+
+end
+%>

@@ -1,13 +1,14 @@
 class Document < ActiveRecord::Base
-	belongs_to :user
-	
-	validates_format_of :filename, :with=>/[A-Za-z0-9_\=\+][A-Za-z0-9_ \.\=\+\-]*(\.[A-Za-z0-9_\=\+\-]+)?/
-	validates_format_of :subfolder, :with=>/([A-Za-z0-9_]+\/)?/, :allow_nil=>true
-	validates_uniqueness_of :filename
-	
-	attr_accessible :uploaded_data, :filename, :subfolder,
+	attr_accessible :uploaded_data, :filename, :site_select,
 		:temp_path, :thumbnail_resize_options, :content_type
 		# the previous 3 are needed by attachment_fu
+	
+	validates_format_of :filename,
+		:with=>/[A-Za-z0-9_\=\+][A-Za-z0-9_ \.\=\+\-]*(\.[A-Za-z0-9_\=\+\-]+)?/
+	validates_uniqueness_of :filename
+	
+	belongs_to :user
+	belongs_to :site, :readonly=>true
 	
 	
 	# ########################################################
@@ -20,18 +21,18 @@ class Document < ActiveRecord::Base
 	#	write_attribute(:filename, n)
 	#end
 	
-	# TODO: changing the subfolder
-	#def change_subfolder(s)
-	#	@old_subfolder ||= subfolder || ''
-	#	subfolder = s
-	#	write_attribute(:subfolder, s)
+	# TODO: changing the site
+	#def change_site(s)
+	#	@old_site ||= site || nil
+	#	site = s
+	#	write_attribute(:site_id, s.id)
 	#end
 	
 	#def before_update
-	#	unless (@old_filename.nil? || @old_filename == filename) && (@old_subfolder.nil? || @old_subfolder == subfolder)
+	#	unless (@old_filename.nil? || @old_filename == filename) && (@old_site.nil? || @old_site == site)
 	#		debugger
 	#		# the file path has changed, so move the physical file
-	#		old_full_filename = full_filename(nil, @old_filename, @old_subfolder)
+	#		old_full_filename = full_filename(nil, @old_filename, @old_site)
 	#		FileUtils::mv(old_full_filename, full_filename)
 	#	end
 	#end
@@ -41,6 +42,7 @@ class Document < ActiveRecord::Base
 	# Class Methods
 	
 	# create a new Document object using the appropriate subclass
+	# params should contain :uploaded_data and an optional :site_id
 	def self.new_doc(params, user, is_private=false)
 		if is_private
 			doc = DocPrivate.new(params)
@@ -142,15 +144,6 @@ class Document < ActiveRecord::Base
 	# ########################################################
 	# Instance Methods
 	
-	def before_validation
-		# make sure the subfolder doesn’t end with "/"
-		x = read_attribute 'subfolder'
-		unless x.blank? or x[-1].chr != '/'
-			subfolder = x[0..-2]
-			write_attribute('subfolder', subfolder)
-		end
-	end
-	
 	def before_validation_on_create
 		fix_filename
 	end
@@ -239,11 +232,10 @@ class Document < ActiveRecord::Base
 		@folder_root #is_image? ? Wayground::IMAGE_ROOT : Wayground::FILE_ROOT
 	end
 	
-	# n = filename; sub = subfolder
-	def folder_path(thumbnail=nil, n=nil, sub=nil)
+	# n = filename; s = site
+	def folder_path(thumbnail=nil, n=nil, s=nil)
 		n = filename if n.nil?
-		sub = subfolder if sub.nil?
-		sub = sub.blank? ? '' : "#{sub}/"
+		s = site if s.nil?
 		unless thumbnail.blank?
 			f, e = split_filename(n)
 			case thumbnail.to_s
@@ -252,37 +244,26 @@ class Document < ActiveRecord::Base
 			else
 				modifier = "_#{thumbnail.to_s}"
 			end
-			"#{sub}#{f}#{modifier}.#{e}"
+			"#{s.nil? ? '' : s.path + '/'}#{f}#{modifier}.#{e}"
 		else
-			"#{sub}#{n}"
+			s.nil? ? n : "#{s.path + '/'}#{n}"
 		end
 	end
 	
-	def fileurl(thumbnail = nil, n=nil, sub=nil)
-		"#{folder_root()}#{folder_path(thumbnail,n,sub)}"
+	def fileurl(thumbnail = nil, n=nil, s=nil)
+		"#{folder_root()}#{folder_path(thumbnail,n,s)}"
 	end
 	
 	def siteroot
-		unless subfolder.blank?
-			Wayground::SITES.each_value do |site|
-				return site[:url] if site[:abbrev] == subfolder
-			end
+		if site.nil?
+			''
+		else
+			site.url
 		end
-		'' # Wayground::ROOT
-		#case subfolder
-		#when 'actionfilms'
-		#	'http://films.arusha.org'
-		#when 'arusha'
-		#	'http://arusha.org'
-		#when 'caldol'
-		#	'http://calgarydollars.ca'
-		#else
-		#	'' # Wayground::ROOT
-		#end
 	end
 	
-	def siteurl(thumbnail = nil, n=nil, sub=nil)
-		"#{siteroot}#{fileurl(thumbnail,n,sub)}"
+	def siteurl(thumbnail = nil, n=nil, s=nil)
+		"#{siteroot}#{fileurl(thumbnail,n,s)}"
 	end
 
 	# returns an array of two elements,
@@ -332,6 +313,17 @@ class Document < ActiveRecord::Base
 	
 	def uploaded_data=(upload)
 		@uploaded_data = upload
+	end
+	def site_select
+		site.nil? ? nil : site.id
+	end
+	def site_select=(s)
+		if s.blank? or s.to_i == 0
+			site = nil
+		else
+			site = Site.find(s.to_i)
+			write_attribute(:site_id, site.id)
+		end
 	end
 	
 	def css_class(prefix='')

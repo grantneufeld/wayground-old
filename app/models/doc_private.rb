@@ -29,8 +29,8 @@ class DocPrivate < Document
 	end
 	
 	# private documents have a separate folder_path
-	# n = filename; sub = subfolder
-	def folder_path(thumbnail=nil, n=nil, sub=nil)
+	# n = filename; s = site
+	def folder_path(thumbnail=nil, n=nil, s=nil)
 		n.nil? ? filename : n
 	end
 	
