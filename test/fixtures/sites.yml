@@ -1,0 +1,31 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  domain: test1.wayground.ca
+  url: http://test1.wayground.ca
+  path: siteone
+  layout: wayground
+  title: Test Site One
+  title_prefix: Test 1
+  email: test+site1@wayground.ca
+  sender: Test Site One
+
+two:
+  domain: test2.wayground.ca
+  url: http://test2.wayground.ca
+  path: sitetwo
+  layout: admin
+  title: Test Site Two
+  title_prefix: Test 2
+  email: test+site2@wayground.ca
+  sender: Test Site Two
+
+arusha:
+  domain: arusha.org
+  url: http://arusha.org
+  path: arusha
+  layout: arusha
+  title: Arusha Centre
+  title_prefix: Arusha
+  email: test+arusha@wayground.ca
+  sender: Arusha Centre Test

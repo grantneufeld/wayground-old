@@ -1,5 +1,4 @@
 ActionController::Routing::Routes.draw do |map|
-	
 	# Sample of regular route:
 	#   map.connect 'products/:id', :controller => 'catalog', :action => 'view'
 	# Keep in mind you can assign values other than :controller and :action
@@ -68,6 +67,9 @@ ActionController::Routing::Routes.draw do |map|
 	end
 	map.resources :locations
 	#map.resources :memberships
+	
+	# SITES
+	map.resources :sites
 	
 	# DEMOCRACY
 	map.resources :weblinks
