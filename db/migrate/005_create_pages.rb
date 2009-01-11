@@ -8,6 +8,7 @@ class CreatePages < ActiveRecord::Migration
 			t.integer :user_id # owner
 			t.integer :editor_id # last editor
 			# CONTAINMENT
+			t.integer :site_id
 			t.integer :parent_id
 			t.string :subpath
 			t.string :sitepath
@@ -28,8 +29,10 @@ class CreatePages < ActiveRecord::Migration
 			t.timestamps
 		end
 		add_index :pages, [:user_id, :title], :name=>'user'
+		add_index :pages, [:site_id, :parent_id, :title], :name=>'site'
 		add_index :pages, [:parent_id, :title], :name=>'parent'
 		add_index :pages, [:title, :content_type], :name=>'title'
+		add_index :pages, [:site_id, :sitepath], :name=>'site_sitepath'
 		add_index :pages, :sitepath, :name=>'sitepath'
 		
 		# ======================================================== #

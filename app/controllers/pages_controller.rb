@@ -18,17 +18,18 @@ class PagesController < ApplicationController
 			@page_title = "Site Index: ‘#{params[:key]}’"
 		else
 			# find all top-level pages
-			@page = Page.find_home
-			if @page
-				conditions = ['(pages.parent_id IS NULL OR pages.parent_id = ?) AND pages.id != ?',
-					@page.id, @page.id]
-			else
-				conditions = ['pages.parent_id IS NULL']
-			end
-			@pages = Page.find(:all,
-				:conditions=>conditions,
-				:order=>'pages.title',
-				:include=>:children)
+			@page = nil
+			@pages = Page.find_homes
+			#if @page
+			#	conditions = ['(pages.parent_id IS NULL OR pages.parent_id = ?) AND pages.id != ?',
+			#		@page.id, @page.id]
+			#else
+			#	conditions = ['pages.parent_id IS NULL']
+			#end
+			#@pages = Page.find(:all,
+			#	:conditions=>conditions,
+			#	:order=>'pages.title',
+			#	:include=>:children)
 			@page_title = "Site Index"
 		end
 		respond_to do |format|
@@ -56,6 +57,16 @@ class PagesController < ApplicationController
 	# form for adding a page
 	def new
 		@page = Page.new(params[:page])
+		begin
+			@site = Site.find(params[:site_id])
+		rescue ActiveRecord::RecordNotFound
+			@site = nil
+		end
+		if @site
+			@page.site = @site
+		else
+			@page.site_id = 0
+		end
 		@page.user = current_user
 		@parent = Page.find(params[:id]) rescue nil
 		@page.parent = @parent
@@ -87,6 +98,16 @@ class PagesController < ApplicationController
 	def edit
 		@page = Page.find(params[:id])
 		if current_user.admin? or @page.user == current_user
+			begin
+				@site = Site.find(params[:site_id])
+			rescue ActiveRecord::RecordNotFound
+				@site = nil
+			end
+			if @site
+				@page.site = @site
+			else
+				@page.site_id = 0
+			end
 			@page_title = "Edit ‘#{@page.title}’"
 			@section = 'pages'
 		else

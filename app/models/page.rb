@@ -10,10 +10,11 @@ class Page < ActiveRecord::Base
 	validates_format_of :subpath,
 		:with=>/\A([\w\-](\.?[\w\-]+)*)?\/?\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
-	validates_uniqueness_of :subpath, :scope=>[:parent_id]
+	validates_uniqueness_of :subpath, :scope=>[:site_id, :parent_id]
 	validates_format_of :content_type, :allow_nil=>true, :with=> /\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,
 		:message=>'is not a valid mimetype'
 	
+	belongs_to :site, :readonly=>true
 	belongs_to :user
 	belongs_to :editor, :class_name=>"User", :foreign_key=>"editor_id"
 	
@@ -30,13 +31,21 @@ class Page < ActiveRecord::Base
 	# Class Methods
 	
 	# the home page is a special page
-	def self.find_home
+	def self.find_home(site_id = nil)
 		@@home_page ||= nil
 		if @@home_page.nil?
-			home_path = Path.find_home
+			home_path = Path.find_home(site_id)
 			@@home_page = home_path.item unless home_path.nil?
 		end
 		@@home_page
+	end
+	# find all of the site home pages
+	def self.find_homes
+		homes = []
+		Path.find_homes.each do |p|
+			homes << p.item
+		end
+		homes
 	end
 	
 	# keyword search

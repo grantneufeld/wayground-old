@@ -3,8 +3,6 @@
 # Paths have a polymorphic relation to models that can be displayed
 # (such as Pages, Events, etc.).
 class Path < ActiveRecord::Base
-	belongs_to :item, :polymorphic=>true
-	
 	validates_presence_of :sitepath
 	validates_uniqueness_of :sitepath
 	validates_format_of :sitepath, :allow_nil=>true,
@@ -16,10 +14,23 @@ class Path < ActiveRecord::Base
 		:with=>/\A(https?:\/\/.+|\/(([\w_\-]+\/?)+(\.[\w_\-]+|\/)?)?)\z/,
 		:message=>'must begin with a valid URL (including ‘http://’) or a valid root-relative sitepath (starts with a slash ‘/’)'
 	
+	belongs_to :site, :readonly=>true
+	belongs_to :item, :polymorphic=>true
+	
 	
 	# the home page is a special page
-	def self.find_home
-		@@home_path ||= find(:first, :conditions=>'sitepath = "/"')
+	def self.find_home(site_id = nil)
+		if site_id.nil?
+			@@home_path ||= find(:first,
+				:conditions=>'site_id IS NULL AND sitepath = "/"')
+		else
+			@@home_path ||= find(:first,
+				:conditions=>['site_id = ? AND sitepath = "/"', site_id])
+		end
+	end
+	# find all of the home pages for the various sites
+	def self.find_homes
+		find(:all, :conditions=>'sitepath = "/"')
 	end
 	
 	# keyword search

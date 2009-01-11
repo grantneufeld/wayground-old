@@ -1,17 +1,20 @@
 class CreatePaths < ActiveRecord::Migration
 	def self.up
 		create_table :paths do |t|
+			t.integer :site_id
 			t.integer :item_id
 			t.string :item_type
 			t.string :sitepath, :null=>false
 			t.text :redirect
 		end
 		add_index :paths, [:item_id, :item_type], :name=>'item'
-		add_index :paths, :sitepath, :name=>'sitepath'
+		add_index :paths, [:site_id, :sitepath], :name=>'site_sitepath', :unique=>true
+		add_index :paths, [:sitepath, :site_id], :name=>'sitepath'
 		# create path objects for every existing page
 		say "Migrating sitepaths from pages table to new paths table"
-		execute "INSERT INTO paths (item_id, item_type, sitepath)
-			SELECT pages.id, 'Page', pages.sitepath FROM pages ORDER BY pages.id"
+		execute "INSERT INTO paths (site_id, item_id, item_type, sitepath)
+			SELECT pages.site_id, pages.id, 'Page', pages.sitepath
+			FROM pages ORDER BY pages.id"
 		# remove the sitepath column from the pages table
 		execute "ALTER TABLE pages DROP INDEX sitepath"
 		remove_column :pages, :sitepath
