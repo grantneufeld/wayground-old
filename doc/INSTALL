@@ -124,6 +124,10 @@ For monitoring the server and restarting processes that crash:
  sudo gem install god
 (info: http://god.rubyforge.org/)
 
+Apache Config:
+ # Use modified time and size only (no inode)
+ FileETag MTime Size
+
 
 Testing & Debugging
 -------------------
