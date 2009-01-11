@@ -114,8 +114,10 @@ end
 # optimizes display on iPhone
 -%>
 <meta name="viewport" content="width=800" />
-<%= stylesheet_link_tag 'wg' %>
-<%= stylesheet_link_tag 'admin', :media=>'screen' %>
+<%= stylesheet_link_tag 'wg' #, :cache=>'cache/all'
+%>
+<%= stylesheet_link_tag 'admin', :media=>'screen' #, :cache=>'cache/all'
+%>
 <% #= stylesheet_link_tag 'print', :media=>'print'
 -%>
 <%= javascript_include_tag :defaults, :cache=>true %>
@@ -159,7 +161,9 @@ unless @content_for_keywords.blank?
 <%
 # ### USER ACCESS LINKS
 if current_user
-	%><%= link_to 'Your Account', account_users_path, {
+	%><%= link_to current_user.nickname, current_user.profile_path,
+		{:title=>'View your profile'} %><span class="separator">,</span>
+<%= link_to 'Your Account', account_users_path, {
 		:class=>(@section == 'account' ? 'current' : nil),
 		:title=>'View your account/login/registration information for this website'
 		} %><span class="separator">,</span>
@@ -190,17 +194,8 @@ end %><span class="separator">.</span>
 	:class=>(@section == 'websites' ? 'current' : nil),
 	:title=>'Arusha’s websites'
 	} %><span class="separator">.</span>
-<%= link_to '<img src="/icon/library_32.png" width="32" height="32" alt=" " />
-<br />Library', '/library', {
-	:class=>(@section == 'library' ? 'current' : nil),
-	:title=>'Arusha’s Info-Active Resource Library: Videos, books, periodicals'
-	} %><span class="separator">.</span>
-<%= link_to '<img src="/icon/calendar_32.png" width="32" height="32" alt=" " />
-<br />Events', '/events', {
-	:class=>(@section == 'events' ? 'current' : nil),
-	:title=>'Calendar of upcoming events'
-	} %><span class="separator">.</span>
-<% if current_user -%>
+<% # TODO: refine the access on these items to determine specific permissions
+if current_user and (current_user.admin? or current_user.staff?) -%>
 <%= link_to '<img src="/icon/page_32.png" width="32" height="32" alt=" " />
 <br />Pages', pages_path, {
 	:class=>(@section == 'pages' ? 'current' : nil),
@@ -227,6 +222,16 @@ end %><span class="separator">.</span>
 	:title=>'Arusha’s staff phone log'
 	} %><span class="separator">.</span>
 <% end %>
+<%= link_to '<img src="/icon/calendar_32.png" width="32" height="32" alt=" " />
+<br />Events', '/events', {
+	:class=>(@section == 'events' ? 'current' : nil),
+	:title=>'Calendar of upcoming events'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/library_32.png" width="32" height="32" alt=" " />
+<br />Library', '/library', {
+	:class=>(@section == 'library' ? 'current' : nil),
+	:title=>'Arusha’s Info-Active Resource Library: Videos, books, periodicals'
+	} %><span class="separator">.</span>
 <div id="nav-tail"></div>
 </div>
 

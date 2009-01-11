@@ -17,7 +17,7 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 #title a:link:active, #title a:visited:active{color:#FCC; text-shadow:#F00 -1px -1px 2px;}
 #usernav{float:right; margin:0px; padding:2px 0px;}
 #usernav a{background:transparent; color:white; font-weight:bold; text-decoration:none;
-	padding:2px 4px;}
+	padding:2px 8px;}
 #usernav a:hover{background:transparent; color:#CCF; text-decoration:underline;}
 #usernav a:active{background:transparent; color:#F66; outline:0px none;}
 #nav{clear:both; margin:0px; text-align:center;}
@@ -73,7 +73,7 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 #flash{background:#FFD url("/images/bg-flash.gif") repeat-x left bottom; color:#000; border:1px outset #999; margin:0px 8px 0px 0px; padding:8px; width:486px; /*max-width:777px;*/}
 #flash > p{margin:0em; font-size:13px;}
 #flash > p + p{margin-top:0.5em;}
-p.warning, p.error{font-weight:bold;}
+#flash p.warning, #flash p.error{font-weight:bold;}
 p.error{color:#600;}
 #flash > p.warning{background:transparent url("/icon/warning_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}
 #flash > p.error{background:transparent url("/icon/error_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}

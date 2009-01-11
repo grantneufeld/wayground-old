@@ -13,6 +13,10 @@ a:link:hover{background-color:#FFECB5; color:#00858A; text-decoration:none;}
 a:visited:hover{background-color:#FFECB5; color:#6E0A78; text-decoration:none;}
 a:link:active, a:visited:active{color:red;}
 
+a.button{font-size:110%; font-weight:bold; padding:2px 4px; min-height:20px; vertical-align:middle;}
+a:link.button, a:visited.button{text-decoration:none;}
+a:link.button img, a:visited.button img, a:link:hover.button img, a:visited:hover.button img, a:link:active.button img, a:visited:active.button img, a:link.button img.icon, a:visited.button img.icon, a:link:hover.button img.icon, a:visited:hover.button img.icon, a:link:active.button img.icon, a:visited:active.button img.icon{border-color:transparent; outline:0px none;}
+
 h1, h2, h3, h4, h5, h6{margin:0em; padding:0em;}
 * + h1, * + h2, * + h3, * + h4, * + h5, * + h6{margin-top:0.5em;}
 h2 + h3{margin-top:0.5em;}
@@ -55,6 +59,7 @@ tr[valign=bottom]{vertical-align:bottom;}
 thead > tr > th, tr.inforow > th, tr.inforow > td{background:#CCC url("/images/bg-header-info.gif") repeat-x left top; color:#000; border-left:1px solid #CCC; padding:0em 0.5em;}
 tr.inforow > th, tr.inforow > td{border-top:1px solid #666; text-align:left;}
 thead > tr > th:first-child{border-left:0px none;}
+thead > tr > th > h3{font-size:150%;}
 /*
 thead + tbody > tr:first-child > td,
 thead + tbody > tr:first-child > th{border-top:1px solid #CCC;}
@@ -73,6 +78,7 @@ tfoot td, tfoot th{background:#EEE; color:#000; border-left:0px none;}
 .layout, table.layout, table.layout > tr, table.layout > tr > td,
 table.layout > tbody > tr, table.layout > tbody > tr > td{border:0px none;}
 td > *:first-child{margin-top:0em;}
+td.column{padding-left:0.5em; padding-right:0.5em;}
 
 .current_sort{vertical-align:middle; white-space:nowrap;}
 .number_col{text-align:right;}
@@ -105,11 +111,16 @@ p.indent{margin-left:2em;}
 .more_link{text-align:right;}
 .bigger{font-size:110%;}
 .overflow{overflow:scroll;}
+.flat-left{float:left;}
+.flat-right{float:right;}
+.warning{background:transparent url('/icon/warning.png') no-repeat top left; padding-left:20px;}
 
 /* DIRECTORY */
 ul.dir, ul.dir ul{list-style:none outside url('../icon/item.png'); padding-left:24px;}
-ul.dir li{vertical-align:top; padding:4px 0px 0px;}
-ul.dir > li img, ul.dir ul > li img{margin-left:4px; vertical-align:top;}
+ul.dir li{vertical-align:middle; margin-top:4px; padding:0px 0px;}
+ul.dir li > *{vertical-align:middle;}
+ul.dir li.alternate{background:transparent;}
+ul.dir > li img, ul.dir ul > li img{margin-left:4px; vertical-align:middle;}
 li.dir-root{list-style-image:url('../icon/root.png');}
 a.dir-root:before{content:url('../icon/root.png'); padding-right:4px;}
 li.dir-article{list-style-image:url('../icon/article.png');}
@@ -129,7 +140,7 @@ ul.dir a, ul.dir a:link, ul.dir a:visited, ul.dir a:link:hover, ul.dir a:visited
 /* STEPS */
 .steps{border:1px solid #DEEDBD; margin:0px auto; padding:14px; -moz-border-radius:12px; -webkit-border-radius:12px;}
 p + .steps{margin-top:1em;}
-.steps h1, .steps h2{background:transparent; color:#456600;}
+.steps h1, .steps h2, .steps h3{background:transparent; color:#456600;}
 .steps > h1, .steps > h2{margin:0px 0px 14px;}
 .step_sections{margin:0px 0px 2px; padding:0px;}
 .step_label{/*background:#bfe0e1; color:#005659;*/ background:#DDD; color:#666; border:1px solid #DEEDBD; border-bottom:0px none; display:inline; padding:2px 4px; margin:0px 4px; white-space:nowrap;}
@@ -144,8 +155,11 @@ p + .steps{margin-top:1em;}
 .step_form /*> form > */ table tr.alternate{background:#E8EEDA; color:inherit;}
 .step_form /*> form > */ table > tfoot, .step_form /*> form > */ table > tfoot th, .step_form /*> form > */ table > tfoot td{background:#DEEDBD; color:inherit; border-top-color:#BEDC7F;}
 .step_form + .step_sections{margin-top:14px;}
-.step_form table > thead > tr > th, .step_form table > * > tr.inforow > th{background:#DEEDBD; color:#456600; border-top:1px solid #BEDC7F; border-bottom:1px solid #BEDC7F; text-align:left;}
+.step_form table > thead > tr > th, .step_form table > * > tr.inforow > th{background:#DEEDBD; color:#456600; border-top:1px solid #BEDC7F; border-bottom:1px solid #BEDC7F; text-align:left; padding:0.3em 0.5em;}
 .step_form table > * > tr.disabled, .step_form table > * > tr.disabled > th, .step_form table > * > tr.disabled > td{background:#DDD; color:#666;}
+.step_form > form > h2{background:#BEDC7F; padding:8px 8px 2px; margin:0em; font-size:175%;}
+.step_form > form > h2 + *{margin-top:0em;}
+.step_form > form > h3{padding:8px 8px 2px; margin:0em; font-size:150%;}
 
 /***  Copied from scaffold.css:  ****************************/
 #errorExplanation, .errorExplanation{width:400px; border:2px solid red; padding:7px 7px 12px 7px; margin-bottom:20px; background:#f0f0f0;}
