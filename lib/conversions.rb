@@ -38,5 +38,6 @@ module Conversions
 		# cleanup
 		text.gsub!(/<p[^>]*>\n*(<ul)/, '\1') # strip p from ul
 		text.gsub!(/(<\/ul>)\n*<\/p>/, '\1') # strip /p from /ul
+		text
 	end
 end
