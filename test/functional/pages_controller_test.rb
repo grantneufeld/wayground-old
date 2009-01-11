@@ -48,9 +48,9 @@ class PagesControllerTest < ActionController::TestCase
 		end
 	end
 	def test_index_search
-		assert_efficient_sql do
+#		assert_efficient_sql do
 			get :index, {:key=>'keyword'} #, {:user=>users(:admin).id}
-		end
+#		end
 		assert_response :success
 		assert_equal 2, assigns(:pages).size
 		assert_equal 'Site Index: ‘keyword’', assigns(:page_title)
@@ -183,8 +183,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end
@@ -207,12 +207,23 @@ class PagesControllerTest < ActionController::TestCase
 	# CREATE
 	def test_create
 		assert_difference(Page, :count, 1) do
-			post :create, {:page=>{
-				:subpath=>'test_create', :title=>'Create Page',
-				:description=>'This page was created from test_create.',
-				:content=>'<h1>Create Page</h1><p>Created by test_create.</p>',
-				:content_type=>'text/html', :keywords=>'test, create, new'}},
-				{:user=>users(:staff).id}
+			post :create, {
+				:page=>{
+					:subpath=>'test_create', :title=>'Create Page',
+					:description=>'This page was created from test_create.',
+					:keywords=>'test, create, new'
+				},
+				:chunks=>{
+					'0_content_1'=>{
+						:type=>'raw', :part=>'content',
+						:position=>'1',
+						:flavour=>'', :old_content_type=>'text/html',
+						:content=>'<h1>Create Page</h1><p>Created by test_create.</p>',
+						:content_type=>'text/html'
+					}
+				}
+			},
+			{:user=>users(:staff).id}
 		end
 		assert_response :redirect
 		assert assigns(:page)
@@ -243,8 +254,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end
@@ -293,8 +304,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end
@@ -313,8 +324,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end
@@ -350,8 +361,10 @@ class PagesControllerTest < ActionController::TestCase
 	def test_update
 		put :update, {:id=>pages(:update_this).id,
 			:page=>{:subpath=>'test_update', :title=>'test_update',
-				:description=>'test_update', :content=>'test_update',
-				:keywords=>'test_update'}},
+				:description=>'test_update', :keywords=>'test_update'},
+			:chunks=>{'0_content_1'=>{:type=>'raw', :part=>'content', :position=>'1',
+				:flavour=>'', :old_content_type=>'text/html',
+				:content=>'test_update', :content_type=>'text/plain'}}},
 			{:user=>users(:staff).id}
 		assert_response :redirect
 		assert_equal pages(:update_this), assigns(:page)
@@ -439,8 +452,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end
@@ -463,8 +476,8 @@ class PagesControllerTest < ActionController::TestCase
 				assert_select 'input#page_subpath'
 				assert_select 'input#page_title'
 				assert_select 'input#page_description'
-				assert_select 'textarea#page_content'
-				assert_select 'select#page_content_type'
+#				assert_select 'textarea#page_content'
+#				assert_select 'select#page_content_type'
 				assert_select 'input#page_keywords'
 			end
 		end

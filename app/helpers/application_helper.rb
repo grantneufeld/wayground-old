@@ -45,16 +45,62 @@ module ApplicationHelper
 	# ########################################################
 	# FORMATTING CONTENT
 	
+	def preprocess_content(content, content_type='text/plain', confirmed_urls=true)
+		case content_type
+		when 'text/wayground'
+			chunks = process_wayground_content(content, confirmed_urls)
+		when 'text/html', '', nil :
+			# •••
+		# •••
+		end
+	end
+	
+	# break content into Chunks based on <wg:chunk …> tags.
+	def process_wayground_content(content, confirmed_urls=true)
+		chunks = Chunk.array_from_text(content)
+		chunks.each do |chunk|
+			case chunk.class
+			when RawChunk :
+				chunk.rendered_content = format_content(
+					chunk.content, chunk.content_type, confirmed_urls)
+			when ItemChunk :
+				chunk.rendered_content = render_to_string(
+					:partial=>'templates/item_chunk', :locals=>{:chunk=>chunk})
+			when ListChunk :
+				chunk.rendered_content = render_to_string(
+					:partial=>'templates/list_chunk', :locals=>{:chunk=>chunk})
+			# other chunk types
+			else
+				chunk.rendered_content = "<!-- unrecognized Chunk type #{chunk.class} -->"
+			end
+		end
+		chunks
+	end
+	# convert a text/wayground content block to chunks
+	def wayground_content_to_chunks(content)
+		raise "Call Chunk.array_from_text(content) instead."
+	end
+	def chunks_to_wayground_content(chunks)
+		(chunks.collect {|chunk| chunk.as_xmltag}).join("\r\n")
+	end
+	
 	# always format before processing
-	# if unconfirmed_urls is set, add ' rel="nofollow"' to anchor elements
+	# if confirmed_urls is false, add ' rel="nofollow"' to anchor elements
 	# (that tells search engines to not reference those urls — a useful
 	# anti-spam technique)
-	def process_and_format(content, content_type='text/plain', unconfirmed_urls=false)
-		process_content format_content(content, content_type, !unconfirmed_urls)
+	def process_and_format(content, content_type='text/plain', confirmed_urls=true)
+		if content_type == 'text/wayground'
+			process_wayground_content(content, confirmed_urls)
+		else
+			process_content format_content(content, content_type, confirmed_urls)
+		end
 	end
 	
 	def format_content(content, content_type, confirmed_urls=true)
 		case content_type
+		when 'text/wayground' :
+			# pass through. text/wayground should be run through process_wayground_content
+			content
 		when 'text/html', '', nil :
 			confirmed_urls ? content : mark_unconfirmed_urls(content)
 		when 'text/plain' :
@@ -150,8 +196,8 @@ module ApplicationHelper
 	# formatting
 	# (such as pulling out sidebar chunks and rendering page lists).
 	def processable_content_types
-		["text/html", "text/plain", "text/markdown", "text/bbcode",
-			"text/textilize"]
+		['text/wayground', "text/html", "text/plain", "text/markdown",
+			"text/bbcode", "text/textilize"]
 	end
 	
 	# Format any page lists and pull out any sidebar chunks,

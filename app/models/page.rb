@@ -88,6 +88,12 @@ class Page < ActiveRecord::Base
 		set_sitepath!
 		self
 	end
+	def before_save
+		# convert chunks to content, if needed
+		unless @chunks.nil?
+			chunks_to_content
+		end
+	end
 	
 	def validate
 		if Path.restricted_path?(subpath, (parent.nil? ? nil : parent.path))
@@ -166,5 +172,61 @@ class Page < ActiveRecord::Base
 	
 	def css_class(prefix='')
 		"#{prefix}#{subpath == '/' ? 'root' : self.class.name.downcase}"
+	end
+	
+	def chunks
+		if @chunks.nil?
+			@chunks = Chunk.array_from_text(content)
+			if @chunks.size < 1
+				# the content had no chunk tags, so make it a raw chunk
+				chunk = RawChunk.new
+				chunk.page = self
+				chunk.part = 'content'
+				chunk.position = 1
+				chunk.content = self.content
+				chunk.content_type = self.content_type
+				@chunks << chunk
+			elsif @chunks.size > 1
+				chunks_sort!
+			end
+		end
+		@chunks
+	end
+	def chunks=(a)
+		content_will_change!
+		@chunks = a
+	end
+	# Ensure the Page’s chunks are sorted by part and position
+	def chunks_sort!
+		unless @chunks.nil? or @chunks.size <= 1
+			@chunks.sort! {|a,b|
+				x = a.part <=> b.part
+				if x == 0
+					a.position <=> b.position
+				else
+					x
+				end
+			}
+		end
+	end
+	
+	protected
+	
+	def chunks_to_content
+		if @chunks.nil?
+			# do nothing to the content
+		elsif @chunks.size == 0
+			self.content = ''
+			self.content_type = 'text/html'
+		elsif @chunks.size == 1 and @chunks[0].is_a? RawChunk
+			# If there’s just one chunk and it’s raw, just use it for the content
+			self.content = @chunks[0].content
+			self.content_type = @chunks[0].content_type
+		else
+			chunks_sort!
+			chunk_strs = @chunks.collect {|c| c.to_s }
+			self.content = chunk_strs.join("\r")
+			self.content_type = 'text/wayground'
+		end
 	end
 end

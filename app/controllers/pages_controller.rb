@@ -70,6 +70,7 @@ class PagesController < ApplicationController
 		@page.user = current_user
 		@parent = Page.find(params[:id]) rescue nil
 		@page.parent = @parent
+		@page.chunks = Chunk.create_from_param_hash(params[:chunks]) if params[:chunks]
 		@page_title = 'New Page'
 		@section = 'pages'
 	end
@@ -127,6 +128,9 @@ class PagesController < ApplicationController
 			# can’t update - was caught in edit
 		else
 			@page.editor = current_user
+			if params[:chunks]
+				@page.chunks = Chunk.create_from_param_hash(params[:chunks])
+			end
 			if params[:page] && params[:page].size > 0 && @page.update_attributes(params[:page])
 				flash[:notice] = "Updated information for ‘#{@page.title}’."
 				redirect_to page_path(@page)

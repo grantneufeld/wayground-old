@@ -2,12 +2,13 @@
 # requires @page
 # requires f to be set as the fields for @page
 
-
+name_prefix ||= 'page'
 field_id ||= 'page_content'
+content_type ||= 'text/html'
 rows = 20
 cols = 68
 
-%><input type="hidden" name="old_content_type" id="old_content_type" value="<%= h content_type %>"/>
+%><input type="hidden" name="<%= name_prefix %>[old_content_type]" id="old_content_type" value="<%= h content_type %>"/>
 <%
 
 if content_type == 'text/html'
@@ -18,10 +19,10 @@ if content_type == 'text/html'
 	toolbarset = 'Wayground'
 	width = '100%'
 	height = '320px'
-	js_path = "#{request.relative_url_root}/javascripts/"
+	js_path = "#{controller.relative_url_root}/javascripts/"
 	base_path = "#{js_path}fckeditor/"
 	
-	%><textarea id="<%= field_id %>" name="page[content]" rows="<%= rows %>" cols="<%= cols %>"><%= h @page.content %></textarea>
+	%><textarea id="<%= field_id %>" name="<%= name_prefix %>[content]" rows="<%= rows %>" cols="<%= cols %>"><%= h @page.content %></textarea>
 <%=	javascript_tag(
 "var oFCKeditor = new FCKeditor('#{field_id}', '#{width}', '#{height}', '#{toolbarset}');
 oFCKeditor.BasePath = '#{base_path}'
@@ -30,8 +31,8 @@ oFCKeditor.ReplaceTextarea();
 ")
 	 %><%
 elsif content_type == 'text/textilize'
-	%><%= textile_editor 'page', 'content' %>
+	%><%= textile_editor 'page', 'content', :name=>"#{name_prefix}[content]" %>
 <%=	textile_editor_initialize %><%
 else
-	%><%= f.text_area :content, :rows=>rows, :cols=>cols, :id=>field_id %><%
+	%><%= f.text_area :content, :rows=>rows, :cols=>cols, :id=>field_id, :name=>"#{name_prefix}[content]" %><%
 end %>

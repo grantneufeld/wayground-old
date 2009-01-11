@@ -11,5 +11,5 @@
 <% end
 unless @user.about.blank? %>
 <h3>About</h3>
-<%= process_and_format @user.about, 'text/plain', (not @user.admin?) %>
+<%= process_and_format @user.about, 'text/plain', @user.admin? %>
 <% end %>

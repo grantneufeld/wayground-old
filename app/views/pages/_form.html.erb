@@ -1,28 +1,52 @@
 <%
+chunks ||= @page.chunks
+
 content_for("head") do
 	%><%= javascript_include_tag :fckeditor
 	%><script type="text/javascript" charset="utf-8">
-function change_content_type() {
-	var theContent = $F('page_content');
-	if($F('old_content_type') == 'text/html') {
-		theContent = FCKeditorAPI.GetInstance('page_content').GetXHTML();
+// Change the content type of a text area (e.g., switch between plain text and html)
+function change_content_type(prefix) {
+	var theContent = $F(prefix + '_content');
+	if($F(prefix + '_old_content_type') == 'text/html') {
+		theContent = FCKeditorAPI.GetInstance(prefix + '_content').GetXHTML();
 	}
-	var u = new Ajax.Updater('content_field', '<%= content_switch_path() %>', {
+	var u = new Ajax.Updater(prefix + '_content_wrap', '<%= content_switch_path() %>', {
 		//asynchronous:true, DEFAULT
 		evalScripts:true, parameters: {
-			old_content_type: $F('old_content_type'),
-			content_type: $F('page_content_type'),
+			old_content_type: $F(prefix + '_old_content_type'),
+			content_type: $F(prefix + '_content_type'),
 			content: theContent
 		},
 		onCreate: function(requestor, xhr_obj){
-			Element.show('change_type_progress');
+			Element.show(prefix + '_change_type_progress');
 		},
 		onComplete: function(){
-			Element.hide('change_type_progress');
+			Element.hide(prefix + '_change_type_progress');
 		},
 	});
 	return false;
 }
+// function change_content_type() {
+// 	var theContent = $F('page_content');
+// 	if($F('old_content_type') == 'text/html') {
+// 		theContent = FCKeditorAPI.GetInstance('page_content').GetXHTML();
+// 	}
+// 	var u = new Ajax.Updater('content_field', '<%= content_switch_path() %>', {
+// 		//asynchronous:true, DEFAULT
+// 		evalScripts:true, parameters: {
+// 			old_content_type: $F('old_content_type'),
+// 			content_type: $F('page_content_type'),
+// 			content: theContent
+// 		},
+// 		onCreate: function(requestor, xhr_obj){
+// 			Element.show('change_type_progress');
+// 		},
+// 		onComplete: function(){
+// 			Element.hide('change_type_progress');
+// 		},
+// 	});
+// 	return false;
+// }
 </script>
 <%
 end
@@ -36,40 +60,66 @@ if @page.parent
 <%
 end
 %><tbody>
+<% unless @page.is_home?
+	# special case — don’t show subpath or title for home page
+	-%>
 <tr><th><label for="page_subpath">Subpath:</label></th>
 	<td><%= h(@page.parent.sitepath) if @page.parent
-	%><%= (@page.parent && @page.parent.sitepath == '/') ? nil : '/'
+	%><%= (@page.parent.nil? || (@page.parent && @page.parent.sitepath == '/')) ? nil : '/'
 	%><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
-	<br />Setting the subpath will set the web-link url for this page
-	(e.g., “http://website/<b>subpath</b>”).
-	<br />If this page has a parent page, the subpath will be relative to the parent page’s subpath (e.g., “http://website/parent-subpath/<b>subpath</b>”).
-	<br />Only the following characters may be used, no spaces: <b>A-Z a-z 0-9 - _</b></td></tr>
+	<br /><span class="help">The subpath determines the web-link url for this page<%
+	if @page.parent && @page.parent.sitepath != '/'
+		%>, relative to the parent page’s subpath<%
+	end
+	%> (e.g., “http://website/<%= @page.parent ? "#{h(@page.parent.sitepath)}/" : '' %><b>subpath</b>”).
+	<br />Only the following characters may be used, no spaces: <b>A-Z a-z 0-9 - _</b></span></td></tr>
 <tr class="alternate"><th><label for="page_title">Title:</label></th>
 	<td><%= f.text_field :title %></td></tr>
+<% end -%>
 <tr><th><label for="page_description">Description:</label></th>
 	<td><%= f.text_field :description %>
-	<br />The description is used when listing pages, and by some search engines.</td></tr>
-<tr class="alternate"><th><label for="page_content">Content:</label></th>
-	<td id="content_field"><%= render :partial=>'content_field', :locals=>{:f=>f, :content_type=>@page.content_type} %></td></tr>
-<tr class="alternate"><th><label for="page_content_type">Content Type:</label></th>
-	<td><%
-	content_types = [
-		#['Auto-formatted text (Markdown)','text/markdown'],
-		#['Message Board text (BBCode)','text/bbcode'],
-		['Plain text','text/plain'],
-		['HTML formatted text','text/html'],
-		['Textilize','text/textilize']
-		]
-	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
-	%><%= f.select :content_type, content_types, {}, {:onchange=>'return change_content_type();'} %>
-<span id="change_type_progress" style="display:none" onclick="Element.hide('change_type_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Converting Content…</span>
-<%	#	<br />Auto-formatted text allows you to use the formatting described above.
-%>		<br />Plain text is just plain paragraphs, no special formatting.
-		<br />HTML is for text formatted using standard HTML markup.</td></tr>
-<tr><th><label for="page_keywords">Keywords:</label></th>
+	<br /><span class="help">The description is used when listing pages, and by some search engines.</span></td></tr>
+<tr class="alternate"><th><label for="page_keywords">Keywords:</label></th>
 	<td><%= f.text_field :keywords %>
-		<br />Comma-separated.</td></tr>
-</tbody>
+	<br /><span class="help">Comma-separated.</span></td></tr>
+</tbody></table>
+<% end
+
+%>
+<h2>Main Content</h2>
+<div id="chunks-content">
+<% chunks.each do |chunk|
+	if chunk.part == 'content'
+		%><%= render :partial=>'chunk_fields', :locals=>{:chunk=>chunk} %>
+<%	end
+end %></div>
+<h3>Add a Chunk to the Main Content</h3>
+<table cellspacing="0" width="60%" style="width:66%">
+<tbody><tr><td class="column" style="width:50%;"><a class="button" href="" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
+	<br />Directly enter content to be displayed on the page. Can include pictures.</td>
+<% #<td class="column" style="width:33%;"><a class="button" href="" title="Add a new Item Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Item</a>
+#	<br />Display content from a specific item (such as an event, file, etc.)</td>
+%><td class="column" style="width:50%;"><a class="button" href="" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
+	<br />A list of items, such as articles or events.</td></tr></tbody>
+</table>
+
+<h2>Sidebar</h2>
+<div id="chunks-sidebar">
+<% chunks.each do |chunk|
+	if chunk.part == 'sidebar'
+		%><%= render :partial=>'chunk_fields', :locals=>{:chunk=>chunk} %>
+<%	end
+end %></div>
+<h3>Add a Chunk to the Sidebar</h3>
+<table cellspacing="0" width="60%" style="width:66%">
+<tbody><tr><td class="column" style="width:50%;"><a class="button" href="" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
+	<br />Directly enter content to be displayed on the page. Can include pictures.</td>
+<% #<td class="column" style="width:33%;"><a class="button" href="" title="Add a new Item Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Item</a>
+#	<br />Display content from a specific item (such as an event, file, etc.)</td>
+%><td class="column" style="width:50%;"><a class="button" href="" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
+	<br />A list of items, such as articles or events.</td></tr></tbody>
+</table>
+
+<table cellspacing="0">
 <tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
 </table>
-<% end %>

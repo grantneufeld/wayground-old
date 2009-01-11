@@ -1,0 +1,100 @@
+<%
+# REQUIRED
+# chunk
+chunk_label = "chunk_#{chunk.id}"
+field_prefix = "chunks[#{chunk.id}]"
+
+# TODO: ••• set input element ids appropriately
+# TODO: ••• set input element names appropriately chunk[]
+
+fields_for chunk do |f|
+%>
+<div id="<%= chunk_label %>" class="form_chunk">
+<% # style="cursor:move;"
+#= draggable_element chunk_label, :ghosting=>true, :revert=>true 
+-%>
+<input type="hidden" name="<%= field_prefix %>[type]" value="<%= chunk.xmltag_type %>" />
+<table cellspacing="0">
+<thead><tr><th colspan="2"><h3 class="flat-left" style="vertical-align:middle;"><a href="" title="Move this chunk up on the page (relative to the other chunks)"><img src="/icon/arrow_up.png" width="16" height="16" alt="up" align="top" class="icon" /></a><a href="" title="Move this chunk down on the page (relative to the other chunks)"><img src="/icon/arrow_down.png" width="16" height="16" alt="down" align="top" class="icon" /></a>
+Chunk
+<a href="#" onclick="Element.remove('<%= chunk_label %>'); return false;" title="delete this chunk from the page"><img src="/icon/delete.png" width="16" height="16" alt="delete" align="top" class="icon" /></a></h3>
+<%= f.hidden_field :part, :name=>"#{field_prefix}[part]", :id=>"#{chunk_label}_part" %>
+<%= f.hidden_field :position, :name=>"#{field_prefix}[position]", :id=>"#{chunk_label}_position" %>
+<% flavours = [ ['Normal',''], ['Feature','feature'] ]
+%><%= f.select :flavour, flavours, {}, {:name=>"#{field_prefix}[flavour]", :id=>"#{chunk_label}_flavour", :class=>"flat-right", :title=>'Specify the flavour for this chunk of the page (‘featured’ items will be highlghted)'} %></th></tr></thead>
+<tbody>
+<%
+#<tr><td colspan="2"><label for="<%= chunk_label % >_part">Part:</label>
+#	<% parts = [ ['Content','content'], ['Sidebar','sidebar'] ]
+#	% ><%= f.select :part, parts, {}, {:name=>"#{field_prefix}[part]", :id=>"#{chunk_label}_part"} % >
+#<label for="<%= chunk_label % >_position">Position:</label>
+#	<%= f.text_field :position, :size=>4, :class=>'fixed', :name=>"#{field_prefix}[position]", :id=>"#{chunk_label}_position" % ></td></tr>
+
+
+if chunk.is_a? RawChunk
+-%>
+<tr id="<%= chunk_label %>_content_wrap"><td colspan="2"><%= render :partial=>'content_field', :locals=>{:f=>f, :content_type=>@page.content_type, :field_id=>"#{chunk_label}_content", :name_prefix=>"#{field_prefix}"} %>
+<br /><input type="hidden" name="#{field_prefix}_old_content_type" value="<%= h chunk.content_type %>" id="#{chunk_label}_old_content_type" />
+<label for="<%= chunk_label %>_content_type">Content Type:</label>
+<%	content_types = [
+		['Formatted (HTML) text','text/html'],
+		['Plain text','text/plain'],
+		#['Markdown auto-formatted text','text/markdown'],
+		#['Message Board text (BBCode)','text/bbcode'],
+		['Textilize','text/textilize']
+		]
+	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
+	%><%= f.select :content_type, content_types, {}, {:onchange=>"return change_content_type('#{chunk_label}');", :name=>"#{field_prefix}[content_type]", :id=>"#{chunk_label}_content_type"} %>
+<span id="<%= h chunk_label %>_change_type_progress" style="display:none" onclick="Element.hide('<%= h chunk_label %>_change_type_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Converting Content…</span>
+<%	#	<br />Auto-formatted text allows you to use the formatting described above.
+%>		<br /><span class="help">Formatted text uses standard HTML markup to define headings, tables, bold, italic, etc.
+		<br />Plain text is just plain paragraphs, no special formatting.</span></td></tr>
+<%
+
+elsif chunk.is_a? ItemChunk
+-%>
+<tr><th><label for="<%= chunk_label %>_item_type">Item Type:</label></th>
+	<td><%= f.select :item_type, chunk.recognized_item_types,
+		{:id=>"#{chunk_label}_item_type", :name=>"#{field_prefix}[item_type]", :id=>"#{chunk_label}_item_type"} %></td></tr>
+<tr class="alternate"><th><label for="<%= chunk_label %>_item">Item:</label></th>
+	<td>••• search by key or id, :name=>"#{field_prefix}[item_id]", :id=>"#{chunk_label}_item_id"</td></tr>
+
+<%
+
+elsif chunk.is_a? ListChunk
+-%>
+<tr><th><label for="<%= chunk_label %>_item_type">Item Type:</label></th>
+	<td><%= f.select :item_type, chunk.recognized_item_types,
+		{:id=>"#{chunk_label}_item_type", :name=>"#{field_prefix}[item_id]", :id=>"#{chunk_label}_item_id"} %></td></tr>
+<tr class="alternate"><th><label for="<%= chunk_label %>_parent">Parent Item:</label></th>
+	<td>Optionally restrict the list to items under this “parent” item.
+	<br />••• search by key or id, :name=>"#{field_prefix}[parent_id]", :id=>"#{chunk_label}_parent_id"</td></tr>
+<tr><th><label for="<%= chunk_label %>_user">User:</label></th>
+	<td>Optionally restrict the list to items owned by a specific user.
+	<br />••• search by key or id, :name=>"#{field_prefix}[user_id]", :id=>"#{chunk_label}_user_id"</td></tr>
+<tr class="alternate"><th><label for="<%= chunk_label %>_key">Keyword/phrase:</label></th>
+	<td>Optionally restrict the list to items that can be found with the keyword or key-phrase.
+	<br /><%= f.text_field :key, :name=>"#{field_prefix}[key]", :id=>"#{chunk_label}_key" %></td></tr>
+<tr><th><label for="<%= chunk_label %>_tag">Tag:</label></th>
+	<td>Optionally restrict the list to items tagged with:
+	<br /><%= f.text_field :tag, :name=>"#{field_prefix}[tag]", :id=>"#{chunk_label}_tag" %></td></tr>
+
+
+<%
+max
+paginate
+# date restrictions (before_date, after_date)
+# template
+-%>
+<%
+
+else
+	raise
+end
+%>
+
+</tbody></table>
+</div>
+<%
+end
+%>

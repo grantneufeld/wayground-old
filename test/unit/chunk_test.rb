@@ -5,7 +5,7 @@ class ChunkTest < ActiveSupport::TestCase
 	fixtures :pages, :users, :paths
 
 	def default_params(overrides={})
-		{:page_id=>1, :block=>'content', :position=>1, :flavour=>'feature'}.merge(overrides)
+		{:page_id=>1, :part=>'content', :position=>1, :flavour=>'feature'}.merge(overrides)
 	end
 	def xmltag_from_params(params, close_it=true)
 		param_strs = []
@@ -29,7 +29,7 @@ class ChunkTest < ActiveSupport::TestCase
 		chunk = Chunk.from_xmltag xmltag, content
 		assert_kind_of RawChunk, chunk
 		assert_equal params[:page_id], chunk.page_id
-		assert_equal params[:block], chunk.block
+		assert_equal params[:part], chunk.part
 		assert_equal params[:position], chunk.position
 		assert_equal params[:flavour], chunk.flavour
 		assert_equal params[:content_type], chunk.content_type
@@ -44,7 +44,7 @@ class ChunkTest < ActiveSupport::TestCase
 		chunk = Chunk.from_xmltag xmltag
 		assert_kind_of ItemChunk, chunk
 		assert_equal params[:page_id], chunk.page_id
-		assert_equal params[:block], chunk.block
+		assert_equal params[:part], chunk.part
 		assert_equal params[:position], chunk.position
 		assert_equal params[:flavour], chunk.flavour
 		assert_equal pages(:one), chunk.item
@@ -63,7 +63,7 @@ class ChunkTest < ActiveSupport::TestCase
 		chunk = Chunk.from_xmltag xmltag
 		assert_kind_of ListChunk, chunk
 		assert_equal params[:page_id], chunk.page_id
-		assert_equal params[:block], chunk.block
+		assert_equal params[:part], chunk.part
 		assert_equal params[:position], chunk.position
 		assert_equal params[:flavour], chunk.flavour
 		assert_equal params[:key], chunk.key
