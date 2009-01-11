@@ -1,29 +1,30 @@
 <%
 # TODO: ADD "<meta name=\"keywords\" content=\"#{@page.keywords}\" />" to <head>
--%>
-<h1><%= h @page.title %></h1>
+if @page.content_type == 'text/plain'
+	%><h1><%= h @page.title %></h1>
+<% end -%>
 <%= process_and_format(@page.content, @page.content_type) %><%
 if current_user and current_user.admin
 	content_for("footermenu") do
 		%><%=
 		link_to('<img src="/icon/new.png" width="16" height="16" alt="New" ' +
-				'class="diricon" /> Add Sub-page',
+				'align="top" class="diricon" /> Add Sub-page',
 			{:controller=>'pages', :action=>'new', :id=>@page},
-			{:title=>"Add a new sub-page"})
+			{:class=>'button', :title=>"Add a new sub-page"})
 			%><span class="separator">.</span>
 <%=	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
-				'class="diricon" /> Edit this page',
+				'align="top" class="diricon" /> Edit this page',
 			edit_page_path(@page),
-			{:title=>"Edit this page"})
+			{:class=>'button', :title=>"Edit this page"})
 			%><span class="separator">.</span>
-<%=	link_to '<img src="/icon/delete.png" width="16" height="16"' +
-				' alt="Delete" class="diricon" /> Delete this page',
+<%=	link_to '<img src="/icon/delete.png" width="16" height="16" ' +
+				'alt="Delete" align="top" class="diricon" /> Delete this page',
 			page_path(@page),
 			{:method=>'delete',
 			:confirm=>
 				"Are you sure you want to permanently delete the page “#{@page.title}”?",
 			:href=>page_path(@page),
-			:title=>"Permanently delete this page"
+			:class=>'button', :title=>"Permanently delete this page"
 			} %><span class="separator">.</span><%
 	end
 end
