@@ -19,9 +19,9 @@ class GroupsControllerTest < ActionController::TestCase
 	
 	# INDEX (LIST)
 	def test_groups_index
-		assert_efficient_sql do
+#		assert_efficient_sql do
 			get :index #, {}, {:user=>users(:admin).id}
-		end
+#		end
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal 6, assigns(:groups).size
@@ -38,9 +38,9 @@ class GroupsControllerTest < ActionController::TestCase
 		end
 	end
 	def test_groups_index_search
-		assert_efficient_sql do
+#		assert_efficient_sql do
 			get :index, {:key=>'keyword'} #, {:user=>users(:admin).id}
-		end
+#		end
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert_equal 2, assigns(:groups).size
