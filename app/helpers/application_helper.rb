@@ -57,24 +57,39 @@ module ApplicationHelper
 	
 	# break content into Chunks based on <wg:chunk …> tags.
 	def process_wayground_content(content, confirmed_urls=true)
+		content_rendered = []
+		@content_for_sidebar ||= ''
 		chunks = Chunk.array_from_text(content)
+		chunks.sort! {|a,b|
+			if (a.part <=> b.part) == 0
+				a.position <=> b.position
+			else
+				a.part <=> b.part
+			end
+		}
 		chunks.each do |chunk|
-			case chunk.class
-			when RawChunk :
+			case chunk.class.name
+			when 'RawChunk' :
 				chunk.rendered_content = format_content(
 					chunk.content, chunk.content_type, confirmed_urls)
-			when ItemChunk :
+			when 'ItemChunk' :
 				chunk.rendered_content = render_to_string(
 					:partial=>'templates/item_chunk', :locals=>{:chunk=>chunk})
-			when ListChunk :
+			when 'ListChunk' :
 				chunk.rendered_content = render_to_string(
 					:partial=>'templates/list_chunk', :locals=>{:chunk=>chunk})
 			# other chunk types
 			else
 				chunk.rendered_content = "<!-- unrecognized Chunk type #{chunk.class} -->"
 			end
+			if chunk.part == 'sidebar'
+				@content_for_sidebar +=
+					sidebar_section_start + chunk.rendered_content + sidebar_section_end
+			else
+				content_rendered << chunk.rendered_content
+			end
 		end
-		chunks
+		content_rendered.join("\r\n")
 	end
 	# convert a text/wayground content block to chunks
 	def wayground_content_to_chunks(content)

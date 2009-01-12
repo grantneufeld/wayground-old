@@ -26,7 +26,7 @@ class Chunk
 			end
 			# pull out wg:chunk elements with content
 			t.scan /(<wg:chunk [^>]+[^\/>]>)[\r\n]*(.*?)[\r\n]*<\/wg:chunk>/ do |match|
-				chunks << Chunk.from_xmltag(match[0], match[0])
+				chunks << Chunk.from_xmltag(match[0], match[1])
 			end
 		end
 		chunks
