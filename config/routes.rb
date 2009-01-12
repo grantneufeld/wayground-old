@@ -52,9 +52,11 @@ ActionController::Routing::Routes.draw do |map|
 	#	:conditions=>{:method=>:get} #, :url=>nil, :id=>nil
 	map.root :controller=>'paths', :action=>'show'
 	map.resources :paths
-	map.resources :pages
 	map.content_switch '/pages/content_type_switch', :controller=>'pages',
 		:action=>'content_type_switch', :conditions=>{:method=>:post}
+	map.new_page_chunk '/pages/new_chunk', :controller=>'pages',
+		:action=>'new_chunk' #, :conditions=>{:method=>:post}
+	map.resources :pages
 	
 	# DOCUMENTS / FILES
 	map.private_doc '/private/*filename', :controller=>'documents',

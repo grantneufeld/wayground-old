@@ -175,7 +175,10 @@ class Chunk
 	
 	# mock id for chunk objects
 	def id
-		"#{page_id.nil? ? 0 : page_id}_#{part}_#{position}"
+		@id ||= "#{page_id.nil? ? 0 : page_id}_#{part}_#{position}"
+	end
+	def id=(i)
+		@id = i
 	end
 	
 	def page_id

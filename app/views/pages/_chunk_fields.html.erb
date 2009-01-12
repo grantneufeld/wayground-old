@@ -1,6 +1,20 @@
 <%
 # REQUIRED
 # chunk
+unless chunk
+	if chunk_type == 'raw'
+		chunk = RawChunk.new
+	elsif chunk_type == 'item'
+		chunk = ItemChunk.new
+	elsif chunk_type == 'list'
+		chunk = ListChunk.new
+	else
+		raise 'no chunk and no chunk_type specified'
+	end
+	chunk.page = @page
+end
+		
+
 chunk_label = "chunk_#{chunk.id}"
 field_prefix = "chunks[#{chunk.id}]"
 
@@ -33,7 +47,7 @@ Chunk
 
 if chunk.is_a? RawChunk
 -%>
-<tr id="<%= chunk_label %>_content_wrap"><td colspan="2"><%= render :partial=>'content_field', :locals=>{:f=>f, :content_type=>@page.content_type, :field_id=>"#{chunk_label}_content", :name_prefix=>"#{field_prefix}"} %>
+<tr id="<%= chunk_label %>_content_wrap"><td colspan="2"><%= render :partial=>'content_field', :locals=>{:f=>f, :content=>chunk.content, :content_type=>chunk.content_type, :field_id=>"#{chunk_label}_content", :name_prefix=>"#{field_prefix}"} %>
 <br /><input type="hidden" name="#{field_prefix}_old_content_type" value="<%= h chunk.content_type %>" id="#{chunk_label}_old_content_type" />
 <label for="<%= chunk_label %>_content_type">Content Type:</label>
 <%	content_types = [

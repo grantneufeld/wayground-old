@@ -2,6 +2,7 @@
 # requires @page
 # requires f to be set as the fields for @page
 
+content ||= (@page.nil? ? '' : @page.content)
 name_prefix ||= 'page'
 field_id ||= 'page_content'
 content_type ||= 'text/html'
@@ -22,7 +23,7 @@ if content_type == 'text/html'
 	js_path = "#{controller.relative_url_root}/javascripts/"
 	base_path = "#{js_path}fckeditor/"
 	
-	%><textarea id="<%= field_id %>" name="<%= name_prefix %>[content]" rows="<%= rows %>" cols="<%= cols %>"><%= h @page.content %></textarea>
+	%><textarea id="<%= field_id %>" name="<%= name_prefix %>[content]" rows="<%= rows %>" cols="<%= cols %>"><%= h content %></textarea>
 <%=	javascript_tag(
 "var oFCKeditor = new FCKeditor('#{field_id}', '#{width}', '#{height}', '#{toolbarset}');
 oFCKeditor.BasePath = '#{base_path}'

@@ -166,7 +166,24 @@ class PagesController < ApplicationController
 			@content = params[:content]
 		end
 		@page = Page.new(:content=>@content, :content_type=>@content_type)
-		render :layout=>false
+		#render :layout=>false
+		respond_to do |format|
+			format.html # index.html.erb
+			format.js   { render :layout=>false }
+			format.xml  { render :xml=>@page.to_xml }
+		end
+	end
+	
+	def new_chunk
+		#@part = params[:part]
+		#@chunk_type = params[:type]
+		#@position = params[:position]
+		@chunk = Chunk.create(params)
+		respond_to do |format|
+			format.html # index.html.erb
+			format.js   { render :layout=>false }
+			format.xml  { render :xml=>@chunk.to_xml }
+		end
 	end
 	
 	# report an error result
