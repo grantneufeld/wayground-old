@@ -1,7 +1,7 @@
 production: &production_settings
   #SITE: :wayground
-  ## Wayground site id is sum of all site ids
-  ID: 0
+  # Site ID zero means admin site - allow access to all pages, etc.
+  SITE_ID: 0
   #SITE_IDS: [1,2,4,8,16,32,64,128,256,512]
   ROOT: 'http://wayground.ca'
   #FILE_ROOT: '/file/'

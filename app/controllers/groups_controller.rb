@@ -7,7 +7,7 @@ class GroupsController < ApplicationController
 		@key = params[:key]
 		@groups = Group.paginate(
 			:per_page=>10, :page=>params[:page], :order=>'groups.name',
-			:conditions=>Group.search_conditions(true, current_user, @key)
+			:conditions=>Group.search_conditions({:only_visible=>true, :u=>current_user, :key=>@key})
 			)
 		@page_title = 'Groups'
 		unless @key.blank?

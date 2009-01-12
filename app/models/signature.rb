@@ -31,23 +31,23 @@ class Signature < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
-	# return a conditions string for find.
-	# only_public is ignored (used in some other classes)
-	# u is the current_user to use to determine private access. [currently ignored]
-	# key is a search restriction key
-	# only_confirmed - only show signatures that have been confirmed
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_confirmed=true)
-		constraints = []
-		values = []
-		if only_confirmed
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :only_confirmed restricts to only signatures that have been confirmed
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		if p[:only_confirmed]
 			# only signatures that have been confirmed
-			constraints << 'signatures.confirmed_at IS NOT NULL'
+			strs << 'signatures.confirmed_at IS NOT NULL'
 		end
-		unless key.blank?
-			constraints << 'signatures.name LIKE ?'
-			values += ["%#{key}%"] * 3
+		unless p[:key].blank?
+			strs << 'signatures.name LIKE ?'
+			vals += ["%#{p[:key]}%"] * 3
 		end
-		[constraints.join(' AND ')] + values
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'signatures.id'

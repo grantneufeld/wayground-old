@@ -19,40 +19,51 @@ class Path < ActiveRecord::Base
 	
 	
 	# the home page is a special page
-	def self.find_home(site_id = nil)
-		if site_id.nil?
-			@@home_path ||= find(:first,
-				:conditions=>'site_id IS NULL AND sitepath = "/"')
-		else
-			@@home_path ||= find(:first,
-				:conditions=>['site_id = ? AND sitepath = "/"', site_id])
-		end
+	def self.find_home(site_id=nil)
+		@@home_path ||= find(:first,
+			:conditions=>search_conditions({:site_id=>site_id},
+				['sitepath = "/"']))
 	end
 	# find all of the home pages for the various sites
 	def self.find_homes
-		find(:all, :conditions=>'sitepath = "/"')
+		find(:all, :conditions=>search_conditions({:site_id=>false},
+			['sitepath = "/"']))
 	end
 	
 	# keyword search
-	def self.find_by_key(key) #, parent=nil)
-		find(:all, :conditions=>search_conditions(false, nil, key),
+	# site_id restricts to specified site, current site if nil. Special Case: false puts no site restriction.
+	def self.find_by_key(key, site_id=nil) #, parent=nil)
+		find(:all, :conditions=>search_conditions({:key=>key, :site_id=>site_id}),
 			:order=>default_order, :include=>default_include)
 	end
-	# return a conditions string for find.
-	# only_public is ignored (used in some other classes)
-	# u is ignored (used in some other classes)
-	# key is a search restriction key
-	# only_active is ignored (used in some other classes)
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
-		s = []
-		unless key.blank?
-			s << 'paths.sitepath like ?'
-			s << "%#{key}%"
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :only_active restricts to only items that have started and not ended
+	# - :site_id restricts to specified site, current site if nil. Special Case: false puts no site restriction.
+	# - :u is the current_user to use to determine access to private items.
+	# - (ignored: :key, :only_active, :site_id, :u)
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	## only_public=false, u=nil, key=nil, only_active=false, site_id=nil
+	def self.search_conditions(p={}, strs=[], vals=[])
+		unless p[:site_id] == false
+			p[:site_id] ||= WAYGROUND['SITE_ID'] if WAYGROUND['SITE_ID'] > 0
+			if p[:site_id].nil?
+				strs << 'paths.site_id IS NULL'
+			else
+				strs << 'paths.site_id = ?'
+				vals << p[:site_id]
+			end
 		end
-		s
-	end
-	def self.default_order
-		'paths.sitepath'
+		unless p[:key].blank?
+			strs << 'paths.sitepath like ?'
+			vals << "%#{p[:key]}%"
+    	end
+    	[strs.join(' AND ')] + vals
+    end
+    def self.default_order
+    	'paths.sitepath'
 	end
 	def self.default_include
 		:item

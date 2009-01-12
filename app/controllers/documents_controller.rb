@@ -35,7 +35,7 @@ class DocumentsController < ApplicationController
 		@documents = Document.paginate :per_page=>10, :page=>params[:page],
 			:order=>'documents.filename',
 			:conditions=>Document.search_conditions(
-				false, current_user, params[:key])
+				{:u=>current_user, :key=>params[:key]})
 		@page_title = 'Documents'
 		@page_title += ": ‘#{params[:key]}’" unless params[:key].blank?
 	end

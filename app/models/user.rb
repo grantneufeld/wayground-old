@@ -55,18 +55,18 @@ class User < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
-	# return a conditions string for find.
-	# only_public is ignored (used in some other classes)
-	# u is the current_user to use to determine private access. [currently ignored]
-	# key is a search restriction key
-	# only_active is ignored (used in some other classes)
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
-		s = []
-		unless key.blank?
-			s << 'users.nickname like ?'
-			s << "%#{key}%"
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		unless p[:key].blank?
+			strs << 'users.nickname like ?'
+			vals << "%#{p[:key]}%"
 		end
-		s
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'users.nickname, users.id'

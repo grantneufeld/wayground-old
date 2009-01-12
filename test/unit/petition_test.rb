@@ -107,15 +107,15 @@ class PetitionTest < ActiveSupport::TestCase
 	
 	def test_petition_search_conditions
 		assert_equal [''], Petition.search_conditions
-		assert_equal [''], Petition.search_conditions(false, users(:admin))
+		assert_equal [''], Petition.search_conditions({:u=>users(:admin)})
 		assert_equal ['(petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)',
 				'%keyword%', '%keyword%', '%keyword%'],
-			Petition.search_conditions(false, nil, 'keyword')
+			Petition.search_conditions({:key=>'keyword'})
 		assert_equal ['((petitions.start_at IS NULL OR petitions.start_at <= NOW()) AND (petitions.end_at IS NULL OR petitions.end_at > NOW()))'],
-			Petition.search_conditions(false, nil, nil, true)
+			Petition.search_conditions({:only_active=>true})
 		assert_equal ['((petitions.start_at IS NULL OR petitions.start_at <= NOW()) AND (petitions.end_at IS NULL OR petitions.end_at > NOW())) AND (petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)',
 				'%keyword%', '%keyword%', '%keyword%'],
-			Petition.search_conditions(false, users(:admin), 'keyword', true)
+			Petition.search_conditions({:u=>users(:admin), :key=>'keyword', :only_active=>true})
 	end
 	
 	

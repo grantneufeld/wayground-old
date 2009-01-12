@@ -110,28 +110,31 @@ class Document < ActiveRecord::Base
 		self.find(*args)
 	end
 	
-	# return a conditions string for find.
-	# u is the current_user to use to determine access to private documents.
-	# key is a search restriction key
-	# only_active is ignored (used in some other classes)
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
-		s = ['(documents.thumbnail IS NULL OR documents.thumbnail = "")']
-		if only_public or u.nil?
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :only_public restricts to only public documents
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		strs << '(documents.thumbnail IS NULL OR documents.thumbnail = "")'
+		if p[:only_public] or p[:u].nil?
 			# only public or no user
-			s[0] = 'documents.type != "DocPrivate" AND ' + s[0]
-		elsif u.admin?
+			strs << 'documents.type != "DocPrivate"'
+		elsif p[:u].admin?
 			# no restrictions
 		else
 			# document is public, or user owns the document
 			# TODO: future: search_conditions support for privacy restrictions
-			s[0] = '(documents.type != "DocPrivate" OR documents.user_id = ?) AND ' + s[0]
-			s << u.id
+			strs << '(documents.type != "DocPrivate" OR documents.user_id = ?)'
+			vals << p[:u].id
 		end
-		unless key.blank?
-			s[0] += " AND documents.filename LIKE ?"
-			s << "%#{key}%"
+		unless p[:key].blank?
+			strs << 'documents.filename LIKE ?'
+			vals << "%#{p[:key]}%"
 		end
-		s
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'documents.filename'

@@ -392,13 +392,9 @@ class ListChunk < Chunk
 	
 	def items(for_user=nil, offset=nil)
 		return nil if item_class.nil?
-		# ••• restrict by parent, user, before_date, after_date, tags
-		if key.blank?
-			conditions = nil
-		else
-			conditions = item_class.search_conditions(false, for_user, key, true)
-		end
-		item_class.find(:all, :conditions=>conditions,
+		# TODO: ••• restrict by parent, user, before_date, after_date, tags
+		item_class.find(:all,
+			:conditions=>item_class.search_conditions({:u=>for_user, :key=>key, :only_active=>true}),
 			:limit=>max, :offset=>offset,
 			:order=>item_class.default_order,
 			:include=>item_class.default_include)

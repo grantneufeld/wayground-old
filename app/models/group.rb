@@ -46,22 +46,23 @@ class Group < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
-	# return a conditions string for find.
-	# u is the current_user to use to determine access to private groups. [currently ignored]
-	# key is a search restriction key
-	# only_active is ignored (used in some other classes)
-	def self.search_conditions(only_visible=false, u=nil, key=nil, only_active=false)
-		constraints = []
-		values = []
-		if only_visible or u.nil?
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :only_visible restricts to groups that are visible
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		if p[:only_visible] or p[:u].nil?
 			# only public or no user
-			constraints << '(groups.is_visible = 1)'
+			strs << '(groups.is_visible = 1)'
 		end
-		unless key.blank?
-			constraints << "(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)"
-			values += ["%#{key}%"] * 3
+		unless p[:key].blank?
+			strs << "(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)"
+			vals += ["%#{p[:key]}%"] * 3
 		end
-		[constraints.join(' AND ')] + values
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'groups.name'

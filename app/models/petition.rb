@@ -28,23 +28,23 @@ class Petition < ActiveRecord::Base
 	
 	# CLASS METHODS
 
-	# return a conditions string for find.
-	# only_public is ignored (used in some other classes)
-	# u is the current_user to use to determine private access. [currently ignored]
-	# key is a search restriction key
-	# only_active - only petitions that have started and not ended
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
-		constraints = []
-		values = []
-		if only_active
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :only_active restricts to only items that have started and not ended
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		if p[:only_active]
 			# only petitions that are currently active
-			constraints << '((petitions.start_at IS NULL OR petitions.start_at <= NOW()) AND (petitions.end_at IS NULL OR petitions.end_at > NOW()))'
+			strs << '((petitions.start_at IS NULL OR petitions.start_at <= NOW()) AND (petitions.end_at IS NULL OR petitions.end_at > NOW()))'
 		end
-		unless key.blank?
-			constraints << "(petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)"
-			values += ["%#{key}%"] * 3
+		unless p[:key].blank?
+			strs << "(petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)"
+			vals += ["%#{p[:key]}%"] * 3
 		end
-		[constraints.join(' AND ')] + values
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'petitions.title'

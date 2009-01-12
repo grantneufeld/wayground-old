@@ -27,7 +27,7 @@ class DocumentTest < ActiveSupport::TestCase
 		search_condition_tests.each do |sc|
 			only_public = sc[0]
 			user = sc[1].nil? ? nil : users(sc[1])
-			conditions = Document.search_conditions(only_public, user)
+			conditions = Document.search_conditions({:only_public=>only_public, :u=>user})
 			docs = Document.find(:all, :conditions=>conditions)
 			bad_docs = expect_privacy(docs, only_public, user)
 			assert bad_docs.size == 0, :message=>"found #{bad_docs.size} private documents that should not have been shown when " +

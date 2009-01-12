@@ -50,21 +50,21 @@ class Page < ActiveRecord::Base
 	
 	# keyword search
 	def self.find_by_key(key) #, parent=nil)
-		find(:all, :conditions=>search_conditions(false, nil, key),
+		find(:all, :conditions=>search_conditions({:key=>key}),
 			:order=>default_order)
 	end
-	# return a conditions string for find.
-	# only_public is ignored (used in some other classes)
-	# u is ignored (used in some other classes)
-	# key is a search restriction key
-	# only_active is ignored (used in some other classes)
-	def self.search_conditions(only_public=false, u=nil, key=nil, only_active=false)
-		s = []
-		unless key.blank?
-			s << '(pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?)'
-			s += (["%#{key}%"] * 4)
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :u is the current_user to use to determine access to private items.
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		unless p[:key].blank?
+			strs << '(pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?)'
+			vals += (["%#{p[:key]}%"] * 4)
 		end
-		s
+		[strs.join(' AND ')] + vals
 	end
 	def self.default_order
 		'pages.title'
