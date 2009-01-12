@@ -5,30 +5,56 @@ row_id ||= "page_#{page.id}"
 
 %><li id="<%= row_id %>" class="<%= page.css_class('dir-') %><%= cycle '', ' alternate' %>"><%
 
-if page.children.size > 0 #or page.is_container?
-	if page.children.size < 1
-		%><img src="/icon/expand-off.png" width="16" height="16" alt="Empty" class="diricon" /><%
-	elsif false #pages
-		%><img src="/icon/expanded.png" width="16" height="16" alt="Expanded" class="diricon" /><%
-	else
-		%><%=
-		link_to_remote('<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
-			{:url=>{:controller=>'pages', :action=>'index', :id=>page},
-			:method=>:get,
-			:loading=>"Element.update('#{row_id}_expand','<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\" alt=\"Loading…\" class=\"diricon\" />');",
-			:loaded=>"Element.replace('#{row_id}_expand','<img src=\"/icon/expanded.png\" width=\"16\" height=\"16\" alt=\"Expanded\" class=\"diricon\" />');",
-			:update=>"#{row_id}_pages"},
-			{:href=>url_for({:controller=>'pages',:action=>'index', :id=>page}),
-				:title => "Show the children of this #{page.class}",
-				:id=>"#{row_id}_expand"}) %><%
-	end %><span class="separator">.</span>
+if page.children.nil? or page.children.size < 1
+	%><img src="/icon/expand-off.png" width="16" height="16" alt="Empty" class="diricon" title="There are no sub-pages for this page" /><%
+elsif false #pages
+	%><img src="/icon/expanded.png" width="16" height="16" alt="Expanded" class="diricon" /><%
+else
+	
+	# {row_id}_busy indicator
+	%><span class="tight"><img src="/images/indicator.gif" width="16" height="16" alt="Loading…" class="diricon" id="<%= row_id %>_busy" style="display:none;" /><%=
+	
+	# {row_id}_expand_remote Expander for when children not yet loaded
+	link_to_remote(
+		'<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
+		{:url=>{:controller=>'pages', :action=>'index', :id=>page},
+		:method=>:get,
+		:loading=>"Element.show('#{row_id}_busy'); Element.hide('#{row_id}_expand_remote');",
+		:loaded=>"Element.show('#{row_id}_collapse'); Element.hide('#{row_id}_busy');",
+		:update=>"#{row_id}_pages"},
+		{:href=>url_for({:controller=>'pages',:action=>'index', :id=>page}),
+			:title=>"Show the children of this #{page.class}",
+			:id=>"#{row_id}_expand_remote"}
+	) %><%=
+	
+	# {row_id}_expand Expander for when children already loaded
+	link_to_function(
+		'<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
+		"Element.show('#{row_id}_pages');
+		Element.show('#{row_id}_collapse');
+		Element.hide('#{row_id}_expand');",
+		:title=>"Show the children of this #{page.class}",
+		:id=>"#{row_id}_expand",
+		:style=>'display:none;'
+	) %><%=
+	
+	# {row_id}_collapse Collapser - hides children
+	link_to_function(
+		'<img src="/icon/expanded.png" width="16" height="16" alt="Collapse" class="diricon" />',
+		"Element.hide('#{row_id}_pages');
+		Element.show('#{row_id}_expand');
+		Element.hide('#{row_id}_collapse');",
+		:title=>"Hide the children of this #{page.class}",
+		:id=>"#{row_id}_collapse",
+		:style=>'display:none;'
+	) %></span><%
+end %><span class="separator">.</span>
 <%
-end
 
 %><%= link_to page.title, page.sitepath, {:title=>page.description} %><%
 
 if page.children.size > 0 %>
-<span class="meta">(<%= page.children.size %> page<%= page.children.size != 1 ? 's' : '' %>)</span>
+<span class="meta">(<%= page.children.size %> sub-page<%= page.children.size != 1 ? 's' : '' %>)</span>
 <%
 end
 
@@ -69,11 +95,13 @@ if current_user && current_user.admin
 <%
 end
 
+%><ul id="<%= row_id %>_pages">
+<%
 #page_path(page)
 if pages.size > 0
-%><ul id="<%= row_id %>_pages">
-<%= render :partial=>'page', :collection=>pages %>
-</ul><%
+%><%= render :partial=>'page', :collection=>pages %>
+<%
 end
+%></ul><%
 
 %></li>

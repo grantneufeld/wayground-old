@@ -34,7 +34,7 @@ class PagesController < ApplicationController
 		end
 		respond_to do |format|
 			format.html # index.html.erb
-			format.js   { render :partial=>'page', :collection=>@pages }
+			format.js   { render :action=>'index_sublist', :layout=>false }
 			format.xml  { render :xml => @pages.to_xml }
 		end
 	end
