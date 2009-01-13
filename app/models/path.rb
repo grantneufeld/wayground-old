@@ -4,7 +4,7 @@
 # (such as Pages, Events, etc.).
 class Path < ActiveRecord::Base
 	validates_presence_of :sitepath
-	validates_uniqueness_of :sitepath
+	validates_uniqueness_of :sitepath, :scope=>[:site_id]
 	validates_format_of :sitepath, :allow_nil=>true,
 		:with=>/\A\/(([\w_\-]+\/?)+(\.[\w_\-]+|\/)?)?\z/,
 		:message=>'must begin with a ‘/’ and be letters, numbers, dashes, underscores and/or slashes, with an optional extension'
