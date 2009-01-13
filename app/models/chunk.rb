@@ -210,7 +210,8 @@ class Chunk
 	
 	# whitelist of classes that can be displayed
 	def recognized_item_types
-		['Document', 'DocFile', 'DocImage', 'DocPrivate', 'Group', 'Page', 'Path', 'Petition', 'Signature', 'User', 'Weblink']
+		# , 'DocFile', 'DocImage', 'DocPrivate', 'Path'
+		['Article', 'Document', 'Group', 'Page', 'Petition', 'Signature', 'User', 'Weblink']
 	end
 	
 	# t must be a class name for a descendent of ActiveRecord::Base
@@ -319,18 +320,19 @@ class ItemChunk < Chunk
 end
 
 class ListChunk < Chunk
-	attr_accessor :before_date, :after_date, :tags, :key
+	attr_accessor :before_date, :after_date, :tags, :key, :author, :issue
 		# :item_type, :parent_id, :user_id, :max, :paginate, :template_id
 	
 	def self.accessible_attrs
-		super + ['item_type', 'parent_id', 'user_id', 'before_date', 'after_date', 'tags', 'key', 'max', 'paginate', 'template_id']
+		super + ['item_type', 'parent_id', 'user_id', 'before_date', 'after_date', 'tags', 'key', 'author', 'issue', 'max', 'paginate', 'template_id']
 	end
 	
 	def attributes
 		super.merge({'item_type'=>item_type, 'parent_id'=>parent_id,
 			'user_id'=>user_id, 'before_date'=>before_date,
-			'after_date'=>after_date, 'tags'=>tags, 'key'=>key, 'max'=>max,
-			'paginate'=>paginate, 'template_id'=>template_id})
+			'after_date'=>after_date, 'tags'=>tags, 'key'=>key, 'author'=>author,
+			'issue'=>issue, 'max'=>max,	'paginate'=>paginate,
+			'template_id'=>template_id})
 	end
 	
 	def xmltag_type
@@ -396,8 +398,12 @@ class ListChunk < Chunk
 	def items(for_user=nil, offset=nil)
 		return nil if item_class.nil?
 		# TODO: ••• restrict by parent, user, before_date, after_date, tags
+		condition_params = {:u=>for_user, :key=>key, :only_active=>true}
+		if item_type == 'Article'
+			condition_params.merge({:author=>author, :issue=>issue})
+		end
 		item_class.find(:all,
-			:conditions=>item_class.search_conditions({:u=>for_user, :key=>key, :only_active=>true}),
+			:conditions=>item_class.search_conditions(condition_params),
 			:limit=>max, :offset=>offset,
 			:order=>item_class.default_order,
 			:include=>item_class.default_include)

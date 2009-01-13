@@ -56,7 +56,17 @@ class PagesController < ApplicationController
 	
 	# form for adding a page
 	def new
-		@page = Page.new(params[:page])
+		
+		if params[:page]
+			page_type = params[:page].delete(:type)
+		else
+			page_type = nil
+		end
+		if page_type == 'Article'
+			@page = Article.new(params[:page])
+		else
+			@page = Page.new(params[:page])
+		end
 		begin
 			@site = Site.find(params[:site_id])
 		rescue ActiveRecord::RecordNotFound

@@ -1,6 +1,6 @@
 <div class="steps">
 <h1><img src="/icon/page_24.png" width="24" height="24" alt=" " class="icon" />
-New Page</h1>
+New <span id="page_class_name"><%= @page.class.name %></span></h1>
 <%= error_messages_for :page %>
 <div class="step_form">
 <% form_for(:page, :url=>pages_path) do |f|

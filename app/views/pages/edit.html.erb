@@ -1,6 +1,6 @@
 <div class="steps">
 <h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
-Editing Page: <%= link_to (@page.title || @page.id), page_path(@page) %></h1>
+Editing <span id="page_class_name"><%= @page.class.name %></span>: <%= link_to (@page.title || @page.id), page_path(@page) %></h1>
 <%= error_messages_for :page %>
 <div class="step_form">
 <% form_for(:page, :url=>page_path(@page), :html=>{:method=>:put}) do |f|

@@ -199,12 +199,7 @@ if current_user and (current_user.admin? or current_user.staff?) -%>
 <%= link_to '<img src="/icon/page_32.png" width="32" height="32" alt=" " />
 <br />Pages', pages_path, {
 	:class=>(@section == 'pages' ? 'current' : nil),
-	:title=>'Manage the web pages of Arusha’s websites'
-	} %><span class="separator">.</span>
-<%= link_to '<img src="/icon/article_32.png" width="32" height="32" alt=" " />
-<br />Articles', '/articles', {
-	:class=>(@section == 'articles' ? 'current' : nil),
-	:title=>'Manage the articles on Arusha’s websites'
+	:title=>'Manage the web pages, including articles, of Arusha’s websites'
 	} %><span class="separator">.</span>
 <%= link_to '<img src="/icon/file_32.png" width="32" height="32" alt=" " />
 <br />Files &amp; Pics', documents_path, {

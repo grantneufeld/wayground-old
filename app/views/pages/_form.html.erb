@@ -12,11 +12,29 @@ chunks.each do |chunk|
 	end
 end
 
+
 content_for("head") do
 	%><%= javascript_include_tag :fckeditor
 	%><script type="text/javascript" charset="utf-8">
 // GLOBALS
 var chunk_counts = {'content':<%= chunks_content.length %>, 'sidebar':<%= chunks_sidebar.length %>};
+
+// Change the type of Page (switch between Page and Article)
+function change_page_type() {
+	var theType = $F('page_type')
+	if (theType == 'Page') {
+		Element.hide('page_issue_row');
+		Element.hide('page_author_row');
+		Element.update('page_class_name', 'Page')
+	} else if (theType == 'Article') {
+		Element.show('page_author_row');
+		Element.show('page_issue_row');
+		new Effect.Highlight('page_author_row');
+		new Effect.Highlight('page_issue_row');
+		Element.update('page_class_name', 'Article')
+	}
+	return false;
+}
 
 // Change the content type of a text area (e.g., switch between plain text and html)
 function change_content_type(prefix) {
@@ -90,11 +108,12 @@ function add_content(part, chunk_type) {
 
 end
 
+
 fields_for :page do |f|
 %><table cellspacing="0">
 <%
 if @page.parent
-	%><thead><tr><th>Parent Page:</th> <td><strong><%= link_to(@page.parent.title, @page.parent.sitepath, {:class=>@page.parent.css_class('dir-')}) %></strong>
+	%><thead><tr><th>Parent <%= @page.parent.class.name %>:</th> <td><strong><%= link_to(@page.parent.title, @page.parent.sitepath, {:class=>@page.parent.css_class('dir-')}) %></strong>
 	<input type="hidden" name="id" value="<%= @page.parent.id %>" /></td></tr></thead>
 <%
 end
@@ -115,10 +134,24 @@ end
 <tr class="alternate"><th><label for="page_title">Title:</label></th>
 	<td><%= f.text_field :title %></td></tr>
 <% end -%>
-<tr><th><label for="page_description">Description:</label></th>
+<tr><th><label for="page_type">Type:</label></th>
+	<td><%
+	if @page.new_record?
+		%><%= f.select :type, ['Page','Article'], {}, {:onchange=>"return change_page_type();"} %><%
+	else
+		%><%= @page.class.name %><%
+	end %></td></tr>
+<tr id="page_author_row" class="alternate"<%= ' style="display:none;"' unless @page.is_a? Article %>><th><label for="page_author">Author:</label></th>
+	<td><%= f.text_field :author %></td></tr>
+<tr id="page_issue_row"<%= ' style="display:none;"' unless @page.is_a? Article %>><th><label for="page_issue">Issue:</label></th>
+	<td><%= f.text_field :issue %>
+	<br />The publication volume, date or title (e.g., “Winter 2008”, “September 2007”, “Volume 12, Number 6”).</td></tr>
+<% # TODO: published_on
+-%>
+<tr class="alternate"><th><label for="page_description">Description:</label></th>
 	<td><%= f.text_field :description %>
 	<br /><span class="help">The description is used when listing pages, and by some search engines.</span></td></tr>
-<tr class="alternate"><th><label for="page_keywords">Keywords:</label></th>
+<tr><th><label for="page_keywords">Keywords:</label></th>
 	<td><%= f.text_field :keywords %>
 	<br /><span class="help">Comma-separated.</span></td></tr>
 </tbody></table>
@@ -131,14 +164,15 @@ end
 	%><%= render :partial=>'chunk_fields', :locals=>{:chunk=>chunk} %>
 <% end %></div>
 <div id="content_new_chunk_progress" style="display:none;"><img src="/images/indicator.gif" width="16" height="16" alt="Loading…" class="diricon" /> Loading new chunk…</div>
-<h3>Add a Chunk to the Main Content</h3>
-<table cellspacing="0" width="60%" style="width:66%">
-<tbody><tr><td class="column" style="width:50%;"><a class="button" href="#" onclick="return add_content('content', 'raw');" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
+<table cellspacing="0">
+<thead><tr><th colspan="3"><h3>Add a Chunk to the Main Content</h3></th></tr></thead>
+<tbody><tr><td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('content', 'raw');" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
 	<br />Directly enter content to be displayed on the page. Can include pictures.</td>
 <% #<td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('content', 'item');" title="Add a new Item Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Item</a>
 #	<br />Display content from a specific item (such as an event, file, etc.)</td>
-%><td class="column" style="width:50%;"><a class="button" href="#" onclick="return add_content('content', 'list');" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
-	<br />A list of items, such as articles or events.</td></tr></tbody>
+%><td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('content', 'list');" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
+	<br />A list of items, such as articles or events.</td>
+<td class="column" style="width:33%;"></td></tr></tbody>
 </table>
 
 <h2>Sidebar</h2>
@@ -147,14 +181,15 @@ end
 	%><%= render :partial=>'chunk_fields', :locals=>{:chunk=>chunk} %>
 <% end %></div>
 <div id="sidebar_new_chunk_progress" style="display:none;"><img src="/images/indicator.gif" width="16" height="16" alt="Loading…" class="diricon" /> Loading new chunk…</div>
-<h3>Add a Chunk to the Sidebar</h3>
-<table cellspacing="0" width="60%" style="width:66%">
-<tbody><tr><td class="column" style="width:50%;"><a class="button" href="#" onclick="return add_content('sidebar', 'raw');" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
+<table cellspacing="0">
+<thead><tr><th colspan="3"><h3>Add a Chunk to the Sidebar</h3></th></tr></thead>
+<tbody><tr><td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('sidebar', 'raw');" title="Add a new Content Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Raw Content</a>
 	<br />Directly enter content to be displayed on the page. Can include pictures.</td>
 <% #<td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('sidebar', 'item');" title="Add a new Item Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />Item</a>
 #	<br />Display content from a specific item (such as an event, file, etc.)</td>
-%><td class="column" style="width:50%;"><a class="button" href="#" onclick="return add_content('sidebar', 'list');" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
-	<br />A list of items, such as articles or events.</td></tr></tbody>
+%><td class="column" style="width:33%;"><a class="button" href="#" onclick="return add_content('sidebar', 'list');" title="Add a new List Chunk to this Page"><img src="/icon/new.png" width="16" height="16" alt=" " align="top" class="icon" />List</a>
+	<br />A list of items, such as articles or events.</td>
+<td class="column" style="width:33%;"></td></tr></tbody>
 </table>
 
 <table cellspacing="0">

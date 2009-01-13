@@ -89,6 +89,11 @@ A container for the display of arbitrary content.
 - content_type
 - content
 
+Article (< Page)
+A special type of page with additional meta-data.
+- author:string
+- published_on:date
+- issue:string: The publication volume, date or title (e.g., “Winter 2008”, “September 2007”, “Volume 12, Number 6”)
 
 CHUNKS
 

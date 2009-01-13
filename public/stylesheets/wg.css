@@ -127,6 +127,7 @@ ul.dir li .tight img{margin-left:0px;}
 li.dir-root{list-style-image:url('../icon/root.png');}
 a.dir-root:before{content:url('../icon/root.png'); padding-right:0px;}
 li.dir-article{list-style-image:url('../icon/article.png');}
+a.dir-article:before{content:url('../icon/article.png'); padding-right:0px;}
 li.dir-document{list-style-image:url('../icon/document.png');}
 a.dir-document:before{content:url('../icon/document.png'); padding-right:0px;}
 li.dir-event{list-style-image:url('../icon/event.png');}

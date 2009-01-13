@@ -11,7 +11,7 @@ class CreatePages < ActiveRecord::Migration
 			t.integer :site_id
 			t.integer :parent_id
 			t.string :subpath
-			t.string :sitepath
+			t.string :sitepath # gets replaced by the Path model
 			# CONTENT
 			t.string :title
 			t.string :description

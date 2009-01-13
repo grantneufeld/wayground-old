@@ -30,7 +30,7 @@ fields_for chunk do |f|
 <input type="hidden" name="<%= field_prefix %>[type]" value="<%= chunk.xmltag_type %>" />
 <table cellspacing="0">
 <thead><tr><th colspan="2"><h3 class="flat-left" style="vertical-align:middle;"><a href="" title="Move this chunk up on the page (relative to the other chunks)"><img src="/icon/arrow_up.png" width="16" height="16" alt="up" align="top" class="icon" /></a><a href="" title="Move this chunk down on the page (relative to the other chunks)"><img src="/icon/arrow_down.png" width="16" height="16" alt="down" align="top" class="icon" /></a>
-Chunk
+<%= chunk.xmltag_type.capitalize unless chunk.is_a? RawChunk %> Chunk
 <a href="#" onclick="Element.remove('<%= chunk_label %>'); return false;" title="delete this chunk from the page"><img src="/icon/delete.png" width="16" height="16" alt="delete" align="top" class="icon" /></a></h3>
 <%= f.hidden_field :part, :name=>"#{field_prefix}[part]", :id=>"#{chunk_label}_part" %>
 <%= f.hidden_field :position, :name=>"#{field_prefix}[position]", :id=>"#{chunk_label}_position" %>
@@ -48,7 +48,13 @@ Chunk
 if chunk.is_a? RawChunk
 -%>
 <tr id="<%= chunk_label %>_content_wrap"><td colspan="2"><%= render :partial=>'content_field', :locals=>{:f=>f, :content=>chunk.content, :content_type=>chunk.content_type, :field_id=>"#{chunk_label}_content", :name_prefix=>"#{field_prefix}"} %>
-<br /><input type="hidden" name="#{field_prefix}_old_content_type" value="<%= h chunk.content_type %>" id="#{chunk_label}_old_content_type" />
+<%
+# hide content type switching unless it’s not already html
+if chunk.content_type.blank? or chunk.content_type == 'text/html'
+	%><%= hidden_field_tag "#{field_prefix}[content_type]", 'text/html' %>
+<%
+else
+	%><br /><input type="hidden" name="#{field_prefix}_old_content_type" value="<%= h chunk.content_type %>" id="#{chunk_label}_old_content_type" />
 <label for="<%= chunk_label %>_content_type">Content Type:</label>
 <%	content_types = [
 		['Formatted (HTML) text','text/html'],
@@ -60,9 +66,10 @@ if chunk.is_a? RawChunk
 	#content_types << ['HTML formatted text','text/html'] if User.current_user.admin?
 	%><%= f.select :content_type, content_types, {}, {:onchange=>"return change_content_type('#{chunk_label}');", :name=>"#{field_prefix}[content_type]", :id=>"#{chunk_label}_content_type"} %>
 <span id="<%= h chunk_label %>_change_type_progress" style="display:none" onclick="Element.hide('<%= h chunk_label %>_change_type_progress');"><img src="/images/indicator.gif" width="16" height="16" alt=" " class="diricon" /> Converting Content…</span>
-<%	#	<br />Auto-formatted text allows you to use the formatting described above.
-%>		<br /><span class="help">Formatted text uses standard HTML markup to define headings, tables, bold, italic, etc.
-		<br />Plain text is just plain paragraphs, no special formatting.</span></td></tr>
+	<br /><span class="help">Formatted text uses standard HTML markup to define headings, tables, bold, italic, etc.
+	<br />Plain text is just plain paragraphs, no special formatting.</span><%
+end
+%></td></tr>
 <%
 
 elsif chunk.is_a? ItemChunk
@@ -80,24 +87,36 @@ elsif chunk.is_a? ListChunk
 <tr><th><label for="<%= chunk_label %>_item_type">Item Type:</label></th>
 	<td><%= f.select :item_type, chunk.recognized_item_types,
 		{:id=>"#{chunk_label}_item_type", :name=>"#{field_prefix}[item_id]", :id=>"#{chunk_label}_item_id"} %></td></tr>
-<tr class="alternate"><th><label for="<%= chunk_label %>_parent">Parent Item:</label></th>
-	<td>Optionally restrict the list to items under this “parent” item.
-	<br />••• search by key or id, :name=>"#{field_prefix}[parent_id]", :id=>"#{chunk_label}_parent_id"</td></tr>
-<tr><th><label for="<%= chunk_label %>_user">User:</label></th>
-	<td>Optionally restrict the list to items owned by a specific user.
-	<br />••• search by key or id, :name=>"#{field_prefix}[user_id]", :id=>"#{chunk_label}_user_id"</td></tr>
-<tr class="alternate"><th><label for="<%= chunk_label %>_key">Keyword/phrase:</label></th>
-	<td>Optionally restrict the list to items that can be found with the keyword or key-phrase.
-	<br /><%= f.text_field :key, :name=>"#{field_prefix}[key]", :id=>"#{chunk_label}_key" %></td></tr>
-<tr><th><label for="<%= chunk_label %>_tag">Tag:</label></th>
-	<td>Optionally restrict the list to items tagged with:
-	<br /><%= f.text_field :tag, :name=>"#{field_prefix}[tag]", :id=>"#{chunk_label}_tag" %></td></tr>
-
-
+<tr class="alternate"><th><label for="<%= chunk_label %>_max">Maximum #:</label></th>
+	<td>The maximum number of items to show from the list:
+	<br /><%= f.text_field :max, :size=>6, :maxlen=>5, :name=>"#{field_prefix}[max]", :id=>"#{chunk_label}_max", :class=>'fixed' %></td></tr>
+<tr><th></th>
+	<td><%= f.check_box :tags, :name=>"#{field_prefix}[paginate]", :id=>"#{chunk_label}_paginate" %><label for="<%= chunk_label %>_paginate">Show Pagination</label>
+	<br />This will allow users to ‘page’ through the list if it exceeds the maximum number of items to display per page.</td></tr>
 <%
-max
-paginate
-# date restrictions (before_date, after_date)
+#<tr class="alternate"><th><label for="<%= chunk_label % >_parent">Parent Item:</label></th>
+#	<td>Optionally restrict the list to items under this “parent” item:
+#	<br />••• search by key or id, :name=>"#{field_prefix}[parent_id]", :id=>"#{chunk_label}_parent_id"</td></tr>
+#<tr><th><label for="<%= chunk_label % >_user">User:</label></th>
+#	<td>Optionally restrict the list to items owned by a specific user:
+#	<br />••• search by key or id, :name=>"#{field_prefix}[user_id]", :id=>"#{chunk_label}_user_id"</td></tr>
+%><tr class="alternate"><th><label for="<%= chunk_label %>_key">Keyword/phrase:</label></th>
+	<td>Optionally restrict the list to items that can be found with this keyword or key-phrase:
+	<br /><%= f.text_field :key, :name=>"#{field_prefix}[key]", :id=>"#{chunk_label}_key" %></td></tr>
+<tr><th><label for="<%= chunk_label %>_tags">Tags:</label></th>
+	<td>Optionally restrict the list to items tagged with all of these tags:
+	<br /><%= f.text_field :tags, :name=>"#{field_prefix}[tag]", :id=>"#{chunk_label}_tag" %>
+	<br />(each tag is all lower-case, just letters and numbers, separated by spaces)</td></tr>
+<tr><th>Articles:</th>
+	<td>If you are listing Articles, you can apply these restrictions:
+	<br /><table cellspacing="0">
+	<tr><th><label for="<%= chunk_label %>_author">Author:</label></th>
+	<td><%= f.text_field :max, :maxlen=>255, :name=>"#{field_prefix}[author]", :id=>"#{chunk_label}_author" %></td></tr>
+	<tr><th><label for="<%= chunk_label %>_issue">Issue:</label></th>
+	<td><%= f.text_field :max, :maxlen=>255, :name=>"#{field_prefix}[issue]", :id=>"#{chunk_label}_issue" %></td></tr>
+	</table></td></tr>
+<%
+# date restrictions (before_date, after_date, published_on)
 # template
 -%>
 <%
