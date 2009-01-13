@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  item: pages(one)
+  user: login
+  tag: testone
+  title: Test One
+
+two:
+  item: pages(one)
+  user: login
+  tag: testtwo
+  title: test two
