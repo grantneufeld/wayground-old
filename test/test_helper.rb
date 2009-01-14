@@ -134,18 +134,34 @@ class Test::Unit::TestCase
 		end
 	end
 	
+	# Check that the ActiveRecord object (ar) has errors registered
+	# for the fields expecting to have errors.
 	# ar is an ActiveRecord object that has been validated and should
 	# have validation errors.
 	# fields is an array of field (attribute) name strings that should be invalid.
 	def assert_validation_errors_on(ar, fields)
-		# check that the ActiveRecord object (ar) has errors registered
-		# for the fields expecting to have errors
+		msgs = []
+		# get the list of fields that have errors (err_fields)
+		err_fields = []
+		ar.errors.each {|k,v| err_fields << k}
+		# identify fields missing from the record’s errors 
 		missing_errors = []
 		fields.each do |field_name|
-			missing_errors << field_name if ar.errors[field_name].blank?
+			missing_errors << field_name unless err_fields.include?(field_name) #if ar.errors[field_name].blank?
 		end
 		if missing_errors.length > 0
-			assert false, "missing validation error for fields #{missing_errors.join(', ')}"
+			msgs << "missing validation error for fields #{missing_errors.join(', ')}"
+		end
+		# identify unexpected fields in the record’s errors
+		unexpected_errors = []
+		err_fields.each do |field_name|
+			unexpected_errors << field_name unless fields.include?(field_name)
+		end
+		if unexpected_errors.length > 0
+			msgs << "unexpected errors for fields #{unexpected_errors.join(', ')}"
+		end
+		if msgs.length > 0
+			assert false, msgs.join(".\r")
 		end
 		# check that the page content has the validation errors box,
 		# and the expected number of error items in it
