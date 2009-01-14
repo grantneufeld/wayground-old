@@ -79,9 +79,9 @@ class Page < ActiveRecord::Base
 	# Instance Methods
 	
 	def before_validation
-		if parent.nil?
+		if parent.nil? and subpath != '/'
 			home = self.class.find_home
-			home.children << self unless home.nil?
+			home.children << self unless home.nil? or self.id == home.id
 		end
 		self
 	end
