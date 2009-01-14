@@ -172,7 +172,7 @@ class GroupsControllerTest < ActionController::TestCase
 		assert_response :success
 		assert_equal 'groups', assigns(:section)
 		assert assigns(:group)
-		assert_validation_errors_on(assigns(:group), ['subpath', 'name'], 1)
+		assert_validation_errors_on(assigns(:group), ['subpath', 'name'])
 		assert_nil flash[:notice]
 		assert_equal 'New Group', assigns(:page_title)
 		# view result
