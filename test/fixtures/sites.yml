@@ -1,5 +1,3 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
 one:
   domain: test1.wayground.ca
   url: http://test1.wayground.ca
