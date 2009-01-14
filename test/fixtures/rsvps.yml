@@ -1,0 +1,13 @@
+one:
+  schedule: one
+  user: login
+  position: 1
+  rsvp: yes
+  confirmed_at: 2009-01-14 01:26:17
+
+two:
+  schedule: two
+  user: login
+  position: 1
+  rsvp: no
+  confirmed_at: 2009-01-14 01:26:17

@@ -1,0 +1,23 @@
+one:
+  user: login
+  editor: 
+  group: 
+  parent: 
+  subpath: event1
+  next_at: 2009-01-14 01:22:17
+  title: Test Event One
+  description: The first test event.
+  content: Testing the event system.
+  content_type: text/plain
+
+two:
+  user: staff
+  editor: 
+  group: 
+  parent: one
+  subpath: event2
+  next_at: 2009-01-14 01:22:17
+  title: Test Event Two
+  description: A second test event.
+  content: Still testing the event system.
+  content_type: text/plain

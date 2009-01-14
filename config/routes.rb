@@ -70,7 +70,13 @@ ActionController::Routing::Routes.draw do |map|
 	map.resources :locations
 	#map.resources :memberships
 	
-	# SITES
+	map.resources :events do |events|
+		events.resources :schedules
+		events.resources :rsvps
+	end
+	
+	# META
+	map.resources :tags
 	map.resources :sites
 	
 	# DEMOCRACY
