@@ -29,13 +29,15 @@ fields_for chunk do |f|
 -%>
 <input type="hidden" name="<%= field_prefix %>[type]" value="<%= chunk.xmltag_type %>" />
 <table cellspacing="0">
-<thead><tr><th colspan="2"><h3 class="flat-left" style="vertical-align:middle;"><a href="" title="Move this chunk up on the page (relative to the other chunks)"><img src="/icon/arrow_up.png" width="16" height="16" alt="up" align="top" class="icon" /></a><a href="" title="Move this chunk down on the page (relative to the other chunks)"><img src="/icon/arrow_down.png" width="16" height="16" alt="down" align="top" class="icon" /></a>
-<%= chunk.xmltag_type.capitalize unless chunk.is_a? RawChunk %> Chunk
-<a href="#" onclick="Element.remove('<%= chunk_label %>'); return false;" title="delete this chunk from the page"><img src="/icon/delete.png" width="16" height="16" alt="delete" align="top" class="icon" /></a></h3>
+<thead><tr><th colspan="2"><h3 class="flat-left" style="vertical-align:middle;"><%
+#<a href="" title="Move this chunk up on the page (relative to the other chunks)"><img src="/icon/arrow_up.png" width="16" height="16" alt="up" align="top" class="icon" /></a><a href="" title="Move this chunk down on the page (relative to the other chunks)"><img src="/icon/arrow_down.png" width="16" height="16" alt="down" align="top" class="icon" /></a>
+%>
+<%= chunk.xmltag_type.capitalize unless chunk.is_a? RawChunk %> Chunk</h3>
 <%= f.hidden_field :part, :name=>"#{field_prefix}[part]", :id=>"#{chunk_label}_part" %>
 <%= f.hidden_field :position, :name=>"#{field_prefix}[position]", :id=>"#{chunk_label}_position" %>
-<% flavours = [ ['Normal',''], ['Feature','feature'] ]
-%><%= f.select :flavour, flavours, {}, {:name=>"#{field_prefix}[flavour]", :id=>"#{chunk_label}_flavour", :class=>"flat-right", :title=>'Specify the flavour for this chunk of the page (‘featured’ items will be highlghted)'} %></th></tr></thead>
+<% #flavours = [ ['Normal',''], ['Feature','feature'] ]
+#% ><%= f.select :flavour, flavours, {}, {:name=>"#{field_prefix}[flavour]", :id=>"#{chunk_label}_flavour", :class=>"flat-right", :title=>'Specify the flavour for this chunk of the page (‘featured’ items will be highlghted)'} 
+%><a href="#" onclick="Element.remove('<%= chunk_label %>'); return false;" title="delete this chunk from the page" class="flat-right"><img src="/icon/delete.png" width="16" height="16" alt="delete" align="top" class="icon" /></a></th></tr></thead>
 <tbody>
 <%
 #<tr><td colspan="2"><label for="<%= chunk_label % >_part">Part:</label>
@@ -111,9 +113,9 @@ elsif chunk.is_a? ListChunk
 	<td>If you are listing Articles, you can apply these restrictions:
 	<br /><table cellspacing="0">
 	<tr><th><label for="<%= chunk_label %>_author">Author:</label></th>
-	<td><%= f.text_field :max, :maxlen=>255, :name=>"#{field_prefix}[author]", :id=>"#{chunk_label}_author" %></td></tr>
+	<td><%= f.text_field :author, :maxlen=>255, :name=>"#{field_prefix}[author]", :id=>"#{chunk_label}_author" %></td></tr>
 	<tr><th><label for="<%= chunk_label %>_issue">Issue:</label></th>
-	<td><%= f.text_field :max, :maxlen=>255, :name=>"#{field_prefix}[issue]", :id=>"#{chunk_label}_issue" %></td></tr>
+	<td><%= f.text_field :issue, :maxlen=>255, :name=>"#{field_prefix}[issue]", :id=>"#{chunk_label}_issue" %></td></tr>
 	</table></td></tr>
 <%
 # date restrictions (before_date, after_date, published_on)

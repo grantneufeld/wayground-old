@@ -195,7 +195,28 @@ end
 <table cellspacing="0">
 <tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
 </table>
-<h2>Advanced Functions</h2>
+<h2><span class="tight"><%=
+# Expand to show info
+link_to_function(
+	'<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
+	"Element.show('advanced_functions_info');
+	Element.show('advanced_functions_collapse');
+	Element.hide('advanced_functions_expand');",
+	:title=>"Show the Advanced Functions",
+	:id=>"advanced_functions_expand"
+) %><%=
+# Collapse to hide info
+link_to_function(
+	'<img src="/icon/expanded.png" width="16" height="16" alt="Collapse" class="diricon" />',
+	"Element.hide('advanced_functions_info');
+	Element.show('advanced_functions_expand');
+	Element.hide('advanced_functions_collapse');",
+	:title=>"Hide the Advanced Functions",
+	:id=>"advanced_functions_collapse",
+	:style=>'display:none;'
+) %></span>
+Advanced Functions</h2>
+<div id="advanced_functions_info" style="display:none; padding:1em;">
 <h3>Restricting Access</h3>
 <p>You can restrict access to elements on the page by including special codes (like “<code>wg-admin</code>”) in the ‘<code>class</code>’ attribute of those elements.</p>
 <p>You can set the ‘class’ attribute when viewing the HTML source of a raw content chunk (you can switch in and out of HTML source mode by selecting the “Source” button on the HTML toolbar at the top of the chunk).</p>
@@ -206,3 +227,4 @@ end
 <li><code>wg-stafforadmin</code>: only administrators or staff</li>
 <li><code>wg-login</code>: only users who have logged-in</li>
 </ul>
+</div>
