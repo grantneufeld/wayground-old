@@ -9,7 +9,7 @@ class Page < ActiveRecord::Base
 	validates_presence_of :title
 	validates_presence_of :content_type, :if=>Proc.new {|p| !(p.content.blank?)}
 	validates_format_of :subpath,
-		:with=>/\A([\w\-](\.?[\w\-]+)*)?\/?\z/,
+		:with=>/\A[\w\-]+(\.[\w\-]+)?\/?\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
 	validates_uniqueness_of :subpath, :scope=>[:site_id, :parent_id]
 	validates_format_of :content_type, :allow_nil=>true, :with=> /\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,

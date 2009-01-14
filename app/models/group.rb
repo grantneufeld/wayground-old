@@ -10,7 +10,7 @@ class Group < ActiveRecord::Base
 	validates_presence_of :name
 	
 	validates_format_of :subpath,
-		:with=>/\A[A-Za-z][\w\-]*\z/,
+		:with=>/\A[A-Za-z]([\w\-]*\w)?\z/,
 		:message=>'must begin with a letter and only consist of letters, numbers and/or dashes (a-z, 0-9, -)'
 	validates_format_of :url, :allow_nil=>true,
 		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
