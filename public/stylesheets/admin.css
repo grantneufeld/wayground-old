@@ -1,5 +1,5 @@
 /**{font-family:"Lucida Grande", Geneva, Arial, sans-serif;}*/
-body{margin:0px; padding:0px; background:#DDD; color:black;}
+body{margin:0px; padding:0px; background:#DDD url('/images/bg.png') repeat-y top center; color:black;}
 .ruler{background:black; color:white;
 	height:8px; width:800px; margin:0px; padding:0px; border:0px none;}
 
