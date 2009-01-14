@@ -195,3 +195,14 @@ end
 <table cellspacing="0">
 <tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
 </table>
+<h2>Advanced Functions</h2>
+<h3>Restricting Access</h3>
+<p>You can restrict access to elements on the page by including special codes (like “<code>wg-admin</code>”) in the ‘<code>class</code>’ attribute of those elements.</p>
+<p>You can set the ‘class’ attribute when viewing the HTML source of a raw content chunk (you can switch in and out of HTML source mode by selecting the “Source” button on the HTML toolbar at the top of the chunk).</p>
+<p>You’ll end up with something that looks, in code, like: “<code>&lt;p class="wg-login"&gt;Some text and other tags.&lt;/p&gt;</code>”. (That paragraph would only show up for users who have logged-in.)</p>
+<ul>
+<li><code>wg-admin</code>: only administrators</li>
+<li><code>wg-staff</code>: only staff</li>
+<li><code>wg-stafforadmin</code>: only administrators or staff</li>
+<li><code>wg-login</code>: only users who have logged-in</li>
+</ul>

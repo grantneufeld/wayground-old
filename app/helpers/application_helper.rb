@@ -1,3 +1,5 @@
+require 'xml'
+
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
 	# TODO: NO TESTS HAVE BEEN WRITTEN FOR THESE FUNCTIONS!!!
@@ -117,6 +119,7 @@ module ApplicationHelper
 			# pass through. text/wayground should be run through process_wayground_content
 			content
 		when 'text/html', '', nil :
+			content = strip_priviledged_elements(content)
 			confirmed_urls ? content : mark_unconfirmed_urls(content)
 		when 'text/plain' :
 			format_plain_text content, confirmed_urls
@@ -154,6 +157,51 @@ module ApplicationHelper
 		else
 			auto_link(content, :all, {:rel=>'nofollow'})
 		end
+	end
+	
+	# if user doesn’t have sufficient permission for them,
+	# remove elements that are flagged as class="wg-admin", class="wg-staff", class="wg-stafforadmin", class="wg-login"
+	def strip_priviledged_elements(content)
+		classes_to_strip = ['wg-admin','wg-staff','wg-stafforadmin','wg-login']
+		if current_user
+			classes_to_strip.delete('wg-login')
+		end
+		if current_user and current_user.staff
+			classes_to_strip.delete('wg-staff')
+			classes_to_strip.delete('wg-stafforadmin')
+		end
+		if current_user and current_user.admin
+			classes_to_strip.delete('wg-admin')
+			classes_to_strip.delete('wg-stafforadmin')
+		end
+		if classes_to_strip.length > 0
+			XML.indent_tree_output = false
+			parser = XML::Parser.new
+			parser.string = "<wg>#{content}</wg>"
+			p = parser.parse
+			remove_these = xml_node_strip_priviledged(p.child, classes_to_strip)
+			until (n = remove_these.pop).nil? do
+				n.remove!
+			end
+			content = p.child.to_s
+		end
+		content
+	end
+	# returns an array of nodes that should be removed
+	# classes_to_strip is an array of class names
+	def xml_node_strip_priviledged(node, classes_to_strip)
+		remove_these = []
+		if classes_to_strip.include? node['class']
+			# delete the node
+			remove_these << node #.remove!
+		elsif node.children?
+			#check the children of this node
+			node.each do |n|
+				# recursively parse descendents of this node
+				remove_these += xml_node_strip_priviledged(n, classes_to_strip)
+			end
+		end
+		remove_these
 	end
 	
 	# convert the anchors in a block of html to use rel="nofollow" (anti-spam)

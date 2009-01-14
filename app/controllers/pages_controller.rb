@@ -117,7 +117,7 @@ class PagesController < ApplicationController
 			if @site
 				@page.site = @site
 			else
-				@page.site_id = 0
+				@page.site_id = nil
 			end
 			@page_title = "Edit ‘#{@page.title}’"
 			@section = 'pages'
