@@ -177,13 +177,20 @@ module ApplicationHelper
 		if classes_to_strip.length > 0
 			XML.indent_tree_output = false
 			parser = XML::Parser.new
-			parser.string = "<wg>#{content}</wg>"
+			# hide any entities or stray ampersands so the parser doesn’t barf
+			content.gsub! '&', '&amp;'
+			# create a single temporary root node
+			parser.string = "<html>#{content}</html>"
 			p = parser.parse
 			remove_these = xml_node_strip_priviledged(p.child, classes_to_strip)
 			until (n = remove_these.pop).nil? do
 				n.remove!
 			end
 			content = p.child.to_s
+			# strip temporary root node html tags
+			content.gsub! /[\r\n]*<\/?html>[\r\n]*/, ''
+			# reset ampersands
+			content.gsub! '&amp;', '&'
 		end
 		content
 	end
