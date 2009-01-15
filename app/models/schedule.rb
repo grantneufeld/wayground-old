@@ -20,7 +20,8 @@ class Schedule < ActiveRecord::Base
 	validates_numericality_of :ordinal, :only_integer=>true, :allow_nil=>true
 	validates_presence_of :recur_day,
 		:if=>Proc.new {|p|
-			(p.recur == 'relative' and %w(week month year).include?(p.unit)) or (p.recur == 'fixed' and p.unit == 'week')
+			((p.recur == 'relative' and %w(week month year).include?(p.unit)) or
+			(p.recur == 'fixed' and p.unit == 'week'))
 		},
 		:message=>'required when the recurrence unit is weeks, months or years'
 	validates_inclusion_of :recur_day,
@@ -36,6 +37,6 @@ class Schedule < ActiveRecord::Base
 		:message=>'must be the name of a month (e.g., “January”) or blank'
 	
 	belongs_to :event
-	has_many :rsvps
+	has_many :rsvps, :order=>'rsvps.position, rsvps.confirmed_at'
 	has_many :locations
 end

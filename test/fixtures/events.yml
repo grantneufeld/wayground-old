@@ -1,8 +1,5 @@
 one:
   user: login
-  editor: 
-  group: 
-  parent: 
   subpath: event1
   next_at: 2009-01-14 01:22:17
   title: Test Event One
@@ -12,12 +9,28 @@ one:
 
 two:
   user: staff
-  editor: 
-  group: 
   parent: one
   subpath: event2
   next_at: 2009-01-14 01:22:17
   title: Test Event Two
   description: A second test event.
   content: Still testing the event system.
+  content_type: text/plain
+
+searchable:
+  user: admin
+  subpath: searchable
+  next_at: <%= 1.week.from_now.to_s(:db) %>
+  title: Searchable Event
+  description: An event to with a searchable keyword.
+  content: This event can be found with the keyword.
+  content_type: text/plain
+
+update_event:
+  user: staff
+  subpath: update_event
+  next_at: <%= 1.week.from_now.to_s(:db) %>
+  title: Update Event
+  description: An event to update.
+  content: This event is to be updated.
   content_type: text/plain

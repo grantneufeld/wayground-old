@@ -1,0 +1,10 @@
+<div class="steps">
+<h1><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
+Editing Event: <%= link_to @event.title, event_path(@event) %></h1>
+<%= error_messages_for :event %>
+<div class="step_form">
+<% form_for(:event, :url=>{:action=>'update', :id=>@event}, :html=>{:method=>:put}) do |f|
+	%><%= render :partial=>'form' %><%
+end %>
+</div>
+</div>

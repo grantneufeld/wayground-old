@@ -1,0 +1,14 @@
+<h1><img src="/icon/event_24.png" width="24" height="24" alt=" " class="icon" />
+Events<% unless @key.blank?
+	%>: <%= h @key %><%
+end %></h1>
+<% if @events.size > 0 -%>
+<ul>
+<% @events.each do |event|
+		%><%= render :partial=>'event', :collection=>@events %><%
+end %></ul>
+<% else -%>
+<p>No events found.</p>
+<% end -%>
+<%= will_paginate @events, :params=>params %>
+<%= render :partial=>'standard'%>

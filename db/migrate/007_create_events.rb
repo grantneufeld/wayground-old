@@ -7,7 +7,8 @@ class CreateEvents < ActiveRecord::Migration
 			t.belongs_to :group
 			t.belongs_to :parent
 			t.string :subpath, :null=>false
-			t.datetime :next_at
+			t.datetime :next_at	# the next occurrence based on schedules
+			t.datetime :over_at	# calc from schedules, nil means repeat with no end
 			t.string :title, :null=>false
 			t.string :description
 			t.text :content
@@ -19,7 +20,8 @@ class CreateEvents < ActiveRecord::Migration
 			t.index [:parent_id], :name=>'parent'
 			t.index [:subpath], :name=>'subpath', :unique=>true
 			t.index [:next_at], :name=>'next_at'
-			t.index [:title], :name=>'title'
+			t.index [:over_at], :name=>'over_at'
+			t.index [:title, :description], :name=>'text_info'
 		end
 		
 		create_table :schedules, :force=>true,
@@ -37,7 +39,7 @@ class CreateEvents < ActiveRecord::Migration
 			t.timestamps
 		end
 		change_table :schedules do |t|
-			t.index [:event_id], :name=>'event'
+			t.index [:event_id, :start_at], :name=>'event'
 			t.index [:start_at], :name=>'start_at'
 			t.index [:end_at], :name=>'end_at'
 		end
@@ -53,7 +55,7 @@ class CreateEvents < ActiveRecord::Migration
 		end
 		change_table :rsvps do |t|
 			t.index [:schedule_id, :user_id], :name=>'oneperuser', :unique=>true
-			t.index [:schedule_id, :position], :name=>'schedule'
+			t.index [:schedule_id, :position, :confirmed_at], :name=>'schedule'
 			t.index [:user_id], :name=>'user'
 			t.index [:rsvp], :name=>'rsvp'
 		end

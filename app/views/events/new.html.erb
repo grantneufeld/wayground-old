@@ -1,0 +1,10 @@
+<div class="steps">
+<h1><img src="/icon/event_24.png" width="24" height="24" alt=" " class="icon" />
+New Event</h1>
+<%= error_messages_for :event %>
+<div class="step_form">
+<% form_for(:event, :url=>events_path) do |f|
+	%><%= render :partial=>'form' %>
+<% end -%>
+</div>
+</div>

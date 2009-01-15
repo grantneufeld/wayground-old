@@ -1,0 +1,30 @@
+<%
+fields_for :event do |f|
+%><table cellspacing="0"><%
+if @event.parent %>
+<thead><tr><th>Parent <%= @event.parent.class.name %>:</th> <td><strong><%= link_to(@event.parent.title, event_path(@event.parent), {:class=>@event.parent.css_class('dir-')}) %></strong>
+<input type="hidden" name="id" value="<%= @event.parent.id %>" /></td></tr></thead>
+<%
+end
+%><tbody>
+<tr><th><label for="event_title">Title:</label></th>
+	<td><%= f.text_field :title %></td></tr>
+<tr class="alternate"><th><label for="event_subpath">Path:</label></th>
+	<td><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
+	<br />This permanently sets the subpath (used for the web-link address) for this event
+	(e.g., “http://website/events/<b>subpath</b>”).
+	<br />Only the following characters may be used, no spaces: <b class="nowrap">A-Z a-z 0-9 -</b></td></tr>
+<tr><th><label for="event_description">Description:</label></th>
+	<td><%= f.text_field :description %>
+	<br />A brief, one-line, description of the event.</td></tr>
+<tr class="alternate"><th><label for="event_content">Content:</label></th>
+	<td>All the details of your event not covered below.
+	<br /><%= f.text_area :content, :rows=>8 %>
+	</td></tr>
+<%
+# content_type
+-%>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
+</table>
+<% end %>

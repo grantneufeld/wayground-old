@@ -1,0 +1,38 @@
+<div class="vevent">
+<h1 class="summary"><img src="/icon/event_24.png" width="24" height="24" alt="Event:" class="icon" />
+<%= h @event.title %></h1>
+<div class="description"><%
+if @event.content.blank?
+	unless @event.description.blank?
+		%><p><%= h @event.description %></p><% 
+	end
+else
+	%><%= process_and_format(@event.content, @event.content_type) %><%
+end
+%></div>
+</div><%
+if current_user and current_user.staff
+	content_for("footermenu") do
+		%><%=
+		link_to('<img src="/icon/new.png" width="16" height="16" alt="New" ' +
+				'align="top" class="diricon" /> Add Sub-event',
+			{:controller=>'events', :action=>'new', :id=>@event},
+			{:class=>'button', :title=>"Add a new sub-event for this event"})
+			%><span class="separator">.</span>
+<%=	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
+				'align="top" class="diricon" /> Edit this event',
+			edit_event_path(@event),
+			{:class=>'button', :title=>"Edit this event"})
+			%><span class="separator">.</span>
+<%=	link_to '<img src="/icon/delete.png" width="16" height="16" ' +
+				'alt="Delete" align="top" class="diricon" /> Delete this event',
+			event_path(@event),
+			{:method=>'delete',
+			:confirm=>"Are you sure you want to permanently delete the event “#{@event.title}”?",
+			:href=>event_path(@event),
+			:class=>'button', :title=>"Permanently delete this event"
+			} %><span class="separator">.</span><%
+	end
+end
+%>
+<%= render :partial=>'standard'%>

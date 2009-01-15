@@ -70,9 +70,11 @@ ActionController::Routing::Routes.draw do |map|
 	map.resources :locations
 	#map.resources :memberships
 	
+	# EVENTS
 	map.resources :events do |events|
-		events.resources :schedules
-		events.resources :rsvps
+		events.resources :schedules do |schedules|
+			schedules.resources :rsvps
+		end
 	end
 	
 	# META

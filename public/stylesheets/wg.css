@@ -131,6 +131,7 @@ a.dir-article:before{content:url('../icon/article.png'); padding-right:0px;}
 li.dir-document{list-style-image:url('../icon/document.png');}
 a.dir-document:before{content:url('../icon/document.png'); padding-right:0px;}
 li.dir-event{list-style-image:url('../icon/event.png');}
+a.dir-event:before{content:url('../icon/event.png'); padding-right:0px;}
 li.dir-folder{list-style-image:url('../icon/folder.png');}
 li.dir-image{list-style-image:url('../icon/image.png');}
 li.dir-item{list-style-image:url('../icon/item.png');}

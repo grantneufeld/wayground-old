@@ -1,0 +1,41 @@
+<% 
+event ||= @event
+row_id ||= "event_#{event.id}"
+
+%><li id="<%= row_id %>" class="vevent dir-event"><%
+unless event.next_at.nil?
+	%><abbr class="dtstart" title="<%= event.next_at.to_s(:microformat) %>"><%=
+		event.next_at.to_s(:event_date)
+	%></abbr>
+<%
+end
+%><%= link_to h(event.title), event_path(event), :class=>'url summary' %><%
+	if current_user && current_user.staff
+			%>
+<%=
+		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
+			edit_event_path(event),
+			{:title=>"Edit this event"})
+			%><span class="separator">.</span><%=
+		link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+				' alt="Delete" class="diricon" />',
+			{:url=>{:controller=>'events', :action=>'destroy', :id=>event},
+			:method=>'delete',
+			:loading=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+				" alt=\"Processing…\" class=\"diricon\" />');",
+			:loaded=>"Element.update('#{row_id}_delete'," +
+				"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+				" alt=\"Delete\" class=\"diricon\" />');",
+			:success=>"Effect.Puff('#{row_id}');",
+			:confirm=>
+				"Are you sure you want to permanently delete the event “#{event.title}”?"
+			},
+			{:href=>url_for({:controller=>'events', :action=>'destroy', :id=>event}),
+			:title=>"Permanently delete this event", :method=>'delete',
+			:id=>"#{row_id}_delete"
+			} %><%
+	end %><%
+unless event.description.blank? %>
+<br /><span class="description"><%= h event.description %></span><%
+end %></li>
