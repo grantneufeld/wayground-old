@@ -7,10 +7,10 @@
 label ||= 'location'
 # prefix is the field name prefix (e.g., “location” or “locations[123]”)
 prefix ||= 'location'
-# skip is an array of fields to be skipped (e.g., [:email]).
+# skip is an array of fields to be skipped (e.g., [:email, :phone]).
 skip ||= []
 
-%>
+fields_for location do |f| -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_name">Place Name:</label></th>
 	<td><%= f.text_field :name, :title=>'The name of the location, if applicable. E.g., “The Place Centre”, “Shops Mall”, “Pizza Restaurant”.' %></td></tr>
 
@@ -37,11 +37,12 @@ skip ||= []
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_url">Website:</label></th>
 	<td><%= f.text_field :url %>
 		<br />Must be the complete URL, including the “http://” part.</td></tr>
-<% unless skip.include?(:email) -%>
+<%	unless skip.include?(:email) -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_email">Email:</label></th>
 	<td><%= f.text_field :email, :title=>'An email' %></td></tr>
-<% end -%>
+<%	end
 
+	unless skip.include?(:phone) -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone1">Phone 1:</label></th>
 	<td><%= f.select :phone1_type, Location.phone_options %><%=
 		f.text_field :phone1, :size=>26, :maxlength=>31, :class=>'fixed' %></td></tr>
@@ -51,3 +52,7 @@ skip ||= []
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone3">Phone 3:</label></th>
 	<td><%= f.select :phone3_type, Location.phone_options %><%=
 		f.text_field :phone3, :size=>26, :maxlength=>31, :class=>'fixed' %></td></tr>
+<%
+	end
+
+end %>

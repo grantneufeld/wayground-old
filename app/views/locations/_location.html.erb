@@ -1,0 +1,17 @@
+<p class="location vcard">
+<% if location.url.blank?
+	%><span class="fn org"><%= h location.name %></span>
+<% else
+	%><a class="fn org url" href="<%= location.url %>"><%= h location.name %></a>
+<% end %>
+<br />
+<span class="adr">
+<span class="street-address"><%= h location.address %><%
+unless location.address2.blank? %>
+<br /><%= h location.address2 %>
+<% end %></span>
+<br /><span class="locality"><%= h location.city %></span>,
+<span class="region"><%= h location.province %></span>,
+<span class="country-name"><%= h location.country %></span>
+</span>
+</p>
