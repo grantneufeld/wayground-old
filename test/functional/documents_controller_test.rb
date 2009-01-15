@@ -1,7 +1,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class DocumentsControllerTest < ActionController::TestCase
-	fixtures :documents, :users, :db_files
+	fixtures :documents, :sites, :users, :db_files
+	
 
 	def setup
 		@controller = DocumentsController.new

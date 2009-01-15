@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class NotifierTest < ActionMailer::TestCase
 	tests Notifier
-	fixtures :users
+	fixtures :users, :petitions, :signatures
 	
 	def test_signup_confirmation
 		# WAYGROUND['SENDER']

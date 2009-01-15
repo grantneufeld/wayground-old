@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class DocImageTest < ActiveSupport::TestCase
+	fixtures :documents, :sites, :users
+	
 	# The full set of tests for the DocImage class are handled in DocumentTest
 	
 	def test_associations

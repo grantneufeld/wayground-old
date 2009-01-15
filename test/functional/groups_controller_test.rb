@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class GroupsControllerTest < ActionController::TestCase
-	fixtures :groups, :users, :locations
+	fixtures :groups, :users, :memberships, :locations
 
 	def setup
 		@controller = GroupsController.new

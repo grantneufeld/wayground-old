@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class DocumentTest < ActiveSupport::TestCase
-	fixtures :documents, :users
+	fixtures :documents, :sites, :users
 	
 	def test_associations
 		assert check_associations
