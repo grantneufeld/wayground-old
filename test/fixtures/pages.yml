@@ -9,7 +9,7 @@ two:
   user: login
   editor: admin
   parent: one
-  subpath: two
+  subpath: page2
   title: Page Two
   description: The second page.
   content: This is just the second page. It has the keyword for searching.

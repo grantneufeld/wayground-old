@@ -9,11 +9,15 @@ class Page < ActiveRecord::Base
 	validates_presence_of :title
 	validates_presence_of :content_type, :if=>Proc.new {|p| !(p.content.blank?)}
 	validates_format_of :subpath,
-		:with=>/\A[\w\-]+(\.[\w\-]+)?\/?\z/,
+		:with=>/\A[\w\-]+(\.[\w\-]+)*\/?\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
 	validates_uniqueness_of :subpath, :scope=>[:site_id, :parent_id]
-	validates_format_of :content_type, :allow_nil=>true, :with=> /\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,
+	validates_inclusion_of :content_type, :allow_nil=>true,
+		:in=>%w(text/plain text/html text/wayground),
 		:message=>'is not a valid mimetype'
+	#validates_format_of :content_type, :allow_nil=>true,
+	#	:with=>/\A(application|audio|image|message|multipart|text|video)\/[\w\-]+\z/,
+	#	:message=>'is not a valid mimetype'
 	
 	belongs_to :site, :readonly=>true
 	belongs_to :user
@@ -62,7 +66,7 @@ class Page < ActiveRecord::Base
 	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
 	def self.search_conditions(p={}, strs=[], vals=[])
 		unless p[:key].blank?
-			strs << '(pages.title like ? OR pages.description like ? OR pages.content like ? OR pages.keywords like ?)'
+			strs << '(pages.title LIKE ? OR pages.description LIKE ? OR pages.content LIKE ? OR pages.keywords LIKE ?)'
 			vals += (["%#{p[:key]}%"] * 4)
 		end
 		[strs.join(' AND ')] + vals
