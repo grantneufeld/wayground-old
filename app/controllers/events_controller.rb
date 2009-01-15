@@ -44,11 +44,13 @@ class EventsController < ApplicationController
 	
 	def update
 		pre_edit
+		unmodified_subpath = @event.to_param
 		if params[:event] && params[:event].size > 0 && @event.update_attributes(params[:event])
 			flash[:notice] = "Updated information for ‘#{@event.title}’."
 			redirect_to({:action=>'show', :id=>@event})
 		else
 			# failed to save, back to edit form
+			@event.subpath = unmodified_subpath
 			render :action=>:edit
 		end
 	rescue ActiveRecord::RecordNotFound
@@ -74,6 +76,8 @@ class EventsController < ApplicationController
 		unless params[:id].blank?
 			@event.parent = Event.find(params[:id]) rescue ActiveRecord::RecordNotFound
 		end
+		# TODO: support multiple schedules
+		@event.schedules << Schedule.new(params[:schedule])
 		@page_title = 'New Event'
 	end
 	

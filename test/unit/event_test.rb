@@ -96,6 +96,13 @@ class EventTest < ActiveSupport::TestCase
 	
 	# INSTANCE METHODS
 	
+	def test_event_calculate_next_at
+		assert_equal schedules(:one).start_at, events(:one).calculate_next_at
+	end
+	def test_event_calculate_next_at
+		assert_nil events(:one).calculate_next_at(1.year.from_now)
+	end
+	
 	def test_event_css_class
 		assert_equal 'event', events(:one).css_class
 	end

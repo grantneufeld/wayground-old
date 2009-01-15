@@ -1,0 +1,16 @@
+<p class="event-schedule"><abbr class="dtstart" title="<%= schedule.start_at.to_s(:microformat) %>"><%=
+	schedule.start_at.to_s(:event_date)
+%></abbr><%
+unless schedule.end_at.nil? %> to <abbr class="dtend" title="<%= schedule.end_at.to_s(:microformat) %>"><%=
+	schedule.end_at.to_s(:event_date)
+%></abbr><%
+end
+
+schedule.locations do |location|
+	%><%= render :partial=>'locations/location', :locals=>{:location=>location} %><%
+end
+
+unless schedule.info.blank?
+%><br /><%= h schedule.info %>
+<%
+end %></p>

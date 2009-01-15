@@ -23,7 +23,15 @@ end
 	</td></tr>
 <%
 # content_type
--%>
+
+@event.schedules.each do |schedule|
+	%><tr class="inforow"><th colspan="2"><h2>Schedule</h2></th></tr>
+<%= render :partial=>'schedules/form_fields', :locals=>{:schedule=>schedule} %><%
+end
+
+# TODO: link for adding a schedule
+
+%>
 </tbody>
 <tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
 </table>

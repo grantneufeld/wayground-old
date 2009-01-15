@@ -3,7 +3,7 @@
 Editing Event: <%= link_to @event.title, event_path(@event) %></h1>
 <%= error_messages_for :event %>
 <div class="step_form">
-<% form_for(:event, :url=>{:action=>'update', :id=>@event}, :html=>{:method=>:put}) do |f|
+<% form_for(:event, :url=>event_path(@event), :html=>{:method=>:put}) do |f|
 	%><%= render :partial=>'form' %><%
 end %>
 </div>

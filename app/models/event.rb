@@ -23,6 +23,50 @@ class Event < ActiveRecord::Base
 	has_many :locations, :through=>:schedules
 	has_many :tags, :order=>'tags.created_at'
 	
+	# override the default find to allow first argument to be a string -
+	# the subpath
+	def self.find(*args)
+		if args[0].is_a?(Symbol) or args[0].to_i > 0 or !(args[0].is_a?(String))
+			super(*args)
+		else
+			# first argument is a string (subpath)
+			id = args[0]
+			args[0] = :first
+			options = args.last.is_a?(Hash) ? args.pop : nil
+			if options.nil? or options[:conditions].nil?
+				# no conditions set, so set to our conditions
+				options ||= {}
+				options[:conditions] =
+					["(events.subpath = :subpath)",
+					{:subpath=>id}]
+			elsif options[:conditions].is_a? String
+				# conditions are just a raw SQL sub-string, so add our conditions
+				options[:conditions] = ["(#{options[:conditions]}) AND (events.subpath = :subpath)",
+					{:subpath=>id}]
+			elsif options[:conditions].is_a? Array	
+				# conditions are an array so mix-in our conditions
+				if options[:conditions][1].class == Hash
+					# the conditions array is using a parameter hash,
+					# so mix-in our conditions as hash values
+					options[:conditions][0] = "(#{options[:conditions][0]}) AND (events.subpath = :subpath)"
+					options[:conditions][1].merge!({:subpath=>id})
+				else
+					# conditions array is using '?' parameters,
+					# so append our conditions
+					options[:conditions][0] =
+						"(#{options[:conditions][0]}) AND (events.subpath = ?)"
+					options[:conditions] << id
+				end
+			else
+				raise Exception.new("class of supplied conditions is not recognized")
+			end
+			args << options
+			event = super(*args)
+			raise ActiveRecord::RecordNotFound if event.nil?
+			event
+		end
+	end
+	
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -42,10 +86,26 @@ class Event < ActiveRecord::Base
 			content_type = 'text/plain'
 			write_attribute('content_type', content_type)
 		end
+		next_at = calculate_next_at
+		write_attribute('next_at', next_at)
 	end
 	def before_save
 		# TODO: Event: calculate next_at and over_at based on schedules
 		next_at ||= created_at || Time.now
+	end
+	
+	# use the event’s subpath instead of the id
+	def to_param
+		subpath
+	end
+	
+	def calculate_next_at(relative_to=Time.now)
+		n = nil
+		schedules.each do |schedule|
+			sn = schedule.next_at(relative_to)
+			n = sn if sn and sn < n
+		end
+		n
 	end
 	
 	def css_class(prefix='')

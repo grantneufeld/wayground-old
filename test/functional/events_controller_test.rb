@@ -140,7 +140,9 @@ class EventsControllerTest < ActionController::TestCase
 				:title=>'Controller Creation Test',
 				:description=>'Created event.',
 				:content=>'This should be a valid event.',
-				:content_type=>'text/plain'}},
+				:content_type=>'text/plain'},
+				:schedule=>{:start_at=>Time.now.to_s, :end_at=>1.hour.from_now.to_s,
+					:info=>'schedule for controller creation test'}},
 				{:user=>users(:staff).id}
 		end
 		assert_response :redirect
@@ -160,7 +162,7 @@ class EventsControllerTest < ActionController::TestCase
 		assert_response :success
 		assert_equal 'events', assigns(:section)
 		assert assigns(:event)
-		assert_validation_errors_on(assigns(:event), ['subpath', 'title'])
+		assert_validation_errors_on(assigns(:event), ['subpath', 'title', 'schedules'])
 		assert_nil flash[:notice]
 		assert_equal 'New Event', assigns(:page_title)
 		# view result
@@ -175,7 +177,9 @@ class EventsControllerTest < ActionController::TestCase
 			post :create, {:event=>{:subpath=>'bad subpath',
 				:title=>'Test Bad Params',
 				:content=>'Test of event creation with bad params.',
-				:content_type=>'application/invalid'}},
+				:content_type=>'application/invalid'},
+				:schedule=>{:start_at=>Time.now.to_s, :end_at=>1.hour.from_now.to_s,
+					:info=>'schedule for controller creation test'}},
 				{:user=>users(:staff).id}
 		end
 		# this basically returns the same as a call to new,
@@ -230,7 +234,7 @@ class EventsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{events_path()}/#{events(:one).id}']" do
+			assert_select "form[action='#{events_path()}/#{events(:one).subpath}']" do
 				assert_select 'input#event_subpath'
 				assert_select 'input#event_title'
 				assert_select 'input#event_description'
@@ -334,7 +338,7 @@ class EventsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{events_path}/#{events(:update_event).id}']"
+			assert_select "form[action='#{events_path}/#{events(:update_event).subpath}']"
 		end
 	end
 	def test_events_update_no_params
@@ -353,7 +357,7 @@ class EventsControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select "form[action='#{events_path}/#{events(:update_event).id}']"
+			assert_select "form[action='#{events_path}/#{events(:update_event).subpath}']"
 		end
 	end
 	def test_events_update_invalid_id

@@ -1,0 +1,28 @@
+<%
+fields_for schedule do |f|
+%><tr><th><label for="schedule_start_at">Start:</label></th>
+	<td><%= f.text_field :start_at %></td></tr>
+<tr class="alternate"><th><label for="schedule_end_at">End:</label></th>
+	<td><%= f.text_field :end_at %></td></tr>
+<%
+#t.string :recur	# '', relative, fixed, contained
+#t.string :unit	# second minute hour day week month year
+#t.integer :interval
+#t.integer :ordinal	# x’th day of month, x’th week of year, … (-1 = last)
+#t.string :recur_day	# '', Sunday, …, Saturday
+#t.string :recur_month	# '', January, …, December
+%>
+<tr><th><label for="schedule_info">Info:</label></th>
+	<td>Any details specific to this schedule, and not applicable to the rest of the event’s schedules.
+	<br /><%= f.text_area :info, :rows=>8 %>
+	</td></tr>
+<% end %><%
+
+schedule.locations.each do |location|
+	%><tr class="inforow"><th colspan="2"><h2>Location</h2></th></tr>
+<%= render :partial=>'locations/form_fields', :locals=>{:location=>location} %><%
+end
+
+# TODO: link for adding a location
+
+%>
