@@ -134,12 +134,27 @@ class Test::Unit::TestCase
 		end
 	end
 	
-	# Check that the ActiveRecord object (ar) has errors registered
-	# for the fields expecting to have errors.
-	# ar is an ActiveRecord object that has been validated and should
-	# have validation errors.
-	# fields is an array of field (attribute) name strings that should be invalid.
+	# Check that ar has the expected validation errors and that the error list shows up in the view.
 	def assert_validation_errors_on(ar, fields)
+		validation_error_check_discrepancies(ar, fields)
+		# check that the page content has the validation errors box,
+		# and the expected number of error items in it
+		assert_select 'div#errorExplanation' do
+			assert_select 'li', :count=>ar.errors.length
+		end
+	end
+	
+	# Validate ar and verify that the expected fields have errors.
+	def assert_validation_fails_for(ar, fields)
+		assert !(ar.valid?), "passed validation when errors expected for fields #{fields.join(', ')}"
+		validation_error_check_discrepancies(ar, fields)
+	end
+	
+	# Checks for expected fields missing from the validation errors,
+	# and unexpected fields present in the validation errors.
+	# ar is an ActiveRecord object that has been validated and should have validation errors.
+	# fields is an array of field (attribute) name strings that are expected to be invalid.
+	def validation_error_check_discrepancies(ar, fields)
 		msgs = []
 		# get the list of fields that have errors (err_fields)
 		err_fields = []
@@ -163,11 +178,5 @@ class Test::Unit::TestCase
 		if msgs.length > 0
 			assert false, msgs.join(".\r")
 		end
-		# check that the page content has the validation errors box,
-		# and the expected number of error items in it
-		assert_select 'div#errorExplanation' do
-			assert_select 'li', :count=>ar.errors.length
-		end
-		
 	end
 end
