@@ -40,7 +40,7 @@ Rails::Initializer.run do |config|
 #	config.gem 'tzinfo'
 	config.gem 'chronic'
 	config.gem 'will_paginate'
-	#config.gem 'image_science'
+	config.gem 'image_science'
 	config.gem 'RedCloth', :version=>'>= 3.301',
 		:source=>'http://code.whytheluckystiff.net/'
 	
