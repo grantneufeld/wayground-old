@@ -45,7 +45,17 @@ class EventsController < ApplicationController
 	def update
 		pre_edit
 		unmodified_subpath = @event.to_param
-		if params[:event] && params[:event].size > 0 && @event.update_attributes(params[:event])
+		# TODO: I’m clearly not doing something “The Rails Way” here. There’s got to be a better way to update a model and it’s sub-models all in one go.
+		has_params = !(params[:event].nil? or params[:event].size == 0) and !(params[:schedule].nil? or params[:schedule].size == 0) and !(params[:location].nil? or params[:location].size == 0)
+		if has_params
+			@event.attributes = params[:event]
+			@event.schedules[0].attributes = params[:schedule]
+			@event.schedules[0].locations[0].attributes = params[:location]
+			failed_validation = !(@event.valid?)
+			failed_validation ||= !(@event.schedules[0].valid?)
+			failed_validation ||= !(@event.schedules[0].locations[0].valid?)
+		end
+		if has_params and !failed_validation and (@event.schedules[0].locations[0].save and @event.schedules[0].save and @event.save)
 			flash[:notice] = "Updated information for ‘#{@event.title}’."
 			redirect_to({:action=>'show', :id=>@event})
 		else
@@ -78,6 +88,8 @@ class EventsController < ApplicationController
 		end
 		# TODO: support multiple schedules
 		@event.schedules << Schedule.new(params[:schedule])
+		# TODO: support multiple locations
+		@event.schedules[0].locations << Location.new(params[:location])
 		@page_title = 'New Event'
 	end
 	

@@ -1,9 +1,13 @@
 <%
 fields_for schedule do |f|
 %><tr><th><label for="schedule_start_at">Start:</label></th>
-	<td><%= f.text_field :start_at %></td></tr>
+	<td>When entering dates and times, you can use plain language like “tomorrow”, “next Friday”, "5pm", "17:00", etc.
+	<br />Times should always follow dates (e.g., “today 7pm” rather than “7pm today”).
+	<br />If you enter in a date, leave off the weekday (e.g., “January 1” not “Monday January 1”).
+	<br /><%= f.text_field :start_at,
+		:value=>((schedule.start_at.nil? or schedule.start_at.is_a?(String)) ? schedule.start_at : schedule.start_at.to_s(:form_datetime)) %></td></tr>
 <tr class="alternate"><th><label for="schedule_end_at">End:</label></th>
-	<td><%= f.text_field :end_at %></td></tr>
+	<td><%= f.text_field :end_at, :value=>((schedule.end_at.nil? or schedule.end_at.is_a?(String)) ? schedule.end_at : schedule.end_at.to_s(:form_datetime)) %></td></tr>
 <%
 #t.string :recur	# '', relative, fixed, contained
 #t.string :unit	# second minute hour day week month year
@@ -12,15 +16,17 @@ fields_for schedule do |f|
 #t.string :recur_day	# '', Sunday, …, Saturday
 #t.string :recur_month	# '', January, …, December
 %>
-<tr><th><label for="schedule_info">Info:</label></th>
+<tr><th><label for="schedule_info"><img src="/icon/note.png" alt=" " width="16" height="16" class="icon" align="top" /> Info:</label></th>
 	<td>Any details specific to this schedule, and not applicable to the rest of the event’s schedules.
 	<br /><%= f.text_area :info, :rows=>8 %>
 	</td></tr>
 <% end %><%
 
 schedule.locations.each do |location|
-	%><tr class="inforow"><th colspan="2"><h2>Location</h2></th></tr>
-<%= render :partial=>'locations/form_fields', :locals=>{:location=>location} %><%
+	%><tr class="inforow"><th colspan="2"><h2><img src="/icon/location.png" alt=" " width="16" height="16" class="icon" align="top" />
+Location</h2></th></tr>
+<%= render :partial=>'locations/form_fields',
+	:locals=>{:location=>location, :skip=>[:email, :phone]} %><%
 end
 
 # TODO: link for adding a location

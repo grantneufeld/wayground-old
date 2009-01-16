@@ -7,14 +7,17 @@ render_sidebar do
 			:title=>'Enter a keyword or keyphrase to search for' %>
 <%= 	submit_tag 'Search', :name=>nil %></p>
 <%	end
-	%><p><a href="/events">Browse Events List</a>.</p><%
+	%><p><a href="/events" class="button"><img src="/icon/event.png" alt=" " width="16" height="16" class="icon" align="top" />
+Browse Events List</a><span class="separator">.</span></p><%
 end
 
 # ADMIN
-render_sidebar do
-	%><h2>Admin</h2>
+if current_user and current_user.staff
+	render_sidebar do
+		%><h2>Admin</h2>
 <p><a href="/events/new" class="button"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" align="top" /> New Event</a><span class="separator">.</span></p>
 <%
+	end
 end
 
 # LEGEND

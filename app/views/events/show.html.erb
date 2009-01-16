@@ -1,19 +1,20 @@
 <div class="vevent">
 <h1 class="summary"><img src="/icon/event_24.png" width="24" height="24" alt="Event:" class="icon" />
 <%= h @event.title %></h1>
-<% @event.schedules.each do |schedule|
+<%
+
+unless @event.description.blank?
+	%><p<%= @event.content.blank? ? ' class="description"' : ''
+	%>><%= h @event.description %></p><% 
+end
+
+@event.schedules.each do |schedule|
 	%><%= render :partial=>'schedules/schedule', :locals=>{:schedule=>schedule} %><%
 end
-unless @event.content.blank? and @event.description.blank?
+unless @event.content.blank?
 	%><h2>Details</h2>
 <%
-	if @event.content.blank?
-		unless @event.description.blank?
-			%><p class="description"><%= h @event.description %></p><% 
-		end
-	else
-		%><div class="description"><%= process_and_format(@event.content, @event.content_type) %></div><%
-	end
+	%><div class="description"><%= process_and_format(@event.content, @event.content_type) %></div><%
 end
 %>
 </div><%

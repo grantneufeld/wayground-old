@@ -18,14 +18,15 @@ end
 	<td><%= f.text_field :description %>
 	<br />A brief, one-line, description of the event.</td></tr>
 <tr class="alternate"><th><label for="event_content">Content:</label></th>
-	<td>All the details of your event not covered below.
+	<td>All the details of your event not covered by the Schedule and Location.
 	<br /><%= f.text_area :content, :rows=>8 %>
 	</td></tr>
 <%
 # content_type
 
 @event.schedules.each do |schedule|
-	%><tr class="inforow"><th colspan="2"><h2>Schedule</h2></th></tr>
+	%><tr class="inforow"><th colspan="2"><h2><img src="/icon/schedule.png" alt=" " width="16" height="16" class="icon" align="top" />
+Schedule</h2></th></tr>
 <%= render :partial=>'schedules/form_fields', :locals=>{:schedule=>schedule} %><%
 end
 

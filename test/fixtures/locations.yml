@@ -34,3 +34,18 @@ two:
   phone1: "1 (234) 567-8901"
   phone2_type: c
   phone2: "(234) 567-8902"
+
+schedule_one:
+  locatable: one (Schedule)
+
+schedule_two:
+  locatable: two (Schedule)
+
+schedule_searchable:
+  locatable: searchable (Schedule)
+
+schedule_update:
+  locatable: update_schedule (Schedule)
+
+schedule_expired:
+  locatable: expired_schedule (Schedule)

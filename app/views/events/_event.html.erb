@@ -7,7 +7,7 @@ unless event.next_at.nil?
 	%><abbr class="dtstart" title="<%= event.next_at.to_s(:microformat) %>"><%=
 		event.next_at.to_s(:event_date)
 	%></abbr>
-<%
+<br /><%
 end
 %><%= link_to h(event.title), event_path(event), :class=>'url summary' %><%
 	if current_user && current_user.staff

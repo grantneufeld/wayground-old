@@ -3,10 +3,9 @@ Events<% unless @key.blank?
 	%>: <%= h @key %><%
 end %></h1>
 <% if @events.size > 0 -%>
-<ul>
-<% @events.each do |event|
-		%><%= render :partial=>'event', :collection=>@events %><%
-end %></ul>
+<ul class="dir">
+<%= render :partial=>'event', :collection=>@events %>
+</ul>
 <% else -%>
 <p>No events found.</p>
 <% end -%>

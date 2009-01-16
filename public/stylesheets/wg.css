@@ -24,6 +24,7 @@ h1{font-size:18px;}
 h2{font-size:15px;}
 h3{font-size:13px;}
 h4, h5{font-size:11px;}
+h1 + ul{margin-top:1em;}
 h2 + div{margin-top:0.5em;}
 p, ul{margin-top:0em;}
 p + p{margin-top:0.5em;}
@@ -166,10 +167,16 @@ p + .steps{margin-top:1em;}
 .step_form > form > h2 + *{margin-top:0em;}
 .step_form > form > h3{padding:8px 8px 2px; margin:0em; font-size:150%;}
 
-/* Events & Schedules */
-.event-schedule{display:list-item; list-style-image:url('../icon/schedule.png'); margin-left:28px; margin-top:0.5em; font-size:110%; vertical-align:top;}
-.event-schedule > p{margin:0em;}
+/* Events, Schedules, Locations */
+.event-schedule > p, .location, .event-schedule-info{display:list-item; margin:0em 0em 0em 28px; vertical-align:top;}
+.event-schedule{margin:1em 0em; background:#EEE; color:black; border-left:2px solid #CCC; padding:4px;}
+.event-schedule p:first-child{list-style-image:url('../icon/schedule.png');}
+.location{list-style-image:url('../icon/location.png');}
+.event-schedule-info{list-style-image:url('../icon/note.png');}
 .dtstart, .dtend{border-bottom:0px none; font-size:120%; font-weight:bold; white-space:nowrap;}
+li.vevent .summary{font-size:120%;}
+li.vevent a.summary{border-bottom:1px dotted blue;}
+li.vevent a.summary:hover{border-bottom:1px dotted transparent;}
 
 /***  Copied from scaffold.css:  ****************************/
 #errorExplanation, .errorExplanation{width:400px; border:2px solid red; padding:7px 7px 12px 7px; margin-bottom:20px; background:#f0f0f0;}

@@ -9,3 +9,21 @@ two:
   start_at: <%= 1.week.from_now.to_s(:db) %>
   end_at: <%= (1.week.from_now + 4.hours).to_s(:db) %>
   info: Second Schedule
+
+searchable:
+  event: searchable
+  start_at: <%= 1.week.from_now.to_s(:db) %>
+  end_at: <%= (1.week.from_now + 4.hours).to_s(:db) %>
+  info: Searchable Schedule
+  
+update_schedule:
+  event: update_event
+  start_at: <%= 1.week.from_now.to_s(:db) %>
+  end_at: <%= (1.week.from_now + 4.hours).to_s(:db) %>
+  info: Update Schedule
+
+expired_schedule:
+  event: expired_event
+  start_at: <%= 1.week.ago.to_s(:db) %>
+  end_at: <%= (1.week.ago + 4.hours).to_s(:db) %>
+  info: Expired Schedule

@@ -27,7 +27,7 @@ class EventsControllerTest < ActionController::TestCase
 #		end
 		assert_response :success
 		assert_equal 'events', assigns(:section)
-		assert_equal 4, assigns(:events).size
+		assert_equal Event.count, assigns(:events).size
 		assert_equal 'Events', assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
@@ -68,7 +68,7 @@ class EventsControllerTest < ActionController::TestCase
 		#assert_raise_message Test::Unit::AssertionFailedError,
 		#/Pessimistic.*Signature Load.*\| range \|/m do
 			assert_efficient_sql(:diagnostic=>nil) do
-				get :show, {:id=>events(:one).id}
+				get :show, {:id=>events(:one).subpath}
 			end
 		#end
 		assert_response :success
@@ -224,7 +224,7 @@ class EventsControllerTest < ActionController::TestCase
 	
 	# EDIT
 	def test_events_edit
-		get :edit, {:id=>events(:one).id}, {:user=>users(:staff).id}
+		get :edit, {:id=>events(:one).subpath}, {:user=>users(:staff).id}
 		assert_response :success
 		assert_equal 'events', assigns(:section)
 		assert_equal events(:one), assigns(:event)
@@ -244,14 +244,14 @@ class EventsControllerTest < ActionController::TestCase
 		end
 	end
 	def test_events_edit_invalid_user
-		get :edit, {:id=>events(:one).id}, {:user=>users(:login).id}
+		get :edit, {:id=>events(:one).subpath}, {:user=>users(:login).id}
 		assert_response :redirect
 		assert_nil assigns(:event)
 		assert flash[:warning]
 		assert_redirected_to account_users_path
 	end
 	def test_events_edit_no_user
-		get :edit, {:id=>events(:one).id}, {}
+		get :edit, {:id=>events(:one).subpath}, {}
 		assert_response :redirect
 		assert_nil assigns(:event)
 		assert flash[:warning]
@@ -275,14 +275,16 @@ class EventsControllerTest < ActionController::TestCase
 	# UPDATE
 	def test_events_update
 		put :update,
-			{:id=>events(:update_event).id,
+			{:id=>events(:update_event).subpath,
 				:event=>{
 					:subpath=>'updated',
 					:title=>'updated',
 					:description=>'updated',
 					:content=>'updated',
 					:content_type=>'text/plain'
-				}},
+				},
+				:schedule=>{},
+				:location=>{}},
 			{:user=>users(:staff).id}
 		assert_response :redirect
 		assert_equal events(:update_event), assigns(:event)
@@ -298,7 +300,7 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_update_non_staff_or_admin_user
 		original_name = events(:update_event).title
-		put :update, {:id=>events(:update_event).id,
+		put :update, {:id=>events(:update_event).subpath,
 			:event=>{:title=>'Update Event by Non Staff'}},
 			{:user=>users(:login).id}
 		assert_response :redirect
@@ -310,7 +312,7 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_update_no_user
 		original_name = events(:update_event).title
-		put :update, {:id=>events(:update_event).id,
+		put :update, {:id=>events(:update_event).subpath,
 			:event=>{:title=>'Update Event with No User'}},
 			{}
 		assert_response :redirect
@@ -322,7 +324,7 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_update_invalid_params
 		original_title = events(:update_event).title
-		put :update, {:id=>events(:update_event).id,
+		put :update, {:id=>events(:update_event).subpath,
 			:event=>{:subpath=>'invalid subpath'}},
 			{:user=>users(:staff).id}
 		assert_response :success
@@ -343,7 +345,8 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_update_no_params
 		original_title = events(:update_event).title
-		put :update, {:id=>events(:update_event).id, :event=>{}},
+		put :update, {:id=>events(:update_event).subpath,
+			:event=>{}, :schedule=>{}, :location=>{}},
 			{:user=>users(:staff).id}
 		assert_response :success
 		assert_equal 'events', assigns(:section)
@@ -391,7 +394,7 @@ class EventsControllerTest < ActionController::TestCase
 		end
 		# destroy the event
 		assert_difference(Event, :count, -1) do
-			delete :destroy, {:id=>event.id}, {:user=>users(:admin).id}
+			delete :destroy, {:id=>event.subpath}, {:user=>users(:admin).id}
 		end
 		assert_response :redirect
 		assert flash[:notice]
@@ -408,7 +411,7 @@ class EventsControllerTest < ActionController::TestCase
 		end
 		# destroy the event
 		assert_difference(Event, :count, -1) do
-			delete :destroy, {:id=>event.id}, {:user=>users(:staff).id}
+			delete :destroy, {:id=>event.subpath}, {:user=>users(:staff).id}
 		end
 		assert_response :redirect
 		assert flash[:notice]
@@ -416,7 +419,7 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_destroy_with_wrong_user
 		assert_difference(Event, :count, 0) do
-			delete :destroy, {:id=>events(:one).id},
+			delete :destroy, {:id=>events(:one).subpath},
 				{:user=>users(:login).id}
 		end
 		assert_response :redirect
@@ -426,7 +429,7 @@ class EventsControllerTest < ActionController::TestCase
 	end
 	def test_events_destroy_with_no_user
 		assert_difference(Event, :count, 0) do
-			delete :destroy, {:id=>events(:one).id}, {}
+			delete :destroy, {:id=>events(:one).subpath}, {}
 		end
 		assert_response :redirect
 		assert_nil assigns(:event)
