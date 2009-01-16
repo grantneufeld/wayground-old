@@ -4,19 +4,19 @@ class Location < ActiveRecord::Base
 		:postal, :longitude, :latitude, :url, :email,
 		:phone1_type, :phone1, :phone2_type, :phone2, :phone3_type, :phone3
 	
-	# locatable models may include User, Schedule, Group, Candidate, Campaign
-	belongs_to :locatable, :polymorphic=>true
-	# TODO: make locations reusable so the data doesn’t have to be duplicated when multiple items are at the same location.
-	
 	has_many :memberships, :dependent=>:nullify
 	
 	validates_format_of :url, :allow_nil=>true,
-		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
+		:with=>/\A(https?:\/\/[^ \t\r\n]+)?\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'
 	validates_format_of :email, :allow_nil=>true,
 		:with=>/\A(\w[\w_\.\+\-]*@(?:\w[\w\-]*\.)+[a-z]{2,})?\z/i,
 		:message=>'invalid email'
 	validate :valid_email?
+	
+	# locatable models may include User, Schedule, Group, Candidate, Campaign
+	belongs_to :locatable, :polymorphic=>true
+	# TODO: make locations reusable so the data doesn’t have to be duplicated when multiple items are at the same location.
 
 	include EmailHelper # email validation
 	
