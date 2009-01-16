@@ -21,6 +21,7 @@ ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!(
 	:event_date=>"%A, %B %d, %Y at %I:%M %p",
 	:time_date=>"%l:%M:%S %p on %A, %B %d, %Y",
 	:tight=>"%Y/%b/%d %l:%M%p",
+	:form_datetime=>"%B %d, %Y at %H:%M",
 	:microformat=>"%Y-%b-%dT%H:%M:%S#{tzoff_negative ? '-' : '+'}#{sprintf("%02i:%02i", tzoff_hours, tzoff_minutes)}"
 )
 
