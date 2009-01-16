@@ -66,7 +66,9 @@ class Schedule < ActiveRecord::Base
 	
 	def start_at=(t)
 		if t.is_a? String
+			t.gsub! ',', ' '
 			s = Chronic.parse(t)
+			s = s.utc if s
 			s ||= DateTime.parse(t) rescue ArgumentError
 			if s
 				write_attribute('start_at', s)
@@ -81,7 +83,9 @@ class Schedule < ActiveRecord::Base
 	
 	def end_at=(t)
 		if t.is_a? String
+			t.gsub! ',', ' '
 			s = Chronic.parse(t)
+			s = s.utc if s
 			s ||= DateTime.parse(t) rescue ArgumentError
 			if s
 				write_attribute('end_at', s)

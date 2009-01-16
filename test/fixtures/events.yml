@@ -34,3 +34,13 @@ update_event:
   description: An event to update.
   content: This event is to be updated.
   content_type: text/plain
+
+expired_event:
+  user: staff
+  subpath: expired_event
+  next_at: <%= 1.week.ago.to_s(:db) %>
+  title: Expired Event
+  description: An event in the past.
+  content: This event is in the past and has expired.
+  content_type: text/plain
+  

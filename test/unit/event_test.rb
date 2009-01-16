@@ -93,6 +93,13 @@ class EventTest < ActiveSupport::TestCase
 			Event.search_conditions({:key=>'keyword'}, ['a','b'], [1,2]))
 	end
 	
+	def test_event_update_next_at_for_all_events
+		assert Event.find(:all, :conditions=>'events.next_at < NOW()').size > 0,
+			'expected at least one expired event with a next_at attribute needing updating'
+		Event.update_next_at_for_all_events
+		assert_equal [], Event.find(:all, :conditions=>'events.next_at < NOW()')
+	end
+	
 	
 	# INSTANCE METHODS
 	

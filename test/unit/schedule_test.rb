@@ -25,6 +25,7 @@ class ScheduleTest < ActiveSupport::TestCase
 	def test_schedule_start_at_from_string
 		s = Schedule.new :start_at=>'January 1, 2009 4:32 pm'
 		assert_valid s
+		assert_equal Time.parse('2009-01-01 16:32'), s.start_at
 	end
 	def test_schedule_start_at_from_string_invalid
 		s = Schedule.new :start_at=>'fail'

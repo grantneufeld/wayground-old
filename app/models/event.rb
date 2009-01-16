@@ -67,6 +67,14 @@ class Event < ActiveRecord::Base
 		end
 	end
 	
+	def self.update_next_at_for_all_events
+		to_update = find(:all, :conditions=>'events.next_at < NOW()')
+		to_update.each do |event|
+			event.next_at = event.calculate_next_at
+			event.save
+		end
+	end
+	
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -86,12 +94,12 @@ class Event < ActiveRecord::Base
 			content_type = 'text/plain'
 			write_attribute('content_type', content_type)
 		end
-		next_at = calculate_next_at
-		write_attribute('next_at', next_at)
 	end
 	def before_save
 		# TODO: Event: calculate next_at and over_at based on schedules
-		next_at ||= created_at || Time.now
+		#debugger
+		next_at = calculate_next_at
+		write_attribute('next_at', next_at)
 	end
 	
 	# use the event’s subpath instead of the id
@@ -103,7 +111,7 @@ class Event < ActiveRecord::Base
 		n = nil
 		schedules.each do |schedule|
 			sn = schedule.next_at(relative_to)
-			n = sn if sn and sn < n
+			n = sn if sn and (n.nil? or sn < n)
 		end
 		n
 	end
