@@ -4,8 +4,9 @@ module Wayground
 end
 
 # email notification delivery
-class Notifier < ActionMailer::ARMailer
-
+# ¶¶¶ testing to avoid mailer problems
+#class Notifier < ActionMailer::ARMailer
+class Notifier < ActionMailer::Base
 	# sent when a new user registers
 	def signup_confirmation(user, sent_at = Time.current)
 		setup_email_for_user(user, sent_at)

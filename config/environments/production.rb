@@ -28,21 +28,20 @@ config.cache_classes = true
 
 # Disable delivery errors, bad email addresses will be ignored
 # config.action_mailer.raise_delivery_errors = false
-config.action_mailer.delivery_method = :activerecord
-#ActionMailer::Base.delivery_method = :activerecord
-#config.action_mailer.delivery_method = :sendmail
+#config.action_mailer.delivery_method = :activerecord
+config.action_mailer.delivery_method = :sendmail
 #ActionMailer::Base.delivery_method = :smtp
 #ActionMailer::Base.smtp_settings = {
 
 # TODO: Change this to reflect your local smtp server
-config.action_mailer.smtp_settings = {
-    :address => "66.18.225.132",
-    :port => 25,
-    :domain => "www.wayground.ca" #,
-    #:user_name => "postmaster",
-    #:password => "MyPassword",
-    #:authentication => :login
-}
+#config.action_mailer.smtp_settings = {
+#    :address => "66.18.225.132",
+#    :port => 25,
+#    :domain => "www.wayground.ca" #,
+#    #:user_name => "postmaster",
+#    #:password => "MyPassword",
+#    #:authentication => :login
+#}
 
 # TODO: ??? Not sure why I put this here.
 ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS[:session_key] = 'wayground_key'

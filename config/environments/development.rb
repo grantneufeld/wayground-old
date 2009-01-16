@@ -20,20 +20,21 @@ config.cache_classes = false
 #config.action_mailer.raise_delivery_errors = false
 config.action_mailer.raise_delivery_errors = true
 
-#config.action_mailer.delivery_method = :sendmail
-config.action_mailer.delivery_method = :activerecord
+# ¶¶¶ changed for problem with ar_mailer :-(
+config.action_mailer.delivery_method = :sendmail
+#config.action_mailer.delivery_method = :activerecord
 #ActionMailer::Base.delivery_method = :activerecord
 #config.action_mailer.delivery_method = :smtp
 #ActionMailer::Base.delivery_method = :smtp
 #ActionMailer::Base.smtp_settings = {
-config.action_mailer.smtp_settings = {
-    :address => "mail.wayground.ca",
-    :port => 25,
-    :domain => "g.wayground.ca" #,
-    #:user_name => "postmaster",
-    #:password => "MyPassword",
-    #:authentication => :login
-}
+#config.action_mailer.smtp_settings = {
+#    :address => "mail.wayground.ca",
+#    :port => 25,
+#    :domain => "g.wayground.ca" #,
+#    #:user_name => "postmaster",
+#    #:password => "MyPassword",
+#    #:authentication => :login
+#}
 
 
 # this should be set in the initializer, which might not actually get called until after this
