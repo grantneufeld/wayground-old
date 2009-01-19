@@ -3,13 +3,17 @@ event ||= @event
 row_id ||= "event_#{event.id}"
 
 %><li id="<%= row_id %>" class="vevent dir-event"><%
-unless event.next_at.nil?
+if event.next_at.nil?
+	%><abbr class="dtstart" title="<%= event.start_at.to_s(:microformat) %>"><%=
+		event.start_at.to_s(:event_date)
+	%></abbr><%
+else
 	%><abbr class="dtstart" title="<%= event.next_at.to_s(:microformat) %>"><%=
 		event.next_at.to_s(:event_date)
-	%></abbr>
-<br /><%
+	%></abbr><%
 end
-%><%= link_to h(event.title), event_path(event), :class=>'url summary' %><%
+%>
+<br /><%= link_to h(event.title), event_path(event), :class=>'url summary' %><%
 	if current_user && current_user.staff
 			%>
 <%=

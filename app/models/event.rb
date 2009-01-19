@@ -17,8 +17,9 @@ class Event < ActiveRecord::Base
 	belongs_to :editor
 	belongs_to :group
 	belongs_to :parent, :class_name=>'Event'
-	has_many :children, :class_name=>'Event', :foreign_key=>'parent_id'
-	has_many :schedules, :order=>'schedules.start_at'
+	has_many :children, :class_name=>'Event', :foreign_key=>'parent_id',
+		:dependent=>:destroy
+	has_many :schedules, :order=>'schedules.start_at', :dependent=>:destroy
 	has_many :rsvps, :through=>:schedules
 	has_many :locations, :through=>:schedules
 	has_many :tags, :order=>'tags.created_at'
@@ -67,8 +68,13 @@ class Event < ActiveRecord::Base
 		end
 	end
 	
-	def self.update_next_at_for_all_events
-		to_update = find(:all, :conditions=>'events.next_at < NOW()')
+	def self.update_next_at_for_all_events(include_null_next=false)
+		conds = []
+		if include_null_next
+			conds << 'events.next_at IS NULL'
+		end
+		conds << 'events.next_at < NOW()'
+		to_update = find(:all, :conditions=>conds.join(' OR '))
 		to_update.each do |event|
 			event.next_at = event.calculate_next_at
 			event.save
