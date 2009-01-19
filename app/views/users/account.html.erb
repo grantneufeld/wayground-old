@@ -18,7 +18,13 @@
 <h2>Public Profile</h2>
 <p><a href="<%= h @user.profile_path %>">View Your Profile</a>.</p>
 <p>Screen Name: <%= @user.nickname.blank? ? @user.id : h(@user.nickname) %>
-<br />Subpath: <a href="<%= h @user.profile_path %>"><%= @user.subpath.blank? ? '<i>NOT SET</i>' : h(@user.subpath) %></a> (for the web-link to your profile)</p>
+<br />Subpath: <%
+if @user.subpath.blank?
+	%><%= link_to '<i>NOT SET</i>', edit_user_path(@user) %><%
+else
+	%><%= link_to h(@user.subpath), h(@user.profile_path) %><%
+end
+%> (for the web-link to your profile)</p>
 <% unless @user.about.blank? %>
 <h3>About You</h3>
 <%= process_and_format @user.about, 'text/plain', (not @user.admin?) %>
