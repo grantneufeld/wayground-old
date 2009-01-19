@@ -40,8 +40,9 @@ class Schedule < ActiveRecord::Base
 		:message=>'must be the name of a month (e.g., “January”) or blank'
 	
 	belongs_to :event
-	has_many :rsvps, :order=>'rsvps.position, rsvps.confirmed_at'
-	has_many :locations, :as=>:locatable, :order=>'locations.position'
+	has_many :rsvps, :order=>'rsvps.position, rsvps.confirmed_at', :dependent=>:destroy
+	has_many :locations, :as=>:locatable, :order=>'locations.position',
+		:dependent=>:destroy
 	
 	def validate
 		if @track_errors
