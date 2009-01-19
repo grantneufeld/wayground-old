@@ -78,7 +78,6 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def blocked?
-		
 		!(blocked_at.nil?) && blocked_at <= Time.current && (block_expires_at.nil? || block_expires_at > Time.current)
 	end
 	def block!(blocker, expires=nil)
