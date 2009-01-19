@@ -7,7 +7,8 @@ class CreateEvents < ActiveRecord::Migration
 			t.belongs_to :group
 			t.belongs_to :parent
 			t.string :subpath, :null=>false
-			t.datetime :next_at	# the next occurrence based on schedules
+			t.datetime :start_at # the first occurrence, based on schedules
+			t.datetime :next_at # the next occurrence based on schedules
 			t.datetime :over_at	# calc from schedules, nil means repeat with no end
 			t.string :title, :null=>false
 			t.string :description
@@ -19,7 +20,8 @@ class CreateEvents < ActiveRecord::Migration
 			t.index [:user_id], :name=>'user'
 			t.index [:parent_id], :name=>'parent'
 			t.index [:subpath], :name=>'subpath', :unique=>true
-			t.index [:next_at], :name=>'next_at'
+			t.index [:start_at], :name=>'start_at'
+			t.index [:next_at, :start_at], :name=>'next_at'
 			t.index [:over_at], :name=>'over_at'
 			t.index [:title, :description], :name=>'text_info'
 		end
