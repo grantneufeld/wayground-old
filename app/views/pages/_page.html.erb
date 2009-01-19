@@ -12,20 +12,23 @@ elsif false #pages
 else
 	
 	# {row_id}_busy indicator
-	%><span class="tight"><img src="/images/indicator.gif" width="16" height="16" alt="Loading…" class="diricon" id="<%= row_id %>_busy" style="display:none;" /><%=
-	
-	# {row_id}_expand_remote Expander for when children not yet loaded
-	link_to_remote(
-		'<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
-		{:url=>{:controller=>'pages', :action=>'index', :id=>page},
-		:method=>:get,
-		:loading=>"Element.show('#{row_id}_busy'); Element.hide('#{row_id}_expand_remote');",
-		:loaded=>"Element.show('#{row_id}_collapse'); Element.hide('#{row_id}_busy');",
-		:update=>"#{row_id}_pages"},
-		{:href=>url_for({:controller=>'pages',:action=>'index', :id=>page}),
-			:title=>"Show the children of this #{page.class}",
-			:id=>"#{row_id}_expand_remote"}
-	) %><%=
+	%><span class="tight"><img src="/images/indicator.gif" width="16" height="16" alt="Loading…" class="diricon" id="<%= row_id %>_busy" style="display:none;" /><%
+	if pages.size <= 0
+		%><%=
+		# {row_id}_expand_remote Expander for when children not yet loaded
+		link_to_remote(
+			'<img src="/icon/expand.png" width="16" height="16" alt="Expand" class="diricon" />',
+			{:url=>{:controller=>'pages', :action=>'index', :id=>page},
+			:method=>:get,
+			:loading=>"Element.show('#{row_id}_busy'); Element.hide('#{row_id}_expand_remote');",
+			:loaded=>"Element.show('#{row_id}_collapse'); Element.hide('#{row_id}_busy');",
+			:update=>"#{row_id}_pages"},
+			{:href=>url_for({:controller=>'pages',:action=>'index', :id=>page}),
+				:title=>"Show the children of this #{page.class}",
+				:id=>"#{row_id}_expand_remote"}
+		) %><%
+	end
+	%><%=
 	
 	# {row_id}_expand Expander for when children already loaded
 	link_to_function(
@@ -46,19 +49,19 @@ else
 		Element.hide('#{row_id}_collapse');",
 		:title=>"Hide the children of this #{page.class}",
 		:id=>"#{row_id}_collapse",
-		:style=>'display:none;'
+		:style=>(pages.size > 0 ? '' : 'display:none;')
 	) %></span><%
 end %><span class="separator">.</span>
 <%
 
-%><%= link_to page.title, page.sitepath, {:title=>page.description} %><%
+%><%= link_to page.title, page.full_url, {:title=>page.description} %><%
 
 if page.children.size > 0 %>
 <span class="meta">(<%= page.children.size %> sub-page<%= page.children.size != 1 ? 's' : '' %>)</span>
 <%
 end
 
-if current_user && current_user.admin
+if current_user && (current_user.admin or current_user.staff)
 	#if page.is_container?
 		%>
 <%=
