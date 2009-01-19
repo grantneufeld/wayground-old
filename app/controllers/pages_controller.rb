@@ -8,7 +8,7 @@ class PagesController < ApplicationController
 		@section = 'pages'
 		@key = params[:key]
 		if params[:id] and params[:id].to_i > 0
-			@page = Page.find(params[:id], :include=>:children)
+			@page = Page.find(params[:id], :include=>[:children, :path])
 			@pages = @page.children
 			@key = nil
 			@page_title = "Site Index: #{@page.title}"

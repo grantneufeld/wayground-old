@@ -9,7 +9,7 @@ class Page < ActiveRecord::Base
 	validates_presence_of :title
 	validates_presence_of :content_type, :if=>Proc.new {|p| !(p.content.blank?)}
 	validates_format_of :subpath,
-		:with=>/\A[\w\-]+(\.[\w\-]+)*\/?\z/,
+		:with=>/\A([\w\-]+(\.[\w\-]+)*|\/)\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
 	validates_uniqueness_of :subpath, :scope=>[:site_id, :parent_id]
 	validates_inclusion_of :content_type, :allow_nil=>true,
@@ -27,7 +27,8 @@ class Page < ActiveRecord::Base
 	# page containment hierarchy
 	belongs_to :parent, :class_name=>"Page", :foreign_key=>"parent_id"
 	has_many :children, :class_name=>"Page", :foreign_key=>"parent_id",
-		:order=>'title', :dependent=>:nullify
+		:order=>'title', :dependent=>:nullify, :include=>[:path]
+	# TODO: implement a count field for children to reduce queries when displaying the page as a list entry
 	
 	has_one :path, :as=>:item, :dependent=>:destroy
 	
@@ -173,6 +174,12 @@ class Page < ActiveRecord::Base
 	# Returns true if this Page is the home page (sitepath == "/")
 	def is_home?
 		sitepath == '/'
+	end
+	
+	# return the full, site-specific, url for this page
+	# Root relative if for current server.
+	def full_url
+		"#{(site and !(site.url.blank?)) ? site.url : ''}#{sitepath}"
 	end
 	
 	def css_class(prefix='')
