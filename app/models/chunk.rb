@@ -27,7 +27,9 @@ class Chunk
 				chunks << Chunk.from_xmltag(match[0])
 			end
 			# pull out wg:chunk elements with content
-			t.scan /(<wg:chunk [^>]+[^\/>]>)[\r\n]*(.*?)[\r\n]*<\/wg:chunk>/ do |match|
+			#t.scan /(<wg:chunk [^>]+[^\/>]>)[\r\n]*(.*?)[\r\n]*<\/wg:chunk>/ do |match|
+			# TODO: is there a way to say “match any character, including linebreaks” in regexp? (instead of “(\n|[^\n])” in this expression)
+			t.scan /(<wg:chunk [^>]+[^\/>]>)[\r\n]*((\n|[^\n])*?)[\r\n]*<\/wg:chunk>/ do |match|
 				chunks << Chunk.from_xmltag(match[0], match[1])
 			end
 		end
