@@ -132,6 +132,15 @@ class Chunk
 		self.attributes = attrs
 	end
 	
+	# for sorting, Chunks are grouped first by part, then ordered by position
+	def <=>(b)
+		if (self.part <=> b.part) == 0
+			self.position <=> b.position
+		else
+			self.part <=> b.part
+		end
+	end
+	
 	def attr_accessible?(key)
 		self.class.accessible_attrs.include? key
 	end

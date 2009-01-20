@@ -199,7 +199,7 @@ class Page < ActiveRecord::Base
 				chunk.content_type = self.content_type
 				@chunks << chunk
 			elsif @chunks.size > 1
-				chunks_sort!
+				@chunks.sort!
 			end
 		end
 		@chunks
@@ -207,19 +207,6 @@ class Page < ActiveRecord::Base
 	def chunks=(a)
 		content_will_change!
 		@chunks = a
-	end
-	# Ensure the Page’s chunks are sorted by part and position
-	def chunks_sort!
-		unless @chunks.nil? or @chunks.size <= 1
-			@chunks.sort! {|a,b|
-				x = a.part <=> b.part
-				if x == 0
-					a.position <=> b.position
-				else
-					x
-				end
-			}
-		end
 	end
 	
 	protected
@@ -235,7 +222,7 @@ class Page < ActiveRecord::Base
 			self.content = @chunks[0].content
 			self.content_type = @chunks[0].content_type
 		else
-			chunks_sort!
+			@chunks.sort!
 			chunk_strs = @chunks.collect {|c| c.to_s }
 			self.content = chunk_strs.join("\r")
 			self.content_type = 'text/wayground'

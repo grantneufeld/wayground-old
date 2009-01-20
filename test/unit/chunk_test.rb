@@ -93,4 +93,30 @@ class ChunkTest < ActiveSupport::TestCase
 			chunk = Chunk.from_xmltag '<wg:chunk type="item" item_type="Invalid" />'
 		end
 	end
+	
+	def test_chunk_sort
+		chunks = []
+		sorted = [nil] * 6
+		chunk = Chunk.create({'type'=>'list', 'part'=>'sidebar', 'position'=>3})
+		chunks << chunk
+		sorted[5] = chunk
+		chunk = Chunk.create({'type'=>'raw', 'part'=>'content', 'position'=>3})
+		chunks << chunk
+		sorted[2] = chunk
+		chunk = Chunk.create({'type'=>'list', 'part'=>'sidebar', 'position'=>2})
+		chunks << chunk
+		sorted[4] = chunk
+		chunk = Chunk.create({'type'=>'list', 'part'=>'content', 'position'=>2})
+		chunks << chunk
+		sorted[1] = chunk
+		chunk = Chunk.create({'type'=>'raw', 'part'=>'sidebar', 'position'=>1})
+		chunks << chunk
+		sorted[3] = chunk
+		chunk = Chunk.create({'type'=>'raw', 'part'=>'content', 'position'=>1})
+		chunks << chunk
+		sorted[0] = chunk
+		
+		chunks.sort!
+		assert_equal sorted, chunks
+	end
 end

@@ -62,13 +62,7 @@ module ApplicationHelper
 		content_rendered = []
 		@content_for_sidebar ||= ''
 		chunks = Chunk.array_from_text(content)
-		chunks.sort! {|a,b|
-			if (a.part <=> b.part) == 0
-				a.position <=> b.position
-			else
-				a.part <=> b.part
-			end
-		}
+		chunks.sort!
 		chunks.each do |chunk|
 			case chunk.class.name
 			when 'RawChunk' :
