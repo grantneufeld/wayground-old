@@ -1,6 +1,8 @@
 module Wayground
 	# Current User does not match the requested User.
 	class UserMismatch < Exception; end
+	# Current User does not have needed access permission.
+	class UserWithoutAccessPermission < Exception; end
 end
 
 class User < ActiveRecord::Base

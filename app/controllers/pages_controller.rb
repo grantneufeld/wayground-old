@@ -56,100 +56,58 @@ class PagesController < ApplicationController
 	
 	# form for adding a page
 	def new
-		
-		if params[:page]
-			page_type = params[:page].delete(:type)
-		else
-			page_type = nil
-		end
-		if page_type == 'Article'
-			@page = Article.new(params[:page])
-		else
-			@page = Page.new(params[:page])
-		end
-		begin
-			@site = Site.find(params[:site_id])
-		rescue ActiveRecord::RecordNotFound
-			@site = nil
-		end
-		if @site
-			@page.site = @site
-		else
-			@page.site_id = 0
-		end
-		@page.user = current_user
-		@parent = Page.find(params[:id]) rescue nil
-		@page.parent = @parent
-		@page.chunks = Chunk.create_from_param_hash(params[:chunks]) if params[:chunks]
-		@page_title = 'New Page'
-		@section = 'pages'
+		pre_new
 	end
 	
 	# create a new page
 	def create
-		self.new
+		pre_new
 		@page.save!
 		flash[:notice] = 'New Page was successfully saved.'
 		redirect_to @page.sitepath
 	#rescue NoMethodError
-	#	self.new
 	#	render :action=>:new
 	rescue ActiveRecord::RecordInvalid
-		#self.new
-		@section = 'pages'
 		render :action=>:new
 	rescue
 		flash.now[:error] = 'An error occurred while trying to save your new Page.'
-		#self.new
-		@section = 'pages'
 		render :action=>:new
 	end
 	
 	# form for editing a page
 	def edit
-		@page = Page.find(params[:id])
-		if current_user.admin? or @page.user == current_user
-			begin
-				@site = Site.find(params[:site_id])
-			rescue ActiveRecord::RecordNotFound
-				@site = nil
-			end
-			if @site
-				@page.site = @site
-			else
-				@page.site_id = nil
-			end
-			@page_title = "Edit ‘#{@page.title}’"
-			@section = 'pages'
-		else
-			flash[:error] = "You do not have permission to edit the requested page (‘#{params[:id]}’)."
-			redirect_to page_path(@page)
-			@page = nil
-		end
+		pre_edit
 	rescue ActiveRecord::RecordNotFound
 		flash[:warning] = "Could not find a page matching the requested id (‘#{params[:id]}’)."
 		redirect_to :action=>'index'
+	rescue Wayground::UserWithoutAccessPermission
+		flash[:error] = "You do not have permission to edit the requested page (‘#{params[:id]}’)."
+		redirect_to page_path(@page)
+		@page = nil
 	end
 	
 	# update a page
 	def update
-		self.edit
-		if response.redirected_to
-			# can’t update - was caught in edit
-		else
-			@page.editor = current_user
-			if params[:chunks]
-				@page.chunks = Chunk.create_from_param_hash(params[:chunks])
-			end
-			if params[:page] && params[:page].size > 0 && @page.update_attributes(params[:page])
-				flash[:notice] = "Updated information for ‘#{@page.title}’."
-				redirect_to page_path(@page)
-			else
-				# failed to save, back to edit form
-				@section = 'pages'
-				render :action=>:edit
-			end
+		pre_edit
+		@page.editor = current_user
+		if params[:chunks]
+			@page.chunks = Chunk.create_from_param_hash(params[:chunks])
 		end
+		if params[:page] && params[:page].size > 0 && @page.update_attributes(params[:page])
+			flash[:notice] = "Updated information for ‘#{@page.title}’."
+			redirect_to page_path(@page)
+		else
+			# failed to save, back to edit form
+			@section = 'pages'
+			render :action=>:edit
+		end
+	rescue ActiveRecord::RecordNotFound
+		flash[:warning] = "Could not find a page matching the requested id (‘#{params[:id]}’)."
+		redirect_to :action=>'index'
+	rescue Wayground::UserWithoutAccessPermission
+		flash[:error] = "You do not have permission to edit the requested page (‘#{params[:id]}’)."
+		redirect_to page_path(@page)
+		@page = nil
 	end
 	
 	# delete a page
@@ -205,4 +163,52 @@ class PagesController < ApplicationController
 	end
 	
 	
+	protected
+	
+	def pre_new
+		@section = 'pages'
+		@page_title = 'New Page'
+		if params[:page]
+			page_type = params[:page].delete(:type)
+		else
+			page_type = nil
+		end
+		if page_type == 'Article'
+			@page = Article.new(params[:page])
+		else
+			@page = Page.new(params[:page])
+		end
+		@page.parent = Page.find(params[:id]) rescue nil
+		#@page.parent = @parent
+		begin
+			@page.site = Site.find(params[:site_id])
+		rescue ActiveRecord::RecordNotFound
+			@page.site = @page.parent.nil? ? nil : @page.parent.site
+		end
+		#if @site
+		#	@page.site = @site
+		#else
+		#	@page.site_id = 0
+		#end
+		@page.user = current_user
+		@page.chunks = Chunk.create_from_param_hash(params[:chunks]) if params[:chunks]
+	end
+	
+	def pre_edit
+		@page = Page.find(params[:id])
+		if current_user.admin? or current_user.staff? or @page.user == current_user
+			@section = 'pages'
+			@page_title = "Edit ‘#{@page.title}’"
+			begin
+				@page.site = Site.find(params[:site_id])
+			rescue ActiveRecord::RecordNotFound
+				#@site = nil
+			end
+			#if @site
+			#	@page.site = @site
+			#end
+		else
+			raise Wayground::UserWithoutAccessPermission
+		end
+	end
 end

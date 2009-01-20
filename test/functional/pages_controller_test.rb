@@ -331,11 +331,11 @@ class PagesControllerTest < ActionController::TestCase
 		end
 	end
 	def test_edit_invalid_user
-		get :edit, {:id=>pages(:two).id}, {:user=>users(:staff).id}
+		get :edit, {:id=>pages(:two).id}, {:user=>users(:login).id}
 		assert_response :redirect
 		assert_nil assigns(:page)
-		assert flash[:error]
-		assert_redirected_to page_path(pages(:two))
+		assert flash[:warning]
+		assert_redirected_to account_users_path
 	end
 	def test_edit_no_user
 		get :edit, {:id=>pages(:two).id}, {}
