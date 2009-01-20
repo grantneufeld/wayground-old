@@ -1,0 +1,12 @@
+<%
+content ||= @content
+content_type ||= @content_type
+confirmed_urls ||= true
+
+if content_type == 'text/wayground'
+	%><%= render :partial=>'layouts/wayground_content',
+		:locals=>{:content=>content, :confirmed_urls=>confirmed_urls} %><%
+else
+	%><%= process_content(format_content(content, content_type, confirmed_urls)) %><%
+end
+%>

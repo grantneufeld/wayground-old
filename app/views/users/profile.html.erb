@@ -11,5 +11,7 @@
 <% end
 unless @user.about.blank? %>
 <h3>About</h3>
-<%= process_and_format @user.about, 'text/plain', @user.admin? %>
+<%= render :partial=>'layouts/content',
+	:locals=>{:content=>@user.about, :content_type=>'text/plain',
+		:confirmed_urls=>@user.admin?} %>
 <% end %>

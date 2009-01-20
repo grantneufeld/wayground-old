@@ -10,7 +10,8 @@ if @page.content.blank?
 	# TODO: show a directory of sub-pages when showing a page with no content
 	
 else
-	%><%= process_and_format(@page.content, @page.content_type) %><%
+	%><%= render :partial=>'layouts/content',
+		:locals=>{:content=>@page.content, :content_type=>@page.content_type} %><%
 end
 if current_user and current_user.staff
 	content_for("footermenu") do

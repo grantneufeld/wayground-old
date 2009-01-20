@@ -27,5 +27,7 @@ end
 %> (for the web-link to your profile)</p>
 <% unless @user.about.blank? %>
 <h3>About You</h3>
-<%= process_and_format @user.about, 'text/plain', (not @user.admin?) %>
+<%= render :partial=>'layouts/content',
+	:locals=>{:content=>@user.about, :content_type=>'text/plain',
+		:confirmed_urls=>@user.admin?} %>
 <% end %>

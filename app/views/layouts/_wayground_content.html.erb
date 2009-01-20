@@ -1,0 +1,20 @@
+<%
+# Expects:
+# content or chunks
+chunks ||= Chunk.array_from_text(content)
+confirmed_urls ||= true
+
+chunks.sort!
+
+chunks.each do |chunk|
+	if chunk.part == 'sidebar'
+		render_sidebar do
+			%><%= render :partial=>'layouts/wayground_chunk',
+				:locals=>{:chunk=>chunk, :confirmed_urls=>confirmed_urls} %><%
+		end
+	else	
+		%><%= render :partial=>'layouts/wayground_chunk',
+			:locals=>{:chunk=>chunk, :confirmed_urls=>confirmed_urls} %><%
+	end
+end
+%>

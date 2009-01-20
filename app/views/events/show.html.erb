@@ -14,7 +14,9 @@ end
 unless @event.content.blank?
 	%><h2>Details</h2>
 <%
-	%><div class="description"><%= process_and_format(@event.content, @event.content_type) %></div><%
+	%><div class="description"><%= render :partial=>'layouts/content',
+		:locals=>{:content=>@event.content, :content_type=>@event.content_type}
+		%></div><%
 end
 %>
 </div><%

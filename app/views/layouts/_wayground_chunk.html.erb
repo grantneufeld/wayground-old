@@ -1,0 +1,17 @@
+<%
+# Expects:
+# chunk
+confirmed_urls ||= true
+
+case chunk.class.name
+when 'RawChunk' :
+	%><%= format_content(chunk.content, chunk.content_type, confirmed_urls) %><%
+when 'ItemChunk' :
+	%><%= render(:partial=>'templates/item_chunk', :locals=>{:chunk=>chunk}) %><%
+when 'ListChunk' :
+	%><%= render(:partial=>'templates/list_chunk', :locals=>{:chunk=>chunk}) %><%
+# other chunk types
+else
+	%><!-- unrecognized Chunk type #{chunk.class} --><%
+end
+%>
