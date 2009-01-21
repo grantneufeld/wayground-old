@@ -17,6 +17,9 @@ WAYGROUND = YAML.load(raw_config)[RAILS_ENV]
 #	end
 #end
 module Wayground
+	# it looks like an automated form submission has been received
+	class SpammerDetected < Exception; end
+	
 	unless defined?(SITES)
 		SITES = {
 			4=>{:name=>'Arusha', :abbrev=>'arusha', :url=>'http://arusha.org'},

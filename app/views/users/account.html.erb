@@ -5,7 +5,7 @@
 -%>
 <h1>Your Account: <%= h @user.nickname %></h1>
 
-<p><%= link_to "Edit Your Account", {:controller=>'users', :action=>'edit', :id=>@user} %></p>
+<p><%= link_to "Edit Your Account", {:controller=>'users', :action=>'edit', :id=>(@user.id.nil? ? 1 : @user)} %></p>
 
 <h2>Private Registration Information</h2>
 <p>The following information is included in your registration, but is not displayed publicly.
@@ -20,7 +20,7 @@
 <p>Screen Name: <%= @user.nickname.blank? ? @user.id : h(@user.nickname) %>
 <br />Subpath: <%
 if @user.subpath.blank?
-	%><%= link_to '<i>NOT SET</i>', edit_user_path(@user) %><%
+	%><%= link_to '<i>NOT SET</i>', edit_user_path((@user.id.nil? ? 1 : @user)) %><%
 else
 	%><%= link_to h(@user.subpath), h(@user.profile_path) %><%
 end

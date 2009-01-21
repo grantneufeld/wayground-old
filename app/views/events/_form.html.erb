@@ -11,6 +11,8 @@ end
 	<td><%= f.text_field :title %></td></tr>
 <tr class="alternate"><th><label for="event_subpath">Path:</label></th>
 	<td><%= f.text_field :subpath, :size=>32, :class=>'fixed' %>
+	<% # anti-spam field
+	%><br /><label for="event_url">Website:</label><input id="event_url" name="event[url]" size="30" type="text" />
 	<br />This permanently sets the subpath (used for the web-link address) for this event
 	(e.g., “http://website/events/<b>subpath</b>”).
 	<br />Only the following characters may be used, no spaces: <b class="nowrap">A-Z a-z 0-9 -</b></td></tr>

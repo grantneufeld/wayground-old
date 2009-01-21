@@ -10,9 +10,13 @@ class User < ActiveRecord::Base
 	# prevents a user from submitting a crafted form that bypasses activation
 	# anything else you want your user to be able to set should be added here.
 	attr_accessible :password, :password_confirmation, :email,
-		:nickname, :fullname, :subpath, :time_zone, :location, :about
+		:nickname, :fullname, :subpath, :time_zone, :location, :about,
+		# anti-spam fake-fields:
+		:login, :url
 	
-	attr_accessor :password, :password_confirmation
+	attr_accessor :password, :password_confirmation	,
+		# anti-spam fake-fields:
+		:login, :url
 	
 	# TODO: FUTURE: don’t destroy dependent locations when the location model is changed to allow sharing of location objects.
 	has_many :locations, :as=>:locatable, :dependent=>:destroy

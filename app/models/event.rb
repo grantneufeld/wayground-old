@@ -1,5 +1,10 @@
 class Event < ActiveRecord::Base
-	attr_accessible :subpath, :next_at, :title, :description, :content, :content_type
+	attr_accessible :subpath, :next_at, :title, :description, :content, :content_type,
+		# anti-spam fake-fields:
+		:url
+	
+	# anti-spam fake-fields:
+	attr_accessor :url
 	
 	validates_presence_of :subpath
 	validates_format_of :subpath,

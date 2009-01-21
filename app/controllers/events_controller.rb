@@ -35,9 +35,20 @@ class EventsController < ApplicationController
 	
 	def create
 		pre_new
+		# anti-spam
+		unless (params[:event].nil? or params[:event][:url].blank?) and (params[:schedule].nil? or params[:schedule][:email].blank?)
+			# looks like a non-human is trying to auto-fill the form
+			raise Wayground::SpammerDetected
+		end
 		@event.save!
 		flash[:notice] = 'New event was successfully saved.'
 		redirect_to :action=>'show', :id=>@event
+	rescue Wayground::SpammerDetected
+		block_spammer
+		# skip the save, but let them think it was saved
+		flash.now[:notice] = 'New event was successfully saved.'
+		@page_title = "Event: #{@event.title}"
+		render :action=>:show
 	rescue ActiveRecord::RecordInvalid
 		render :action=>:new
 	end

@@ -2,7 +2,12 @@ require 'chronic'
 
 class Schedule < ActiveRecord::Base
 	attr_accessible :start_at, :end_at, :info,
-		:recur, :unit, :interval, :ordinal, :recur_day, :recur_month
+		:recur, :unit, :interval, :ordinal, :recur_day, :recur_month,
+		# anti-spam fake-fields:
+		:email
+
+	# anti-spam fake-fields:
+	attr_accessor :email
 	
 	validates_presence_of :start_at
 	# TODO: figure out what I meant by “contained” for schedule recurrence???

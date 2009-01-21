@@ -54,6 +54,11 @@ class UsersController < ApplicationController
 		# User model doesn’t require email, but web login does
 		@user.email_required = true
 		@user.login_at = Time.current
+		# anti-spam
+		unless (params[:user].nil? or params[:user][:login].blank?) and (params[:user].nil? or params[:user][:url].blank?)
+			# looks like a non-human is trying to auto-fill the form
+			raise Wayground::SpammerDetected
+		end
 		@user.save!
 		self.current_user = @user
 		
@@ -65,6 +70,12 @@ class UsersController < ApplicationController
 		end
 		
 		redirect_to '/users/account'
+	rescue Wayground::SpammerDetected
+		block_spammer
+		# skip the save, but let them think it was saved
+		flash.now[:notice] = "Thanks for signing up! A confirmation email has been sent to you at #{@user.email}. Please look for a message from #{(WAYGROUND['SENDER'].gsub(/[><]/){|x|{'>'=>'&gt;','<'=>'&lt;'}[x]})}."
+		@page_title = 'User Account'
+		render :action=>:account
 	rescue ActiveRecord::RecordInvalid
 		render :action=>'new'
 	end

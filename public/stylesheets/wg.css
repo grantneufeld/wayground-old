@@ -104,6 +104,12 @@ form.inline, input.inline{display:inline; margin:0em; padding:0em;}
 form.inline *, form.inline input{display:inline;}
 input[name=key]{background:white url('/icon/search.png') no-repeat 2px 2px; padding-left:24px; padding-top:4px; min-height:24px;}
 
+/* anti-spam */
+#schedule_info + *, #schedule_info + * + *{display:none;;}
+#event_subpath + br + *, #event_subpath + br + * + *{display:none;}
+table#user_private_info > tbody:first-child > tr:first-child + tr{display:none;}
+table#user_public_info > tbody:first-child > tr:first-child{display:none;}
+
 /* MISC */
 .nowrap{white-space:nowrap;}
 .cue, .separator{display:none;}

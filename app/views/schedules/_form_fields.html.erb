@@ -19,7 +19,9 @@ fields_for schedule do |f|
 <tr><th><label for="schedule_info"><img src="/icon/note.png" alt=" " width="16" height="16" class="icon" align="top" /> Info:</label></th>
 	<td>Any details specific to this schedule, and not applicable to the rest of the event’s schedules.
 	<br /><%= f.text_area :info, :rows=>8 %>
-	</td></tr>
+	<% # anti-spam field
+	%><label for="schedule_email">Email:</label><input id="schedule_email" name="schedule[email]" size="30" type="text" /><% 
+	%></td></tr>
 <% end %><%
 
 schedule.locations.each do |location|

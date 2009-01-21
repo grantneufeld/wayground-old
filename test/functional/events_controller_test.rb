@@ -239,6 +239,26 @@ class EventsControllerTest < ActionController::TestCase
 		assert flash[:warning]
 		assert_redirected_to login_path
 	end
+	def test_events_create_spam
+		assert_difference(Event, :count, 0) do
+			post :create, {:event=>{:subpath=>'test_create_spam',
+				:title=>'Controller Creation Spam Test',
+				:description=>'Spam event.',
+				:content=>'This spam event should not be created.',
+				:content_type=>'text/plain',
+				:url=>'http://wayground.ca/event_create_spam'},
+				:schedule=>{:start_at=>Time.now.to_s, :end_at=>1.hour.from_now.to_s,
+					:info=>'schedule for controller spam creation test',
+					:email=>'test+event_create_spam@wayground.ca'}},
+				{:user=>users(:staff).id}
+		end
+		assert_response :success
+		assert_equal 'events', assigns(:section)
+		assert assigns(:event)
+		assert_equal("Event: #{assigns(:event).title}", assigns(:page_title))
+		assert flash[:notice]
+		assert_template 'show'
+	end
 	
 	
 	# EDIT

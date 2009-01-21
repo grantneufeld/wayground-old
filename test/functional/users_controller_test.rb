@@ -150,6 +150,46 @@ class UsersControllerTest < ActionController::TestCase
 		assert_nil assigns(:user)
 		assert_redirected_to({:action=>'new'})
 	end
+	def test_user_create_spam_attempt_login
+		new_email = 'test+user_create_spam_login@wayground.ca'
+		assert_difference(User, :count, 0) do
+			post :create, :user=>{:login=>'spamlogin', :email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Spam Login Test', :nickname=>'Spam Login'}
+		end
+		assert_response :success
+		assert assigns(:user)
+		assert_equal 'User Account', assigns(:page_title)
+		assert flash[:notice]
+		assert_template 'account'
+	end
+	def test_user_create_spam_attempt_url
+		new_email = 'test+user_create_spam_url@wayground.ca'
+		assert_difference(User, :count, 0) do
+			post :create, :user=>{:url=>'http://spamurl.tld/', :email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Spam URL Test', :nickname=>'Spam URL'}
+		end
+		assert_response :success
+		assert assigns(:user)
+		assert_equal 'User Account', assigns(:page_title)
+		assert flash[:notice]
+		assert_template 'account'
+	end
+	def test_user_create_spam_attempt_all
+		new_email = 'test+user_create_spam_all@wayground.ca'
+		assert_difference(User, :count, 0) do
+			post :create, :user=>{:login=>'spamall', :url=>'http://spamall.tld/',
+				:email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Spam All Test', :nickname=>'Spam All'}
+		end
+		assert_response :success
+		assert assigns(:user)
+		assert_equal 'User Account', assigns(:page_title)
+		assert flash[:notice]
+		assert_template 'account'
+	end
 	
 	
 	# ACTIVATE

@@ -141,6 +141,12 @@ class ApplicationController < ActionController::Base
 		path
 	end
 	
+	# An automated submission attempt has been detected.
+	# Log it and flag the ip for blocking.
+	def block_spammer
+		# TODO: block_spammer in application.rb
+		
+	end
 	
 	private
 	
