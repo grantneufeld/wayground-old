@@ -66,7 +66,7 @@ class Schedule < ActiveRecord::Base
 	end
 	
 	def start_at=(t)
-		if t.is_a? String
+		if t.is_a? String and !(t.blank?)
 			t.gsub! ',', ' '
 			s = Chronic.parse(t)
 			s = s.utc if s
@@ -83,7 +83,7 @@ class Schedule < ActiveRecord::Base
 	end
 	
 	def end_at=(t)
-		if t.is_a? String
+		if t.is_a? String and !(t.blank?)
 			t.gsub! ',', ' '
 			s = Chronic.parse(t)
 			s = s.utc if s
