@@ -1,0 +1,22 @@
+<div class="chunk-list">
+<%
+#debugger
+chunk.items(current_user, params[:page]).each do |item|
+	%><div class="chunk-item <%= item.css_class %>"><%
+	unless item.title_prefix.blank?
+		%><p class="chunk-prefix"><%= item.title_prefix %><span class="chunk-prefix-punctuation">:</span></p>
+<%	end
+	%><p class="chunk-title"><%= link_to(item.title, item.link)	%></p>
+<%
+	unless item.description.blank?
+		%><p class="chunk-description"><%= h item.description %></p>
+<%	end
+%></div>
+<%
+end
+%>
+<% if chunk.paginate
+	%><div class="chunk-paginate">
+<%= will_paginate chunk.items, :params=>params %>
+</div>
+<% end %></div>
