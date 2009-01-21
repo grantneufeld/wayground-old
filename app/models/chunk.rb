@@ -82,6 +82,18 @@ class Chunk
 				chunks << create(p)
 			end
 		end
+		# fix any errant positions
+		chunks.sort!
+		idx = 0
+		part = ''
+		chunks.each do |chunk|
+			if part != chunk.part
+				part = chunk.part
+				idx = 0
+			end
+			idx += 1
+			chunk.position = idx
+		end
 		chunks
 	end
 	def self.create_from_param_hash(p)
