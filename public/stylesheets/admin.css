@@ -48,6 +48,7 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 	}
 #content{clear:left; margin:0px; padding:19px 19px 19px 10px; max-width:770px;}
 #sidebar + #content{max-width:500px;}
+#content > *:first-child, #content > #flash + *{margin-top:0em;}
 #tail{clear:both; min-height:1px;}
 
 #content .overflow{max-width:500px;}
@@ -70,7 +71,7 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 #footer{text-align:center; padding:12px 0px;}
 
 /* FLASH */
-#flash{background:#FFD url("/images/bg-flash.gif") repeat-x left bottom; color:#000; border:1px outset #999; margin:0px 8px 0px 0px; padding:8px; width:486px; /*max-width:777px;*/}
+#flash{background:#FFD url("/images/bg-flash.gif") repeat-x left bottom; color:#000; border:1px outset #999; margin:0px 8px 1.5em 0px; padding:8px; width:486px; /*max-width:777px;*/}
 #flash > p{margin:0em; font-size:13px;}
 #flash > p + p{margin-top:0.5em;}
 #flash p.warning, #flash p.error{font-weight:bold;}
