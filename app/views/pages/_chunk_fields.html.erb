@@ -27,12 +27,12 @@ fields_for chunk do |f|
 <% # style="cursor:move;"
 #= draggable_element chunk_label, :ghosting=>true, :revert=>true 
 -%>
-<input type="hidden" name="<%= field_prefix %>[type]" value="<%= chunk.xmltag_type %>" />
+<input type="hidden" name="<%= field_prefix %>[type]" value="<%= chunk.chunk_type %>" />
 <table cellspacing="0">
 <thead><tr><th colspan="2"><h3 class="flat-left" style="vertical-align:middle;"><%
 #<a href="" title="Move this chunk up on the page (relative to the other chunks)"><img src="/icon/arrow_up.png" width="16" height="16" alt="up" align="top" class="icon" /></a><a href="" title="Move this chunk down on the page (relative to the other chunks)"><img src="/icon/arrow_down.png" width="16" height="16" alt="down" align="top" class="icon" /></a>
 %>
-<%= chunk.xmltag_type.capitalize unless chunk.is_a? RawChunk %> Chunk</h3>
+<%= chunk.chunk_type.capitalize unless chunk.is_a? RawChunk %> Chunk</h3>
 <%= f.hidden_field :part, :name=>"#{field_prefix}[part]", :id=>"#{chunk_label}_part" %>
 <%= f.hidden_field :position, :name=>"#{field_prefix}[position]", :id=>"#{chunk_label}_position" %>
 <% #flavours = [ ['Normal',''], ['Feature','feature'] ]
@@ -87,8 +87,8 @@ elsif chunk.is_a? ItemChunk
 elsif chunk.is_a? ListChunk
 -%>
 <tr><th><label for="<%= chunk_label %>_item_type">Item Type:</label></th>
-	<td><%= f.select :item_type, chunk.recognized_item_types,
-		{:id=>"#{chunk_label}_item_type", :name=>"#{field_prefix}[item_id]", :id=>"#{chunk_label}_item_id"} %></td></tr>
+	<td><%= f.select :item_type, chunk.recognized_item_types, {},
+		{:id=>"#{chunk_label}_item_type", :name=>"#{field_prefix}[item_type]", :id=>"#{chunk_label}_item_id"} %></td></tr>
 <tr class="alternate"><th><label for="<%= chunk_label %>_max">Maximum #:</label></th>
 	<td>The maximum number of items to show from the list:
 	<br /><%= f.text_field :max, :size=>6, :maxlen=>5, :name=>"#{field_prefix}[max]", :id=>"#{chunk_label}_max", :class=>'fixed' %></td></tr>

@@ -110,6 +110,14 @@ class Document < ActiveRecord::Base
 		self.find(*args)
 	end
 	
+	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'documents.filename'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -135,12 +143,6 @@ class Document < ActiveRecord::Base
 			vals << "%#{p[:key]}%"
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'documents.filename'
-	end
-	def self.default_include
-		nil
 	end
 	
 	
@@ -329,7 +331,20 @@ class Document < ActiveRecord::Base
 		end
 	end
 	
-	def css_class(prefix='')
-		self.is_image? ? "#{prefix}image" : "#{prefix}document"
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		self.is_image? ? "#{name_prefix}image" : "#{name_prefix}document"
+	end
+	def description
+		nil
+	end
+	def title
+		filename
+	end
+	def link
+		self
+	end
+	def title_prefix
+		nil
 	end
 end

@@ -5,57 +5,57 @@
 # f (the fields or form object for creating form-fields)
 # label is the first part of the field html id attribute.
 label ||= 'location'
-# prefix is the field name prefix (e.g., “location” or “locations[123]”)
-prefix ||= 'location'
+# field_prefix is the field name prefix (e.g., “location” or “locations[123]”)
+field_prefix ||= 'location'
 # skip is an array of fields to be skipped (e.g., [:email, :phone]).
 skip ||= []
 
 fields_for location do |f| -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_name">Place Name:</label></th>
-	<td><%= f.text_field :name, :name=>"#{prefix}[name]", :id=>"#{label}_name",
+	<td><%= f.text_field :name, :name=>"#{field_prefix}[name]", :id=>"#{label}_name",
 	:title=>'The name of the location, if applicable. E.g., “The Place Centre”, “Shops Mall”, “Pizza Restaurant”.' %></td></tr>
 
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_address">Address:</label></th>
-	<td><%= f.text_field :address, :name=>"#{prefix}[address]", :id=>"#{label}_address",
+	<td><%= f.text_field :address, :name=>"#{field_prefix}[address]", :id=>"#{label}_address",
 		:title=>'The street or postal address of the location' %>
-	<br /><%= f.text_field :address2, :name=>"#{prefix}[address2]", :id=>"#{label}_address2",
+	<br /><%= f.text_field :address2, :name=>"#{field_prefix}[address2]", :id=>"#{label}_address2",
 		:title=>'Optional second line of the street or postal address' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_city">City:</label></th>
-	<td><%= f.text_field :city, :size=>32, :name=>"#{prefix}[city]", :id=>"#{label}_city", :class=>'fixed' %></td></tr>
+	<td><%= f.text_field :city, :size=>32, :name=>"#{field_prefix}[city]", :id=>"#{label}_city", :class=>'fixed' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_province">Province:</label></th>
-	<td><%= f.text_field :province, :size=>32, :name=>"#{prefix}[province]", :id=>"#{label}_province", :class=>'fixed',
+	<td><%= f.text_field :province, :size=>32, :name=>"#{field_prefix}[province]", :id=>"#{label}_province", :class=>'fixed',
 		:title=>'The province, state, or other sub-region the location is in' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_country">Country:</label></th>
-	<td><%= f.text_field :country, :size=>32, :name=>"#{prefix}[country]", :id=>"#{label}_country", :class=>'fixed' %></td></tr>
+	<td><%= f.text_field :country, :size=>32, :name=>"#{field_prefix}[country]", :id=>"#{label}_country", :class=>'fixed' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_postal">Postal Code:</label></th>
-	<td><%= f.text_field :postal, :size=>16, :name=>"#{prefix}[postal]", :id=>"#{label}_postal", :maxlength=>15, :class=>'fixed', :title=>'The postal, zip or other mailing code' %></td></tr>
+	<td><%= f.text_field :postal, :size=>16, :name=>"#{field_prefix}[postal]", :id=>"#{label}_postal", :maxlength=>15, :class=>'fixed', :title=>'The postal, zip or other mailing code' %></td></tr>
 
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_longitude">Longitude:</label></th>
-	<td><%= f.text_field :longitude, :size=>16, :name=>"#{prefix}[longitude]", :id=>"#{label}_longitude", :class=>'fixed' %>
+	<td><%= f.text_field :longitude, :size=>16, :name=>"#{field_prefix}[longitude]", :id=>"#{label}_longitude", :class=>'fixed' %>
 	<label for="<%= label %>_latitude">Latitude:</label>
-	<%= f.text_field :latitude, :size=>16, :name=>"#{prefix}[latitude]", :id=>"#{label}_latitude", :class=>'fixed' %></td></tr>
+	<%= f.text_field :latitude, :size=>16, :name=>"#{field_prefix}[latitude]", :id=>"#{label}_latitude", :class=>'fixed' %></td></tr>
 
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_url">Website:</label></th>
-	<td><%= f.text_field :url, :name=>"#{prefix}[url]", :id=>"#{label}_url" %>
+	<td><%= f.text_field :url, :name=>"#{field_prefix}[url]", :id=>"#{label}_url" %>
 		<br />Must be the complete URL, including the “http://” part.</td></tr>
 <%	unless skip.include?(:email) -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_email">Email:</label></th>
-	<td><%= f.text_field :email, :name=>"#{prefix}[email]", :id=>"#{label}_email", :title=>'An email' %></td></tr>
+	<td><%= f.text_field :email, :name=>"#{field_prefix}[email]", :id=>"#{label}_email", :title=>'An email' %></td></tr>
 <%	end
 
 	unless skip.include?(:phone) -%>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone1">Phone 1:</label></th>
 	<td><%= f.select :phone1_type, Location.phone_options,
-		:name=>"#{prefix}[phone1_type]", :id=>"#{label}_phone1_type" %><%=
-	f.text_field :phone1, :size=>26, :maxlength=>31, :name=>"#{prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
+		:name=>"#{field_prefix}[phone1_type]", :id=>"#{label}_phone1_type" %><%=
+	f.text_field :phone1, :size=>26, :maxlength=>31, :name=>"#{field_prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone2">Phone 2:</label></th>
 	<td><%= f.select :phone2_type, Location.phone_options,
-		:name=>"#{prefix}[phone2_type]", :id=>"#{label}_phone2_type" %><%=
-	f.text_field :phone2, :size=>26, :maxlength=>31, :name=>"#{prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
+		:name=>"#{field_prefix}[phone2_type]", :id=>"#{label}_phone2_type" %><%=
+	f.text_field :phone2, :size=>26, :maxlength=>31, :name=>"#{field_prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
 <tr<%= cycle '', ' class="alternate"' %>><th><label for="<%= label %>_phone3">Phone 3:</label></th>
 	<td><%= f.select :phone3_type, Location.phone_options,
-		:name=>"#{prefix}[phone3_type]", :id=>"#{label}_phone3_type" %><%=
-	f.text_field :phone3, :size=>26, :maxlength=>31, :name=>"#{prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
+		:name=>"#{field_prefix}[phone3_type]", :id=>"#{label}_phone3_type" %><%=
+	f.text_field :phone3, :size=>26, :maxlength=>31, :name=>"#{field_prefix}[]", :id=>"#{label}_", :class=>'fixed' %></td></tr>
 <%
 	end
 

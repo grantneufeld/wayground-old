@@ -26,7 +26,7 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:public_group), assigns(:item)
 		assert_equal 2, assigns(:weblinks).size
-		assert_equal "#{assigns(:item).display_name} Weblinks",
+		assert_equal "#{assigns(:item).title} Weblinks",
 			assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
@@ -52,14 +52,14 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:public_group), assigns(:item)
 		assert assigns(:weblink)
-		assert_equal("#{assigns(:item).display_name}: Weblink ‘#{assigns(:weblink).title}’",
+		assert_equal("#{assigns(:item).title}: Weblink ‘#{assigns(:weblink).title}’",
 			assigns(:page_title))
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'show'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			#assert_select 'h1', assigns(:item).display_name
+			#assert_select 'h1', assigns(:item).title
 			#assert_select 'h2', "Weblink Details"
 		end
 	end
@@ -86,13 +86,13 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert assigns(:weblink)
 		assert_equal users(:login), assigns(:weblink).user
 		assert_nil flash[:notice]
-		assert_equal "#{assigns(:item).display_name}: New Weblink",
+		assert_equal "#{assigns(:item).title}: New Weblink",
 			assigns(:page_title)
 		# view result
 		assert_template 'new'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			#assert_select 'h1', assigns(:item).display_name
+			#assert_select 'h1', assigns(:item).title
 			#assert_select 'h2', "New Weblink"
 			#assert_select "form[action=#{weblinks_path(assigns(:item))}]" do
 			#	assert_select 'input#weblink_user_id'
@@ -159,7 +159,7 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert assigns(:weblink)
 		assert_validation_errors_on(assigns(:weblink), ['url'])
 		assert_nil flash[:notice]
-		assert_equal "#{assigns(:item).display_name}: New Weblink",
+		assert_equal "#{assigns(:item).title}: New Weblink",
 			assigns(:page_title)
 		# view result
 		assert_template 'new'
@@ -231,7 +231,7 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			#assert_select 'h1', assigns(:item).display_name
+			#assert_select 'h1', assigns(:item).title
 			#assert_select 'h2', "Edit Weblink for #{assigns(:weblink).user.nickname}"
 			#assert_select "form[action='#{group_weblink_path(assigns(:item), assigns(:weblink))}']" do
 			#	assert_select 'input#weblink_user_id', false,
@@ -361,7 +361,7 @@ class WeblinksControllerTest < ActionController::TestCase
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			#assert_select 'h1', assigns(:item).display_name
+			#assert_select 'h1', assigns(:item).title
 			#assert_select 'h2', "Edit Weblink for #{assigns(:weblink).user.nickname}"
 			#assert_select "form[action='#{group_weblink_path(assigns(:item), assigns(:weblink))}']" do
 			#	assert_select 'input#weblink_user_id', false,

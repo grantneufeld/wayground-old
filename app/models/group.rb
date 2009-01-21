@@ -46,6 +46,13 @@ class Group < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'groups.name'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -63,12 +70,6 @@ class Group < ActiveRecord::Base
 			vals += ["%#{p[:key]}%"] * 3
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'groups.name'
-	end
-	def self.default_include
-		nil
 	end
 	
 	# override the default find to allow first argument to be a string -
@@ -123,10 +124,6 @@ class Group < ActiveRecord::Base
 		subpath
 	end
 	
-	def display_name
-		name
-	end
-	
 	def user_can_access?(u)
 		if is_public
 			return true
@@ -150,4 +147,17 @@ class Group < ActiveRecord::Base
 		{}
 	end
 	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}group"
+	end
+	def link
+		self
+	end
+	def title
+		name
+	end
+	def title_prefix
+		nil
+	end
 end

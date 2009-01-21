@@ -57,6 +57,13 @@ class User < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'users.nickname, users.id'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -69,12 +76,6 @@ class User < ActiveRecord::Base
 			vals << "%#{p[:key]}%"
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'users.nickname, users.id'
-	end
-	def self.default_include
-		nil
 	end
 	
 	# Encrypts some data with the salt.
@@ -163,13 +164,6 @@ class User < ActiveRecord::Base
 		end
 	end
 	
-	def display_name
-		if nickname.blank?
-			"User #{self.id}"
-		else
-			nickname
-		end
-	end
 	
 	# root-relative url pointing to the user’s profile page
 	def profile_path
@@ -206,4 +200,24 @@ class User < ActiveRecord::Base
 		save(false)
 	end
 	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}user"
+	end
+	def description
+		nil
+	end
+	def link
+		profile_path
+	end
+	def title
+		if nickname.blank?
+			"User #{self.id}"
+		else
+			nickname
+		end
+	end
+	def title_prefix
+		nil
+	end
 end

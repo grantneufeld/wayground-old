@@ -81,10 +81,19 @@ class Event < ActiveRecord::Base
 		end
 	end
 	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		# TODO: should NULL next_at sort after non-NULL?
+		'events.next_at, events.start_at'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
 	# - :u is the current_user to use to determine access to private items.
+	# TODO: add param(s) to restrict to upcoming or past Events
 	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
 	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
 	def self.search_conditions(p={}, strs=[], vals=[])
@@ -113,6 +122,7 @@ class Event < ActiveRecord::Base
 		subpath
 	end
 	
+	
 	def calculate_next_at(relative_to=Time.now)
 		n = nil
 		schedules.each do |schedule|
@@ -122,7 +132,14 @@ class Event < ActiveRecord::Base
 		n
 	end
 	
-	def css_class(prefix='')
-		"#{prefix}event"
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}event"
+	end
+	def link
+		self
+	end
+	def title_prefix
+		(next_at.nil? ? start_at : next_at).to_s(:event_date)
 	end
 end

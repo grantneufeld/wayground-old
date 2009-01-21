@@ -31,6 +31,13 @@ class Signature < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'signatures.id'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -48,12 +55,6 @@ class Signature < ActiveRecord::Base
 			vals += ["%#{p[:key]}%"] * 3
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'signatures.id'
-	end
-	def self.default_include
-		nil
 	end
 	
 	def self.confirm(confirmation_code, user=nil)
@@ -80,4 +81,20 @@ class Signature < ActiveRecord::Base
 	end
 	
 	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}signature"
+	end
+	def description
+		nil
+	end
+	def link
+		self
+	end
+	def title
+		name
+	end
+	def title_prefix
+		position > 0 ? "#{position}." : nil
+	end
 end

@@ -54,7 +54,7 @@ else
 end %><span class="separator">.</span>
 <%
 
-%><%= link_to page.title, page.full_url, {:title=>page.description} %><%
+%><%= link_to page.title, page.link, {:title=>page.description} %><%
 
 if page.children.size > 0 %>
 <span class="meta">(<%= page.children.size %> sub-page<%= page.children.size != 1 ? 's' : '' %>)</span>

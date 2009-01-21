@@ -7,6 +7,17 @@ module Wayground
 	class AbstractClassUsed < Exception; end
 end
 
+# Requirements for classes that can be displayed by Chunks (as listed in Chunk#recognized_item_types):
+# Class Methods:
+#  default_include - array of symbols naming associations to :include=> on find.
+#  default_order - returns a sql ORDER BY style string (e.g., 'table.field DESC')
+#  search_conditions(p={}, strs=[], vals=[]) - returns a :conditions=> array for use in find.
+# Instance Methods:
+#  description - short text/plain description of the item.
+#  link - root-relative or full url string for the item, or the item’s self (used by: link_to('text', item.link)).
+#  title - descriptive label for the item, usually the name or title.
+#  title_prefix - text to go before the title (e.g., #{title_prefix}: #{link_to title, link})
+
 # Abstract — any instances should be of the subclasses.
 class Chunk
 	attr_accessor :part, :flavour, :rendered_content # :page_id, :position
@@ -158,7 +169,7 @@ class Chunk
 	end
 	
 	# Required method for subclasses
-	def xmltag_type
+	def chunk_type
 		raise Wayground::AbstractClassUsed
 	end
 	def as_xmltag
@@ -166,7 +177,7 @@ class Chunk
 		attributes.each do |k,v|
 			attr_strs << "#{k}=\"#{v}\"" unless v.blank? or k == 'content'
 		end
-		"<wg:chunk type=\"#{xmltag_type}\"#{attr_strs.nil? ? '' : ' '}#{attr_strs.join(' ')}#{content.blank? ? ' /' : ''}>"
+		"<wg:chunk type=\"#{chunk_type}\"#{attr_strs.nil? ? '' : ' '}#{attr_strs.join(' ')}#{content.blank? ? ' /' : ''}>"
 	end
 	def content
 		nil
@@ -224,7 +235,7 @@ class Chunk
 	# whitelist of classes that can be displayed
 	def recognized_item_types
 		# , 'DocFile', 'DocImage', 'DocPrivate', 'Path'
-		['Article', 'Document', 'Group', 'Page', 'Petition', 'Signature', 'User', 'Weblink']
+		['Article', 'Document', 'Event', 'Group', 'Page', 'Petition', 'Signature', 'User', 'Weblink']
 	end
 	
 	# t must be a class name for a descendent of ActiveRecord::Base
@@ -232,12 +243,12 @@ class Chunk
 		@item_type || nil
 	end
 	def item_type=(t)
-		raise Wayground::InvalidItemType unless t.match /\A[A-Z][A-Za-z]+\z/
 		raise Wayground::InvalidItemType unless recognized_item_types.include?(t)
 		@item_type = t
 		@item_class = eval(@item_type)
 	end
 	def item_class
+		raise Wayground::InvalidItemType unless !(item_type.blank?)
 		@item_class ||= eval(item_type)
 	end
 	
@@ -279,7 +290,7 @@ class RawChunk < Chunk
 		super.merge({'content'=>content, 'content_type'=>content_type})
 	end
 	
-	def xmltag_type
+	def chunk_type
 		'raw'
 	end
 end    
@@ -296,8 +307,8 @@ class ItemChunk < Chunk
 			'template_id'=>template_id})
 	end
 	
-	def xmltag_type
-		"item"
+	def chunk_type
+		'item'
 	end
 	
 	def item_type=(t)
@@ -332,6 +343,7 @@ class ItemChunk < Chunk
 	
 end
 
+
 class ListChunk < Chunk
 	attr_accessor :before_date, :after_date, :tags, :key, :author, :issue
 		# :item_type, :parent_id, :user_id, :max, :paginate, :template_id
@@ -348,8 +360,8 @@ class ListChunk < Chunk
 			'template_id'=>template_id})
 	end
 	
-	def xmltag_type
-		"list"
+	def chunk_type
+		'list'
 	end
 	
 	def parent_id
@@ -408,18 +420,25 @@ class ListChunk < Chunk
 		end
 	end
 	
-	def items(for_user=nil, offset=nil)
+	def items(for_user=nil, page=nil) #, offset=nil)
+		#debugger
+		return @items unless @items.nil?
 		return nil if item_class.nil?
 		# TODO: ••• restrict by parent, user, before_date, after_date, tags
 		condition_params = {:u=>for_user, :key=>key, :only_active=>true}
 		if item_type == 'Article'
 			condition_params.merge({:author=>author, :issue=>issue})
 		end
-		item_class.find(:all,
+		#item_class.find(:all,
+		#	:conditions=>item_class.search_conditions(condition_params),
+		#	:limit=>max, :offset=>offset,
+		#	:order=>item_class.default_order,
+		#	:include=>item_class.default_include)
+		@items = item_class.paginate(
+			:per_page=>max, :page=>page, :order=>item_class.default_order,
 			:conditions=>item_class.search_conditions(condition_params),
-			:limit=>max, :offset=>offset,
-			:order=>item_class.default_order,
-			:include=>item_class.default_include)
+			:include=>item_class.default_include
+			)
 	end
 end
 

@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 	def show
 		@user = User.find(params[:id])
 		if @user
-			@page_title = "User: #{@user.display_name}"
+			@page_title = "User: #{@user.title}"
 		end
 	rescue ActiveRecord::RecordNotFound
 		flash[:notice] =
@@ -30,7 +30,7 @@ class UsersController < ApplicationController
 			@user = User.find_by_subpath(params[:id])
 		end
 		raise ActiveRecord::RecordNotFound if @user.nil?
-		@page_title = "User: #{@user.display_name}"
+		@page_title = "User: #{@user.title}"
 	rescue ActiveRecord::RecordNotFound
 		flash[:notice] =
 			"Could not find a user matching the requested id (‘#{params[:id]}’)."
@@ -121,7 +121,7 @@ class UsersController < ApplicationController
 			else
 				@locations = [blank_location]
 			end
-			@page_title = "Edit User: #{@user.display_name}"
+			@page_title = "Edit User: #{@user.title}"
 		else
 			#flash[:notice] = 'You do not have permission to access the requested action. Please login as a user with sufficient permission.'
 			#redirect_to '/login'

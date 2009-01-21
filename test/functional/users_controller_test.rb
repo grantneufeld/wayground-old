@@ -265,13 +265,13 @@ class UsersControllerTest < ActionController::TestCase
 		end
 		assert_response :success
 		assert assigns(:user)
-		assert_equal "User: #{users(:login).display_name}", assigns(:page_title)
+		assert_equal "User: #{users(:login).title}", assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'show'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select 'h1', users(:login).display_name
+			assert_select 'h1', users(:login).title
 		end
 	end
 	def test_user_show_no_id
@@ -308,13 +308,13 @@ class UsersControllerTest < ActionController::TestCase
 		end
 		assert_response :success
 		assert assigns(:user)
-		assert_equal "User: #{users(:login).display_name}", assigns(:page_title)
+		assert_equal "User: #{users(:login).title}", assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'profile'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select 'h1', users(:login).display_name
+			assert_select 'h1', users(:login).title
 		end
 	end
 	def test_user_profile_subpath
@@ -323,13 +323,13 @@ class UsersControllerTest < ActionController::TestCase
 		end
 		assert_response :success
 		assert assigns(:user)
-		assert_equal "User: #{users(:login).display_name}", assigns(:page_title)
+		assert_equal "User: #{users(:login).title}", assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'profile'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
-			assert_select 'h1', users(:login).display_name
+			assert_select 'h1', users(:login).title
 		end
 	end
 	def test_user_profile_invalid_id
@@ -348,7 +348,7 @@ class UsersControllerTest < ActionController::TestCase
 		get :edit, {:id=>users(:login).id}, {:user=>users(:login).id}
 		assert_response :success
 		assert assigns(:user)
-		assert_equal "Edit User: #{users(:login).display_name}",
+		assert_equal "Edit User: #{users(:login).title}",
 			assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
@@ -363,7 +363,7 @@ class UsersControllerTest < ActionController::TestCase
 		get :edit, {:id=>users(:login).id}, {:user=>users(:admin).id}
 		assert_response :success
 		assert assigns(:user)
-		assert_equal "Edit User: #{users(:login).display_name}",
+		assert_equal "Edit User: #{users(:login).title}",
 			assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result

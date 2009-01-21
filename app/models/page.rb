@@ -55,9 +55,17 @@ class Page < ActiveRecord::Base
 	end
 	
 	# keyword search
-	def self.find_by_key(key) #, parent=nil)
-		find(:all, :conditions=>search_conditions({:key=>key}),
-			:order=>default_order)
+	def self.find_by_key(key, user=nil) #, parent=nil)
+		find(:all, :conditions=>search_conditions({:key=>key, :u=>user}),
+			:order=>default_order, :include=>default_include)
+	end
+
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'pages.title'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
@@ -71,12 +79,6 @@ class Page < ActiveRecord::Base
 			vals += (["%#{p[:key]}%"] * 4)
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'pages.title'
-	end
-	def self.default_include
-		nil
 	end
 	
 	
@@ -176,16 +178,6 @@ class Page < ActiveRecord::Base
 		sitepath == '/'
 	end
 	
-	# return the full, site-specific, url for this page
-	# Root relative if for current server.
-	def full_url
-		"#{(site and !(site.url.blank?)) ? site.url : ''}#{sitepath}"
-	end
-	
-	def css_class(prefix='')
-		"#{prefix}#{subpath == '/' ? 'root' : self.class.name.downcase}"
-	end
-	
 	def chunks
 		if @chunks.nil?
 			@chunks = Chunk.array_from_text(content)
@@ -208,6 +200,21 @@ class Page < ActiveRecord::Base
 		content_will_change!
 		@chunks = a
 	end
+	
+	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}#{subpath == '/' ? 'root' : self.class.name.downcase}"
+	end
+	def link
+		# return the full, site-specific, url for this page
+		# Root relative if for current server.
+		"#{(site and !(site.url.blank?)) ? site.url : ''}#{sitepath}"
+	end
+	def title_prefix
+		nil
+	end
+	
 	
 	protected
 	

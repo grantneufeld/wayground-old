@@ -3,7 +3,7 @@ class Weblink < ActiveRecord::Base
 	attr_accessible :position, :category, :title, :site, :url, :description
 	
 	# item models may include pretty much anything, especially Campaign
-	# item models must implement the display_name method
+	# item models must implement the title method
 	belongs_to :item, :polymorphic=>true
 	belongs_to :user # the submitter of the weblink
 	
@@ -98,5 +98,16 @@ class Weblink < ActiveRecord::Base
 	
 	def is_confirmed?
 		is_confirmed
+	end
+	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}url"
+	end
+	def link
+		url
+	end
+	def title_prefix
+		nil
 	end
 end

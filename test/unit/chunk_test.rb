@@ -35,7 +35,7 @@ class ChunkTest < ActiveSupport::TestCase
 		assert_equal params[:content_type], chunk.content_type
 		assert_equal content, chunk.content
 
-		assert xmltags_equal(xmltag, chunk.as_xmltag)
+		assert xmltags_equal(xmltag, chunk.as_xmltag), "“#{xmltag}” !=\n“#{chunk.as_xmltag}”"
 	end
 	def test_xmltag_item
 		params = default_params({:type=>'item', :item_type=>'Page', :item_id=>pages(:one).id})
@@ -49,7 +49,7 @@ class ChunkTest < ActiveSupport::TestCase
 		assert_equal params[:flavour], chunk.flavour
 		assert_equal pages(:one), chunk.item
 
-		assert xmltags_equal(xmltag, chunk.as_xmltag)
+		assert xmltags_equal(xmltag, chunk.as_xmltag), "“#{xmltag}” !=\n“#{chunk.as_xmltag}”"
 	end
 	def test_xmltag_list
 		params = default_params({:type=>'list', :item_type=>'Page', :key=>nil,
@@ -73,7 +73,7 @@ class ChunkTest < ActiveSupport::TestCase
 		assert_kind_of Page, chunk.items[0]
 		assert_equal 5, chunk.items.size
 
-		assert xmltags_equal(xmltag, chunk.as_xmltag)
+		assert xmltags_equal(xmltag, chunk.as_xmltag), "“#{xmltag}” !=\n“#{chunk.as_xmltag}”"
 	end
 	def test_xmltag_invalid_types
 		# not a string

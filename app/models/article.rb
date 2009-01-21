@@ -1,4 +1,9 @@
 class Article < Page
+	# standard Wayground class methods for displayable items
+	def self.default_order
+		# TODO: refine sorting of Articles
+		'pages.created_at DESC, pages.title'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key

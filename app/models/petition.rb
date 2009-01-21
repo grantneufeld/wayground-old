@@ -28,6 +28,13 @@ class Petition < ActiveRecord::Base
 	
 	# CLASS METHODS
 
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'petitions.title'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -45,12 +52,6 @@ class Petition < ActiveRecord::Base
 			vals += ["%#{p[:key]}%"] * 3
 		end
 		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'petitions.title'
-	end
-	def self.default_include
-		nil
 	end
 	
 	
@@ -78,4 +79,14 @@ class Petition < ActiveRecord::Base
 		s
 	end
 	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}petition"
+	end
+	def link
+		self
+	end
+	def title_prefix
+		nil
+	end
 end

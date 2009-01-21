@@ -92,8 +92,8 @@ class GroupTest < ActiveSupport::TestCase
 	
 	# INSTANCE METHODS
 	
-	def test_group_display_name
-		assert_equal 'Group One', groups(:one).display_name
+	def test_group_title
+		assert_equal 'Group One', groups(:one).title
 	end
 	
 	# user access/non-access

@@ -32,21 +32,21 @@ class WeblinksController < ApplicationController
 			@weblinks = nil
 		else
 			@weblinks = @item.weblinks
-			@page_title = "#{@item.display_name} Weblinks"
+			@page_title = "#{@item.title} Weblinks"
 		end
 	end
 
 	# GET weblink_url(:id=>1)
 	def show
 		@weblink = Weblink.find(params[:id], :include=>[:item])
-		@page_title = (@item.nil? ? '' : "#{@item.display_name}: ") + "Weblink ‘#{@weblink.title}’"
+		@page_title = (@item.nil? ? '' : "#{@item.title}: ") + "Weblink ‘#{@weblink.title}’"
 	rescue ActiveRecord::RecordNotFound
 		missing
 	end
 
 	# GET new_weblink_url
 	def new
-		@page_title = (@item.nil? ? '' : "#{@item.display_name}: ") + 'New Weblink'
+		@page_title = (@item.nil? ? '' : "#{@item.title}: ") + 'New Weblink'
 		# return an HTML form for describing a new weblink
 		@weblink = Weblink.new(params[:weblink])
 		@weblink.user = current_user
