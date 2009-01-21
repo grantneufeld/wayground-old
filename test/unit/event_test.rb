@@ -85,13 +85,23 @@ class EventTest < ActiveSupport::TestCase
 				'%keyword%', '%keyword%', '%keyword%'],
 			Event.search_conditions({:key=>'keyword'}))
 	end
-	def test_event_search_conditions_keyword_and_custom
+	def test_event_search_conditions_restrict_upcoming
+		assert_equal(['(events.next_at IS NOT NULL)'],
+			Event.search_conditions({:restrict=>:upcoming}))
+	end
+	def test_event_search_conditions_restrict_past
+		assert_equal(['(events.next_at IS NULL)'],
+			Event.search_conditions({:restrict=>:past}))
+	end
+	def test_event_search_conditions_all_options
 		# keyword search and custom conditions
 		assert_equal([
-			'a AND b AND (events.title LIKE ? OR events.description LIKE ? OR events.content LIKE ?)',
+			'a AND b AND (events.title LIKE ? OR events.description LIKE ? OR events.content LIKE ?) AND (events.next_at IS NOT NULL)',
 			1, 2, '%keyword%', '%keyword%', '%keyword%'],
-			Event.search_conditions({:key=>'keyword'}, ['a','b'], [1,2]))
+			Event.search_conditions({:key=>'keyword', :restrict=>:upcoming},
+				['a','b'], [1,2]))
 	end
+	
 	
 	def test_event_update_next_at_for_all_events
 		assert Event.find(:all, :conditions=>'events.next_at < NOW()').size > 0,

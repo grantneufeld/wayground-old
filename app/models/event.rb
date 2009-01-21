@@ -93,6 +93,7 @@ class Event < ActiveRecord::Base
 	# p is a hash of parameters:
 	# - :key is a search restriction key
 	# - :u is the current_user to use to determine access to private items.
+	# - :restrict is :past, :upcoming or nil (for no restrict)
 	# TODO: add param(s) to restrict to upcoming or past Events
 	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
 	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
@@ -100,6 +101,11 @@ class Event < ActiveRecord::Base
 		unless p[:key].blank?
 			strs << '(events.title LIKE ? OR events.description LIKE ? OR events.content LIKE ?)'
 			vals += (["%#{p[:key]}%"] * 3)
+		end
+		if p[:restrict] == :upcoming
+			strs << '(events.next_at IS NOT NULL)'
+		elsif p[:restrict] == :past
+			strs << '(events.next_at IS NULL)'
 		end
 		[strs.join(' AND ')] + vals
 	end

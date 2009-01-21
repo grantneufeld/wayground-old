@@ -1,7 +1,7 @@
 one:
   user: login
   subpath: event1
-  next_at: 2009-01-14 01:22:17
+  start_at: 2009-01-14 01:22:17
   title: Test Event One
   description: The first test event.
   content: Testing the event system.
@@ -11,7 +11,7 @@ two:
   user: staff
   parent: one
   subpath: event2
-  next_at: 2009-01-14 01:22:17
+  start_at: 2009-01-14 01:22:17
   title: Test Event Two
   description: A second test event.
   content: Still testing the event system.
@@ -20,6 +20,7 @@ two:
 searchable:
   user: admin
   subpath: searchable
+  start_at: <%= 1.week.from_now.to_s(:db) %>
   next_at: <%= 1.week.from_now.to_s(:db) %>
   title: Searchable Event
   description: An event to with a searchable keyword.
@@ -29,6 +30,7 @@ searchable:
 update_event:
   user: staff
   subpath: update_event
+  start_at: <%= 1.week.from_now.to_s(:db) %>
   next_at: <%= 1.week.from_now.to_s(:db) %>
   title: Update Event
   description: An event to update.
@@ -38,6 +40,7 @@ update_event:
 expired_event:
   user: staff
   subpath: expired_event
+  start_at: <%= 1.week.ago.to_s(:db) %>
   next_at: <%= 1.week.ago.to_s(:db) %>
   title: Expired Event
   description: An event in the past.

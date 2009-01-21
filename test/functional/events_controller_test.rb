@@ -27,8 +27,8 @@ class EventsControllerTest < ActionController::TestCase
 #		end
 		assert_response :success
 		assert_equal 'events', assigns(:section)
-		assert_equal Event.count, assigns(:events).size
-		assert_equal 'Events', assigns(:page_title)
+		assert_equal 3, assigns(:events).size
+		assert_equal 'Upcoming Events', assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'index'
@@ -47,7 +47,26 @@ class EventsControllerTest < ActionController::TestCase
 		assert_response :success
 		assert_equal 'events', assigns(:section)
 		assert_equal 1, assigns(:events).size
-		assert_equal 'Events: ‘keyword’', assigns(:page_title)
+		assert_equal 'Upcoming Events: ‘keyword’', assigns(:page_title)
+		assert_nil flash[:notice]
+		# view result
+		assert_template 'index'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			# TODO: test html content for test_events_index_search
+			assigns(:events).each do |p|
+				assert_select "li#event_#{p.id}"
+			end
+		end
+	end
+	def test_events_index_past
+#		assert_efficient_sql do
+			get :index, {:past=>'y'} #, {:user=>users(:admin).id}
+#		end
+		assert_response :success
+		assert_equal 'events', assigns(:section)
+		assert_equal Event.count, assigns(:events).size
+		assert_equal 'Events', assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'index'

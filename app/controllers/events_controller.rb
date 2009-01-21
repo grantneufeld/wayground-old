@@ -2,17 +2,23 @@ class EventsController < ApplicationController
 	before_filter :staff_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
 	
+	# special parameter ‘past’ includes past events if set,
+	# otherwise, only upcoming events are shown
 	def index
 		@section = 'events'
 		@key = params[:key]
-		@events = Event.paginate(
-			:per_page=>10, :page=>params[:page], :order=>'events.title',
-			:conditions=>Event.search_conditions({:u=>current_user, :key=>@key})
-			)
+		restrict = params[:past].blank? ? :upcoming : nil
+		@max = params[:max].to_i
+		@max = 10 if @max < 1
 		@page_title = 'Events'
-		unless @key.blank?
-			@page_title << ": ‘#{@key}’"
-		end
+		@page_title += ": ‘#{@key}’" unless @key.blank?
+		@page_title = "Upcoming #{@page_title}" if restrict == :upcoming
+		@events = Event.paginate(
+			:per_page=>@max, :page=>params[:page], :order=>Event.default_order,
+			:include=>Event.default_include,
+			:conditions=>Event.search_conditions(
+				{:u=>current_user, :key=>@key, :restrict=>restrict})
+			)
 	end
 	
 	def show

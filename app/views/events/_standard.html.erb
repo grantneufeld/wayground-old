@@ -1,11 +1,11 @@
 <%
 # SEARCH
 render_sidebar do
-	%><h2><img src="/icon/search_24.png" width="24" height="24" alt=" " class="icon" />Search Events</h2>
-<%	form_tag events_path, :method=>:get do
-		%><p><%= text_field_tag 'key', @key, :id=>'search_key', :size=>16,
+	form_tag events_path, :method=>:get do
+		%><p><%= text_field_tag 'key', @key, :id=>'search_key', :size=>12,
 			:title=>'Enter a keyword or keyphrase to search for' %>
-<%= 	submit_tag 'Search', :name=>nil %></p>
+<%= 	submit_tag 'Search Events', :name=>nil %>
+<br /><input type="checkbox" name="past" value="y" id="search_past" /><label for="search_past" title="Check this box to have events that have already ended included in the search">Include past events</label></p>
 <%	end
 	%><p><a href="/events" class="button"><img src="/icon/event.png" alt=" " width="16" height="16" class="icon" align="top" />
 Browse Events List</a><span class="separator">.</span></p><%

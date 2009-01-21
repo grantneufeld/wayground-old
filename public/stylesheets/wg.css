@@ -102,6 +102,7 @@ form > table > tfoot{background:#CCC; color:#000;}
 input{font-size:11px; font-family:verdana, geneva, sans-serif; margin:1px; vertical-align:middle;}
 form.inline, input.inline{display:inline; margin:0em; padding:0em;}
 form.inline *, form.inline input{display:inline;}
+input[name=key]{background:white url('/icon/search.png') no-repeat 2px 2px; padding-left:24px; padding-top:4px; min-height:24px;}
 
 /* MISC */
 .nowrap{white-space:nowrap;}
