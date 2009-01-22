@@ -14,7 +14,8 @@ end
 # ADMIN
 if current_user and current_user.staff
 	render_sidebar do
-		%><h2>Admin</h2>
+		%><h2><img src="/icon/admin_24.png" width="24" height="24" alt=" " class="icon" />
+Admin</h2>
 <p><a href="/events/new" class="button"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" align="top" /> New Event</a><span class="separator">.</span></p>
 <%
 	end

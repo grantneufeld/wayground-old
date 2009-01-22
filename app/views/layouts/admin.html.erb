@@ -161,6 +161,11 @@ unless @content_for_keywords.blank?
 <%
 # ### USER ACCESS LINKS
 if current_user
+	if current_user.admin?
+		%><img src="/icon/admin.png" width="16" height="16" alt="(admin)" align="top" class="icon" title="You have administrative access for this website" />
+<%	else
+		%><img src="/icon/contact.png" width="16" height="16" alt="(user)" align="top" class="icon" title="You are a registered user on this website" />
+<% 	end
 	%><%= link_to current_user.nickname, current_user.profile_path,
 		{:title=>'View your profile'} %><span class="separator">,</span>
 <%= link_to 'Your Account', account_users_path, {

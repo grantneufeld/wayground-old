@@ -43,18 +43,19 @@ end
 
 render_sidebar do
 	%><h2>Group Details</h2>
-<p>Owner: <%= link_to @group.owner.nickname, user_path(@group.owner) %>
-<br /><% if @group.is_public
+<p><% if @group.is_public
 		%><b>Public</b> group.<%
 	else
 		%><b>Private</b> group.<% 
-	end %></p>
+	end %>
+<br />Owner: <%= link_to @group.owner.nickname, @group.owner.profile_path %></p>
 <%
 end
 
 if current_user && current_user.staff
 	render_sidebar do
-		%><h2>Manage This Group</h2>
+		%><h2><img src="/icon/admin_24.png" width="24" height="24" alt=" " class="icon" />
+Manage This Group</h2>
 <p><%=
 	# TODO: manage members link
 	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit this group',

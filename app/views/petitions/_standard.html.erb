@@ -18,7 +18,8 @@ end
 # ADMIN
 if !(current_user.nil?) && current_user.staff
 	render_sidebar do
-		%><h2>Admin</h2>
+		%><h2><img src="/icon/admin_24.png" width="24" height="24" alt=" " class="icon" />
+Admin</h2>
 <p><a href="/petitions/new"><img src="/icon/new.png" width="16" height="16" alt=" " class="icon" /> New Petition</a>.</p>
 	<%
 	end

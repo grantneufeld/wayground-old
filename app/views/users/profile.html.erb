@@ -9,8 +9,21 @@
 	# TODO: support the user editing their information
 	%><p><%= link_to "Edit Your Account", edit_user_path(@user) %></p>
 <% end
+
+titles = []
+if @user.admin?
+	titles << 'Administrator'
+end
+if @user.staff?
+	titles << 'Staff'
+end
+if titles.size > 0
+	%><p><%= titles.join("\n<br />") %></p>
+<%
+end
+
 unless @user.about.blank? %>
-<h3>About</h3>
+<h2>About</h2>
 <%= render :partial=>'layouts/content',
 	:locals=>{:content=>@user.about, :content_type=>'text/plain',
 		:confirmed_urls=>@user.admin?} %>

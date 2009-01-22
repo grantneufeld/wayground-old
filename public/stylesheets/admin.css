@@ -62,7 +62,8 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 #sidebar > *, .sidebar-section > *{margin-left:10px; margin-right:19px;}
 #sidebar > *:first-child, .sidebar-section:first-child > *:first-child{margin-top:0em;}
 #sidebar > h1, .sidebar-section > h1{margin:0em 0em 0.5em 0em; padding:0em 19px 0px 10px;}
-#sidebar > h1, #sidebar > h2, .sidebar-section > h1, .sidebar-section > h2{border-top:1px solid #999; border-bottom:1px solid #CCC; margin:1.5em 0em 0em; padding:1em 1em 0.2em; -moz-border-radius-topleft:8px; -moz-border-radius-topright:8px; -webkit-border-top-left-radius:8px; -webkit-border-top-right-radius:8px;}
+#sidebar > h1, #sidebar > h2, .sidebar-section > h1, .sidebar-section > h2{border-top:1px solid #999; border-bottom:1px solid #CCC; margin:1.5em 0em 0em; padding:1em 1em 0.2em; vertical-align:middle; -moz-border-radius-topleft:8px; -moz-border-radius-topright:8px; -webkit-border-top-left-radius:8px; -webkit-border-top-right-radius:8px;}
+#sidebar > h1 *, #sidebar > h2 *, .sidebar-section > h1 *, .sidebar-section > h2 *{vertical-align:middle;}
 #sidebar > h1:first-child, #sidebar > h2:first-child, .sidebar-section:first-child > h1:first-child, .sidebar-section:first-child > h2:first-child{border-top:0px none; padding-top:0em;}
 #sidebar > h2 + *, .sidebar-section > h2 + *{margin-top:0.5em;}
 #sidebar h1, #sidebar h2, #sidebar h3{clear:left;}
