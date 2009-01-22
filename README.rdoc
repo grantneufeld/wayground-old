@@ -1,0 +1,49 @@
+= Wayground web content management system, contact relation management, and democracy tools
+(CMS, CRM, Democracy)
+http://wayground.ca/
+
+Source code repository:
+http://github.com/grantneufeld/wayground/tree/master
+
+Notable functions this is intended to serve:
+* *Content Management* (CMS - administering website content)
+* *Contact Relation Management* (CRM)
+* *Calendaring & events*
+	Scheduling (including identifying available times)
+	RSVPs
+	Event promotion
+* *Democracy tools*
+	Elected representative tracking
+	Candidate tracking
+	Party tracking
+	Policy tracking and development
+	Public participation (consultation, voting, etc.)
+* *Advocacy tools*
+	Petitions
+	Group organizing
+	Etc.
+* *Etc.*
+
+
+== Feedback
+
+You can make suggestions for new features, functions and fixes, and vote on which suggestions should be given priority.
+http://wayground.uservoice.com/
+
+
+== Contributors
+
+Grant Neufeld http://grantneufeld.ca/
+
+
+== Version History
+
+=== 0.1 - May 16, 2008
+
+This version is the beginning of a from-the-ground-up rebuilding of the Wayground system, and is currently notably incomplete.
+
+Basic functionality that seems to be somewhat working includes:
+- User registration and login,
+- Document (file) upload,
+- Basic web-page content management.
+
