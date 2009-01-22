@@ -52,6 +52,7 @@ class CreateEvents < ActiveRecord::Migration
 			t.belongs_to :user, :null=>false
 			t.integer :position
 			t.string :rsvp, :null=>false # yes, no, maybe, invited
+			t.boolean :is_interested
 			t.datetime :confirmed_at
 			t.timestamps
 		end
@@ -60,6 +61,7 @@ class CreateEvents < ActiveRecord::Migration
 			t.index [:schedule_id, :position, :confirmed_at], :name=>'schedule'
 			t.index [:user_id], :name=>'user'
 			t.index [:rsvp], :name=>'rsvp'
+			t.index [:is_interested], :name=>'is_interested'
 		end
 	end
 
