@@ -6,6 +6,16 @@ else
 end %> <%= link_to document.filename, document_path(document) %><%
 if document.is_private? %>
 <img src="icon/private.png" width="16" height="16" alt="[Private]" class="diricon" align="top" title="This document is private" /><%
+end
+if document.is_image?
+	if document.width > 0 and document.width <= 100 and document.height > 0 and document.height <= 100
+		%>
+<br /><%= link_to image_tag(document.siteurl, :width=>document.width, :height=>document.height, :alt=>'image', :title=>'image'), document_path(document) %><%
+	elsif document.thumbnails[0]
+		thumb = document.thumbnails[0]
+		%>
+<br /><%= link_to image_tag(thumb.siteurl, :width=>thumb.width, :height=>thumb.height, :alt=>'thumbnail', :title=>'thumbnail'), document_path(document) %><%
+	end
 end %></td>
 <td><%
 if document.is_image?
