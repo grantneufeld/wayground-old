@@ -28,8 +28,8 @@ class PathsController < ApplicationController
 				@path = Path.find_home
 			else
 				path = get_path
-				@path = Path.find(:first, :conditions=>
-					['(sitepath = ? OR sitepath = ?)', path, "#{path}/"])
+				@path = Path.find(:first, :conditions=>Path.search_conditions(
+					{}, ['(sitepath = ? OR sitepath = ?)'], [path, "#{path}/"]))
 			end
 		
 			if @path.nil?
