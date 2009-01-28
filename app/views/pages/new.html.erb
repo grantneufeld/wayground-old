@@ -1,6 +1,8 @@
 <div class="steps">
 <h1><img src="/icon/page_24.png" width="24" height="24" alt=" " class="icon" />
 New <span id="page_class_name"><%= @page.class.name %></span></h1>
+<p><img src="/icon/document_24.png" width="24" height="24" alt=" " class="icon" align="left" />
+Use the “<a href="/documents"><img src="/icon/document.png" width="16" height="16" alt=" " class="icon" /> Files &amp; Pics</a>” (documents) section to manage graphics or downloadable files for use on pages lke this. You can upload new graphics there, too.</p>
 <%= error_messages_for :page %>
 <div class="step_form">
 <% form_for(:page, :url=>pages_path) do |f|
