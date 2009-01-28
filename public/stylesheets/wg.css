@@ -13,12 +13,13 @@ a:link:hover{background-color:#FFECB5; color:#00858A; text-decoration:none;}
 a:visited:hover{background-color:#FFECB5; color:#6E0A78; text-decoration:none;}
 a:link:active, a:visited:active{color:red;}
 
-a.button{font-size:110%; font-weight:bold; padding:2px 4px; min-height:20px; vertical-align:middle;}
+a.button{font-size:110%; font-weight:bold; padding:2px 4px; min-height:20px; vertical-align:middle; line-height:2em;}
 a:link.button, a:visited.button{text-decoration:none;}
 a:link.button img, a:visited.button img, a:link:hover.button img, a:visited:hover.button img, a:link:active.button img, a:visited:active.button img, a:link.button img.icon, a:visited.button img.icon, a:link:hover.button img.icon, a:visited:hover.button img.icon, a:link:active.button img.icon, a:visited:active.button img.icon{border-color:transparent; outline:0px none;}
 
-h1, h2, h3, h4, h5, h6{margin:0em; padding:0em;}
+h1, h2, h3, h4, h5, h6{margin:0em; padding:0em; vertical-align:middle;}
 * + h1, * + h2, * + h3, * + h4, * + h5, * + h6{margin-top:0.5em;}
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 *{vertical-align:middle;}
 h2 + h3{margin-top:0.5em;}
 h1{font-size:18px;}
 h2{font-size:15px;}
@@ -37,6 +38,9 @@ img.avatar[align=right]{margin-left:8px;}
 img.diricon{border:0px none;}
 a:link:hover img.diricon, a:visited:hover img.diricon{background:transparent url('../icon/hover.png') no-repeat center center;}
 a:link:active img.diricon, a:visited:active img.diricon{background:transparent url('../icon/active.png') no-repeat center center;}
+img.icon{vertical-align:middle;}
+img.icon[align=left]{margin-right:8px;}
+img.icon[align=right]{margin-left:8px;}
 img.photo{border:1px solid #333;}
 img.photo[align=right]{margin-left:1em;}
 img.photo[align=left]{margin-right:1em;}
@@ -163,6 +167,12 @@ ul.dir a, ul.dir a:link, ul.dir a:visited, ul.dir a:link:hover, ul.dir a:visited
 .signature{background-image:url('../icon/signature.png');}
 .user{background-image:url('../icon/user.png');}
 .weblink{background-image:url('../icon/weblink.png');}
+
+/* TAB CONTENT */
+.tabbed-content{}
+.tabs{border-bottom:1px solid #CCC; padding:4px 8px 2px;}
+.tab, .tab:link, .tab:visited{background:#DDD; border:2px outset #CCC; border-bottom:1px solid #CCC; padding:2px 6px; font-size:110%; white-space:nowrap; text-decoration:none;}
+.tab.active{background:white; border:2px outset #999; border-bottom:1px solid white; font-weight:bold; padding:2px 6px;}
 
 /* STEPS */
 .steps{border:1px solid #DEEDBD; margin:0px auto; padding:14px; -moz-border-radius:12px; -webkit-border-radius:12px;}
