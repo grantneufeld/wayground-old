@@ -113,7 +113,7 @@ fields_for :page do |f|
 %><table cellspacing="0">
 <%
 if @page.parent
-	%><thead><tr><th>Parent <%= @page.parent.class.name %>:</th> <td><strong><%= link_to(@page.parent.title, @page.parent.sitepath, {:class=>@page.parent.css_class('dir-')}) %></strong>
+	%><thead><tr><th>Parent <%= @page.parent.class.name %>:</th> <td><strong><%= link_to(@page.parent.title, page_path(@page.parent), {:class=>@page.parent.css_class('dir-')}) %></strong>
 	<input type="hidden" name="id" value="<%= @page.parent.id %>" /></td></tr></thead>
 <%
 end
