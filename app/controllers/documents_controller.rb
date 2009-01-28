@@ -32,8 +32,9 @@ class DocumentsController < ApplicationController
 	def index
 		# uses the will_paginate gem (paginate function)
 		# TODO: customize value for per_page (allow user preference and/or use of params[:max])
+		# sort by most recent if there is no search key
 		@documents = Document.paginate :per_page=>10, :page=>params[:page],
-			:order=>'documents.filename',
+			:order=>Document.default_order(:recent=>params[:key].blank?),
 			:conditions=>Document.search_conditions(
 				{:u=>current_user, :key=>params[:key]})
 		@page_title = 'Documents'

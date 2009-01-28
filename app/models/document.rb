@@ -115,8 +115,12 @@ class Document < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'documents.filename'
+	def self.default_order(p={})
+		if p[:recent].blank?
+			'documents.filename'
+		else
+			'documents.updated_at DESC, documents.filename'
+		end
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
