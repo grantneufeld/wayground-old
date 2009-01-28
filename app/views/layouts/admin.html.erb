@@ -104,9 +104,9 @@ end
 <head><meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title><%
 if @page_title == website_title or @page_title == website_prefix
-	%><%= @page_title %><%
+	%><%= h @page_title %><%
 else
-	%><%= website_prefix %>: <%= @page_title %><%
+	%><%= website_prefix %>: <%= h @page_title %><%
 end
 %></title>
 <%
@@ -139,6 +139,7 @@ unless @content_for_keywords.blank?
 <% end -%>
 <link rel="license" href="http://creativecommons.org/licenses/by/2.5/ca/" title="Creative Commons License" />
 <meta name="MSSmartTagsPreventParsing" content="true" />
+<link rel="bookmark" href="#content" title="Skip Navigation" />
 </head>
 <body<%= @body_attrs %>>
 <ul class="cue" id="skiplinks">
@@ -206,10 +207,15 @@ if current_user and (current_user.admin? or current_user.staff?) -%>
 	:class=>(@section == 'pages' ? 'current' : nil),
 	:title=>'Manage the web pages, including articles, of Arusha’s websites'
 	} %><span class="separator">.</span>
-<%= link_to '<img src="/icon/file_32.png" width="32" height="32" alt=" " />
+<%= link_to '<img src="/icon/document_32.png" width="32" height="32" alt=" " />
 <br />Files &amp; Pics', documents_path, {
 	:class=>(@section == 'documents' ? 'current' : nil),
 	:title=>'Manage the files &amp; pictures (documents) for Arusha’s websites'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/group_32.png" width="32" height="32" alt=" " />
+<br />Groups', '/groups', {
+	:class=>(@section == 'groups' ? 'current' : nil),
+	:title=>'Arusha’s Contact Groups management'
 	} %><span class="separator">.</span>
 <%= link_to '<img src="/icon/contact_32.png" width="32" height="32" alt=" " />
 <br />Contacts', '/crm', {
