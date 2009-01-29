@@ -12,33 +12,6 @@ class Document < ActiveRecord::Base
 	
 	
 	# ########################################################
-	# Updating
-	
-	# TODO: changing the filename
-	#def change_filename(n)
-	#	@old_filename ||= filename
-	#	filename = n
-	#	write_attribute(:filename, n)
-	#end
-	
-	# TODO: changing the site
-	#def change_site(s)
-	#	@old_site ||= site || nil
-	#	site = s
-	#	write_attribute(:site_id, s.id)
-	#end
-	
-	#def before_update
-	#	unless (@old_filename.nil? || @old_filename == filename) && (@old_site.nil? || @old_site == site)
-	#		debugger
-	#		# the file path has changed, so move the physical file
-	#		old_full_filename = full_filename(nil, @old_filename, @old_site)
-	#		FileUtils::mv(old_full_filename, full_filename)
-	#	end
-	#end
-	
-	
-	# ########################################################
 	# Class Methods
 	
 	# create a new Document object using the appropriate subclass
@@ -46,7 +19,7 @@ class Document < ActiveRecord::Base
 	def self.new_doc(params, user, is_private=false)
 		if is_private
 			doc = DocPrivate.new(params)
-		elsif params && params['uploaded_data'] && params['uploaded_data'].content_type.match(/\Aimage\//)
+		elsif params && params[:uploaded_data] && params[:uploaded_data].content_type.match(/\Aimage\//)
 			doc = DocImage.new(params)
 		else
 			doc = DocFile.new(params)
@@ -54,62 +27,6 @@ class Document < ActiveRecord::Base
 		doc.user = user
 		doc
 	end
-	
-	# A wrapper for find that takes a User as the first param.
-	# Enforces security restrictions on document access.
-	# TODO: • WARNING: Doesn’t handle a hash for condition args:
-	#	:conditions=>['string',{args}]
-	def self.find_for_user(u=nil, *args)
-		condition_strs = []
-		condition_args = []
-		# don't include thumbnails in regular finds
-		condition_strs << '(documents.thumbnail IS NULL OR documents.thumbnail = "")'
-		# restrict private docs from being shown unless user has access
-		# TODO: future: support privacy restrictions on find
-		if u.nil?
-			condition_strs << 'documents.type != "DocPrivate"'
-		elsif u.admin?
-			# no restrictions for admins
-		else
-			condition_strs << '(documents.type != "DocPrivate" OR documents.user_id = ?)'
-			condition_args << u.id
-		end
-		
-		# detach the options to make them easier to work with
-		options = args.last.is_a?(Hash) ? args.pop : {}
-		
-		# insert conditions into options
-		if options[:conditions].is_a? Array
-			if options[:conditions].size > 1 && options[:conditions][1].is_a?(Hash)
-				# unsupported format for :conditions
-				raise
-			else
-				if options[:conditions][0].blank?
-					options[:conditions][0] = condition_strs.join(' AND ')
-				else
-					condition_strs.insert 0, "(#{options[:conditions][0]})"
-					options[:conditions][0] = condition_strs.join(' AND ')
-				end
-				options[:conditions] += condition_args
-			end
-		elsif options[:conditions].blank?	
-			options[:conditions] = [condition_strs.join(' AND ')] + condition_args
-		elsif options[:conditions].is_a? String
-			condition_strs.insert 0, "(#{options[:conditions]})"
-			options[:conditions] = [condition_strs.join(' AND ')] + condition_args
-		else
-			# unsupported format for :conditions
-			raise
-		end
-		
-		# (re)attach the options to the args
-		if options and options.size > 0
-			args << options
-		end
-		# pass the call to the usual ActiveRecord find method
-		self.find(*args)
-	end
-	
 	
 	# standard Wayground class methods for displayable items
 	def self.default_include
@@ -134,7 +51,7 @@ class Document < ActiveRecord::Base
 		if p[:only_public] or p[:u].nil?
 			# only public or no user
 			strs << 'documents.type != "DocPrivate"'
-		elsif p[:u].admin?
+		elsif p[:u].admin? or p[:u].staff?
 			# no restrictions
 		else
 			# document is public, or user owns the document
@@ -177,8 +94,7 @@ class Document < ActiveRecord::Base
 		if db_file_id && db_file_id > 0
 			db_file.data
 		else
-			f = File.new(full_filename)
-			if f
+			if File.file?(full_filename) and (f = File.new(full_filename))
 				c = f.read
 				f.close
 				c.to_s
@@ -189,9 +105,10 @@ class Document < ActiveRecord::Base
 	end
 	
 	# return true if the document content can be rendered on an html page
-	def renderable?
-		false #image? or is_text? or (content_type == 'text/html')
-	end
+	# implemented by subclasses
+	#def renderable?
+	#	false #image? or is_text? or (content_type == 'text/html')
+	#end
 	
 	def is_image?
 		['image/gif', 'image/png', 'image/jpeg'].include? content_type
@@ -229,7 +146,7 @@ class Document < ActiveRecord::Base
 	
 	def folder_root
 		unless @folder_root
-			if attachment_options && attachment_options[:path_prefix]
+			if attachment_options and attachment_options[:path_prefix]
 				@folder_root = attachment_options[:path_prefix].sub(
 					/^(public\/)?/, '/')
 				@folder_root += '/' unless @folder_root[-1..-1] == '/'
@@ -238,7 +155,12 @@ class Document < ActiveRecord::Base
 				@folder_root = '/'
 			end
 		end
-		@folder_root #is_image? ? Wayground::IMAGE_ROOT : Wayground::FILE_ROOT
+		@folder_root
+	end
+	
+	# handled by subclasses through attachment_fu
+	def attachment_options
+		{}
 	end
 	
 	# n = filename; s = site
@@ -286,11 +208,11 @@ class Document < ActiveRecord::Base
 	# return a representation of the file size as a string
 	def size_str
 		if size > 1073741823
-			"#{size.quo(1073741824).ceil} GB"
+			"~#{size.quo(1073741824).ceil} GB"
 		elsif size > 1048575
-			"#{size.quo(1048576).ceil} MB"
+			"~#{size.quo(1048576).ceil} MB"
 		elsif size > 1023
-			"#{size.quo(1024).ceil} KB"
+			"~#{size.quo(1024).ceil} KB"
 		else
 			"#{size} B"
 		end
@@ -320,15 +242,16 @@ class Document < ActiveRecord::Base
 		return w.to_i, h.to_i
 	end
 	
-	def uploaded_data=(upload)
-		@uploaded_data = upload
-	end
+	#def uploaded_data=(upload)
+	#	@uploaded_data = upload
+	#end
 	def site_select
-		site.nil? ? nil : site.id
+		read_attribute(:site_id)
 	end
 	def site_select=(s)
 		if s.blank? or s.to_i == 0
 			site = nil
+			write_attribute(:site_id, nil)
 		else
 			site = Site.find(s.to_i)
 			write_attribute(:site_id, site.id)

@@ -56,6 +56,15 @@ class DocumentsControllerTest < ActionController::TestCase
 		assert assigns(:document)
 		assert_nil flash[:notice]
 	end
+	def test_data_private_staff
+		assert_efficient_sql do
+			get :data, {:filename=>[documents(:private_text).filename],
+				:root=>'/private/'}, {:user=>users(:staff).id}
+		end
+		assert_response :success
+		assert assigns(:document)
+		assert_nil flash[:notice]
+	end
 	def test_data_private_no_user
 		assert_efficient_sql do
 			get :data, {:filename=>[documents(:private_text).filename],
@@ -70,7 +79,7 @@ class DocumentsControllerTest < ActionController::TestCase
 	def test_data_private_wrong_user
 		assert_efficient_sql do
 			get :data, {:filename=>[documents(:private_text).filename],
-				:root=>'/private/'}, {:user=>users(:staff).id}
+				:root=>'/private/'}, {:user=>users(:regular).id}
 		end
 		assert_response 404
 		assert_nil assigns(:document)
@@ -189,11 +198,29 @@ class DocumentsControllerTest < ActionController::TestCase
 			assert_select 'h1', documents(:private_text).fileurl
 		end
 	end
+	# test private admin user
+	def test_show_private_staff_user
+#		assert_efficient_sql do
+			get :show, {:id=>documents(:private_text)},
+				{:user=>users(:staff).id}
+#		end
+		assert_response :success
+		assert assigns(:document)
+		assert_equal "Document: ‘#{documents(:private_text).filename}’",
+			assigns(:page_title)
+		assert_nil flash[:notice]
+		# view result
+		assert_template 'show'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			assert_select 'h1', documents(:private_text).fileurl
+		end
+	end
 	# test private incorrect user
 	def test_show_private_invalid_user
 		assert_efficient_sql do
 			get :show, {:id=>documents(:private_text)},
-				{:user=>users(:staff).id}
+				{:user=>users(:regular).id}
 		end
 		assert_response :redirect
 		assert_nil assigns(:document)

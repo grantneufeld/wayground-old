@@ -40,7 +40,7 @@ class DocPrivate < Document
 	
 	# return true if the user can view this document
 	def can_view?(u)
-		u.admin? || (u == self.user)
+		u and (u.admin? or u.staff? or (u == self.user))
 		# TODO: support users having explicit permission to view a document
 		# TODO: support users belonging to group that has permission to view a document
 	end

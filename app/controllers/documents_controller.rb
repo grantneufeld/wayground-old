@@ -14,8 +14,9 @@ class DocumentsController < ApplicationController
 		@filename = params[:filename].nil? ? nil : params[:filename].last
 		# TODO: data action needs a way to determine whether the disposition should be inline or not — whether the file should be downloaded or displaye in(line) the browser.
 		#disposition = (params[:show] == 'inline') ? 'inline' : params[:disposition]
-		@document = Document.find_for_user(current_user, :first,
-			:conditions=>['filename = ?', @filename])
+		@document = Document.find(:first,
+			:conditions=>Document.search_conditions(
+				{:u=>current_user}, ['filename = ?'], [@filename]))
 		if @document
 			disposition = @document.renderable? ? 'inline' : 'attachment'
 			send_data @document.content, :type=>@document.content_type,
@@ -43,7 +44,8 @@ class DocumentsController < ApplicationController
 	
 	# information page for a document
 	def show
-		@document = Document.find_for_user(current_user, params[:id])
+		@document = Document.find(params[:id],
+			:conditions=>Document.search_conditions({:u=>current_user}))
 		@page_title = "Document: ‘#{@document.filename}’"
 	rescue ActiveRecord::RecordNotFound
 		flash[:notice] = "Could not find a document matching the requested id (‘#{params[:id]}’)."
@@ -80,7 +82,8 @@ class DocumentsController < ApplicationController
 	# TODO: updating of document info, such as filename
 	## EDIT
 	#def edit
-	#	@document = Document.find_for_user(current_user, params[:id])
+	#	@document = Document.find(params[:id],
+	#		:conditions=>Document.search_conditions({:u=>current_user}))
 	#	if current_user.admin? or @document.user == current_user
 	#		@page_title = "Edit ‘#{@document.filename}’"
 	#	else
@@ -115,7 +118,8 @@ class DocumentsController < ApplicationController
 	
 	# DESTROY / DELETE
 	def destroy
-		@document = Document.find_for_user(current_user, params[:id])
+		@document = Document.find(params[:id],
+			:conditions=>Document.search_conditions({:u=>current_user}))
 		if current_user.admin? or @document.user == current_user
 			@document.destroy
 			flash[:notice] = "The document ‘#{@document.filename}’ has been permanently removed."
