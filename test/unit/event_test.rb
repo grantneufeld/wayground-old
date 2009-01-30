@@ -72,6 +72,35 @@ class EventTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
+	def test_self_find_by_subpath_as_param_id
+		assert_equal events(:one), Event.find('event1')
+	end
+	def test_self_find_by_subpath_as_param_id_with_string_conditions
+		assert_equal events(:one), Event.find('event1', 'true')
+		assert_raise ActiveRecord::RecordNotFound do
+			Event.find('event1', :conditions=>'false')
+		end
+	end
+	def test_self_find_by_subpath_as_param_id_with_array_of_conditions
+		assert_equal events(:one), Event.find('event1',
+			:conditions=>['events.title LIKE ?', 'Test%'])
+		assert_raise ActiveRecord::RecordNotFound do
+			Event.find('event1',  :conditions=>['events.title = ?', 'false'])
+		end
+	end
+	def test_self_find_by_subpath_as_param_id_with_array_of_conditions_hash_params
+		assert_equal events(:one),
+			Event.find('event1', :conditions=>['events.title LIKE :title', {:title=>'Test%'}])
+		assert_raise ActiveRecord::RecordNotFound do
+			Event.find('event1',  :conditions=>['events.title = :title', {:title=>'false'}])
+		end
+	end
+	def test_self_find_by_subpath_as_param_id_with_invalid_conditions
+		assert_raise Exception do
+			Event.find('event1', :conditions=>:invalid)
+		end
+	end
+	
 	def test_event_search_conditions
 		# no conditions
 		assert_equal nil, Event.search_conditions
@@ -102,16 +131,33 @@ class EventTest < ActiveSupport::TestCase
 				['a','b'], [1,2]))
 	end
 	
-	
 	def test_event_update_next_at_for_all_events
 		assert Event.find(:all, :conditions=>'events.next_at < NOW()').size > 0,
 			'expected at least one expired event with a next_at attribute needing updating'
 		Event.update_next_at_for_all_events
 		assert_equal [], Event.find(:all, :conditions=>'events.next_at < NOW()')
 	end
+	def test_event_update_next_at_for_all_events_include_null_next
+		assert Event.find(:all, :conditions=>'events.next_at < NOW()').size > 0,
+			'expected at least one expired event with a next_at attribute needing updating'
+		Event.update_next_at_for_all_events(true)
+		assert_equal [], Event.find(:all, :conditions=>'events.next_at < NOW()')
+	end
+	
+	def test_event_default_include
+		assert_nil Event.default_include
+	end
+	
+	def test_event_default_order
+		assert_equal 'events.next_at, events.start_at', Event.default_order
+	end
 	
 	
 	# INSTANCE METHODS
+	
+	def test_event_to_param
+		assert_equal 'event1', events(:one).to_param
+	end
 	
 	def test_event_calculate_next_at
 		assert_equal schedules(:one).start_at, events(:one).calculate_next_at
@@ -125,5 +171,23 @@ class EventTest < ActiveSupport::TestCase
 	end
 	def test_event_css_class_prefix
 		assert_equal 'dir-event', events(:two).css_class('dir-')
+	end
+	
+	def test_event_link
+		assert_equal events(:one), events(:one).link
+	end
+	
+	def test_event_title_prefix
+		t = 1.day.from_now
+		event = Event.new
+		event.start_at = t
+		assert_equal t.to_s(:event_date), event.title_prefix
+	end
+	def test_event_title_prefix_with_next_at
+		t = 1.day.from_now
+		event = Event.new
+		event.start_at = t
+		event.calculate_next_at
+		assert_equal t.to_s(:event_date), event.title_prefix
 	end
 end

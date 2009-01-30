@@ -27,11 +27,11 @@ class Schedule < ActiveRecord::Base
 		:message=>'required when the recurrence unit is months or years'
 	validates_numericality_of :ordinal, :only_integer=>true, :allow_nil=>true
 	validates_presence_of :recur_day,
+		:message=>'required when the recurrence unit is weeks, months or years',
 		:if=>Proc.new {|p|
 			((p.recur == 'relative' and %w(week month year).include?(p.unit)) or
 			(p.recur == 'fixed' and p.unit == 'week'))
-		},
-		:message=>'required when the recurrence unit is weeks, months or years'
+		}
 	validates_inclusion_of :recur_day,
 		:in=>%w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday),
 		:allow_nil=>true, :allow_blank=>true,
@@ -62,11 +62,11 @@ class Schedule < ActiveRecord::Base
 	# instead of this approach that feels a bit hacky
 	def track_error(field, msg)
 		@track_errors ||= {}
-		@track_errors[field] = msg
+		@track_errors[field.to_s] = msg
 	end
 	def clear_error(field)
 		if @track_errors
-			@track_errors[field].delete
+			@track_errors.delete(field.to_s)
 		end
 	end
 	
