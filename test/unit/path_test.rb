@@ -63,14 +63,39 @@ class PathTest < ActiveSupport::TestCase
 	# CLASS METHODS
 	
 	def test_path_find_home
-		path = Path.find_home
-		assert_equal paths(:one), path
+		assert_equal paths(:one), Path.find_home
+	end
+	def test_path_find_homes
+		assert_equal [paths(:one)], Path.find_homes
 	end
 	
-	def test_path_find_by_key
-		p = Path.find_by_key('two')
-		assert_equal 2, p.length
-		assert_equal paths(:two), p[0]
+	def test_path_default_include
+		assert_equal :item, Path.default_include
+	end
+	def test_path_default_order
+		assert_equal 'paths.sitepath', Path.default_order
+	end
+	
+	def test_path_search_conditions
+		assert_equal ['paths.site_id IS NULL'], Path.search_conditions
+	end
+	def test_path_search_conditions_custom
+		assert_equal ['a AND b AND paths.site_id IS NULL',1,2],
+			Path.search_conditions({}, ['a','b'], [1,2])
+	end
+	def test_path_search_conditions_site_id
+		assert_equal ['paths.site_id = ?', 1], Path.search_conditions({:site_id=>1})
+	end
+	def test_path_search_conditions_site_id_false
+		assert_equal nil, Path.search_conditions({:site_id=>false})
+	end
+	def test_path_search_conditions_key
+		assert_equal ['paths.site_id IS NULL AND paths.sitepath LIKE ?', '%keyword%'],
+			Path.search_conditions({:key=>'keyword'})
+	end
+	def test_path_search_conditions_all
+		assert_equal ['paths.site_id = ? AND paths.sitepath LIKE ?', 1, '%keyword%'],
+			Path.search_conditions({:site_id=>1, :key=>'keyword'})
 	end
 	
 	def test_restricted_paths

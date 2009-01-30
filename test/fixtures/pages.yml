@@ -2,7 +2,7 @@ one:
   user: admin
   subpath: '/'
   title: Home Page
-  content: Login as an administrative user to be able to edit this page.
+  content: This is the default home page.
   content_type: text/plain
 
 two:
@@ -48,3 +48,26 @@ delete_this:
   content_type: text/plain
   keywords: trash, delete, destroy, remove, erase
 
+site_page:
+  user: login
+  subpath: '/'
+  site: two
+  title: Site 2 Home Page
+  content: This is the home page for the Site two.
+  content_type: text/plain
+
+chunky_page:
+  user: login
+  subpath: 'chunky'
+  title: Page With Chunks Content
+  content: '<wg:chunk type="raw" part="content" position="1" content_type="text/plain">A chunk of raw content</wg:chunk><wg:chunk type="list" part="sidebar" position="1" item_type="Event" max="5" />'
+  content_type: text/wayground
+
+article_one:
+  user: login
+  parent: one
+  subpath: 'article1'
+  title: Article One
+  type: Article
+  content: 'this is a test article'
+  content_type: 'text/plain'

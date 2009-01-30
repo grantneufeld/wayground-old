@@ -64,7 +64,8 @@ class PathsControllerTest < ActionController::TestCase
 			get :index, {:key=>'t'} #, {:user=>users(:admin).id}
 		#end
 		assert_response :success
-		assert_equal Path.find_by_key('t').size, assigns(:paths).size
+		assert_equal Path.find(:all, :conditions=>Path.search_conditions({:key=>'t'})).size,
+			assigns(:paths).size
 		assert_equal 'Site Paths: ‘t’', assigns(:page_title)
 		assert_nil flash[:notice]
 		# view result

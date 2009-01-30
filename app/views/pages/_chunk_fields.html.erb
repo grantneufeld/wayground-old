@@ -96,9 +96,9 @@ elsif chunk.is_a? ListChunk
 	<td><%= f.check_box :tags, :name=>"#{field_prefix}[paginate]", :id=>"#{chunk_label}_paginate" %><label for="<%= chunk_label %>_paginate">Show Pagination</label>
 	<br />This will allow users to ‘page’ through the list if it exceeds the maximum number of items to display per page.</td></tr>
 <%
-#<tr class="alternate"><th><label for="<%= chunk_label % >_parent">Parent Item:</label></th>
+#<tr class="alternate"><th><label for="<%= chunk_label % >_item">Parent Item:</label></th>
 #	<td>Optionally restrict the list to items under this “parent” item:
-#	<br />••• search by key or id, :name=>"#{field_prefix}[parent_id]", :id=>"#{chunk_label}_parent_id"</td></tr>
+#	<br />••• search by key or id, :name=>"#{field_prefix}[item_id]", :id=>"#{chunk_label}_item_id"</td></tr>
 #<tr><th><label for="<%= chunk_label % >_user">User:</label></th>
 #	<td>Optionally restrict the list to items owned by a specific user:
 #	<br />••• search by key or id, :name=>"#{field_prefix}[user_id]", :id=>"#{chunk_label}_user_id"</td></tr>

@@ -54,12 +54,6 @@ class Page < ActiveRecord::Base
 		homes
 	end
 	
-	# keyword search
-	def self.find_by_key(key, user=nil) #, parent=nil)
-		find(:all, :conditions=>search_conditions({:key=>key, :u=>user}),
-			:order=>default_order, :include=>default_include)
-	end
-
 	# standard Wayground class methods for displayable items
 	def self.default_include
 		nil
@@ -78,7 +72,7 @@ class Page < ActiveRecord::Base
 			strs << '(pages.title LIKE ? OR pages.description LIKE ? OR pages.content LIKE ? OR pages.keywords LIKE ?)'
 			vals += (["%#{p[:key]}%"] * 4)
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	
@@ -144,10 +138,6 @@ class Page < ActiveRecord::Base
 				workpath = workpath[1..-1]
 			end
 			if self.parent
-				# make sure the parent's sitepath is set properly
-				if self.parent.sitepath.blank?
-					self.parent.set_sitepath!
-				end
 				# get the parent’s sitepath, ensuring there’s a trailing slash
 				if self.parent.sitepath[-1].chr == '/'
 					parent_path = self.parent.sitepath
@@ -160,7 +150,7 @@ class Page < ActiveRecord::Base
 			end
 			self.sitepath = parent_path + workpath.to_s
 		end	
-		if workpath != old_subpath
+		if workpath != old_subpath or subpath.nil?
 			subpath = workpath
 			write_attribute("subpath", workpath)
 		end

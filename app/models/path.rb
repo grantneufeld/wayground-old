@@ -30,11 +30,11 @@ class Path < ActiveRecord::Base
 			['sitepath = "/"']))
 	end
 	
-	# keyword search
-	# site_id restricts to specified site, current site if nil. Special Case: false puts no site restriction.
-	def self.find_by_key(key, site_id=nil) #, parent=nil)
-		find(:all, :conditions=>search_conditions({:key=>key, :site_id=>site_id}),
-			:order=>default_order, :include=>default_include)
+	def self.default_include
+		:item
+	end
+	def self.default_order
+		'paths.sitepath'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
@@ -57,17 +57,11 @@ class Path < ActiveRecord::Base
 			end
 		end
 		unless p[:key].blank?
-			strs << 'paths.sitepath like ?'
+			strs << 'paths.sitepath LIKE ?'
 			vals << "%#{p[:key]}%"
     	end
-    	[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
     end
-    def self.default_order
-    	'paths.sitepath'
-	end
-	def self.default_include
-		:item
-	end
 	
 	# Certain paths should not be created.
 	def self.restricted_path?(subpath, parent_path=nil)

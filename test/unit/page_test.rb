@@ -64,19 +64,23 @@ class PageTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
-	def test_find_home
-		page = Page.find_home
-		assert_equal pages(:one), page
+	def test_path_find_home
+		assert_equal pages(:one), Page.find_home
+	end
+	def test_path_find_homes
+		assert_equal [pages(:one)], Page.find_homes
 	end
 	
-	def test_find_by_key
-		p = Page.find_by_key('keyword')
-		assert_equal 2, p.length
-		assert_equal pages(:three), p[0]
+	def test_page_default_include
+		assert_nil Page.default_include
+	end
+	
+	def test_page_default_order
+		assert_equal 'pages.title', Page.default_order
 	end
 	
 	def test_page_search_conditions
-		assert_equal [''], Page.search_conditions
+		assert_equal nil, Page.search_conditions
 	end
 	def test_page_search_conditions_custom
 		assert_equal ['a AND b',1,2], Page.search_conditions({}, ['a','b'], [1,2])
@@ -147,6 +151,20 @@ class PageTest < ActiveSupport::TestCase
 		assert pages(:delete_this).frozen?
 	end
 	
+	def test_path_sitepath
+		page = Page.new(:subpath=>'/page_subpath_test')
+		assert_equal '/page_subpath_test', page.sitepath
+	end
+	def test_path_sitepath_for_root
+		page = Page.new(:subpath=>'/')
+		assert_equal '/', page.sitepath
+	end
+	def test_path_sitepath_with_parent
+		page = Page.new(:subpath=>'page_subpath_with_parent_test')
+		page.parent = pages(:two)
+		assert_equal '/two/page_subpath_with_parent_test', page.sitepath
+	end
+	
 	def test_parent_chain_no_parents
 		assert_equal [], pages(:one).parent_chain
 	end
@@ -164,10 +182,62 @@ class PageTest < ActiveSupport::TestCase
 		assert !(pages(:two).is_home?)
 	end
 	
+	def test_page_chunks
+		assert_equal 2, pages(:chunky_page).chunks.size
+	end
+	def test_page_chunks_plain_content
+		chunks = pages(:one).chunks
+		assert_equal 1, chunks.size
+		assert_equal pages(:one).content_type, chunks[0].content_type
+		assert_equal pages(:one).content, chunks[0].content
+	end
+	def test_pages_chunks_assignment
+		assert pages(:update_this).content_type != 'text/wayground'
+		chunks = []
+		chunks << Chunk.create({'type'=>'raw', 'part'=>'content',
+			'content_type'=>'text/plain'})
+		chunks << Chunk.create({'type'=>'list', 'part'=>'sidebar',
+			'item_type'=>'Event', 'max'=>'5'})
+		pages(:update_this).chunks = chunks
+		assert_equal chunks, pages(:update_this).chunks
+		pages(:update_this).save!
+		page = Page.find(pages(:update_this).id)
+		assert_equal 'text/wayground', page.content_type
+	end
+	def test_pages_chunks_assignment_single_raw
+		chunks = [Chunk.create({'type'=>'raw', 'part'=>'content',
+			'content_type'=>'text/plain', 'content'=>'single raw chunk'})]
+		pages(:update_this).chunks = chunks
+		assert_equal chunks, pages(:update_this).chunks
+		pages(:update_this).save!
+		page = Page.find(pages(:update_this).id)
+		assert_equal 'text/plain', page.content_type
+		assert_equal 'single raw chunk', page.content
+	end
+	def test_pages_chunks_assignment_empty_array
+		pages(:update_this).chunks = []
+		assert_equal [], pages(:update_this).chunks
+		pages(:update_this).save!
+		page = Page.find(pages(:update_this).id)
+		assert_equal 'text/html', page.content_type
+		assert_equal '', page.content
+	end
+	
 	def test_page_css_class
 		assert_equal 'root', pages(:one).css_class
 	end
 	def test_page_css_class_prefix
 		assert_equal 'dir-page', pages(:two).css_class('dir-')
+	end
+	
+	def test_page_link
+		assert_equal '/', pages(:one).link
+	end
+	def test_page_link_for_site
+		assert_equal 'http://test2.wayground.ca/', pages(:site_page).link
+	end
+	
+	def test_page_title_prefix
+		assert_nil pages(:one).title_prefix
 	end
 end

@@ -105,7 +105,7 @@ class Chunk
 		Chunk.create_from_param_array(chunk_params)
 	end
 	
-	# copied from ActiveRecord::Base
+	# based on copy from ActiveRecord::Base
 	def self.create(attrs = nil, &block)
 		if attrs.is_a?(Array)
 			attrs.collect { |attr| create(attr, &block) }
@@ -133,16 +133,6 @@ class Chunk
 			object
 		end
 	end
-	def update(id, attrs)
-		if id.is_a?(Array)
-			idx = -1
-			id.collect { |one_id| idx += 1; update(one_id, attrs[idx]) }
-		else
-			object = find(id)
-			object.attributes = attrs
-			object
-		end
-	end
 	
 	def self.accessible_attrs
 		['page_id', 'part', 'position', 'flavour']
@@ -164,20 +154,32 @@ class Chunk
 		end
 	end
 	
+	# based on copy from ActiveRecord::Base
+	#def update(id, attrs)
+	#	if id.is_a?(Array)
+	#		idx = -1
+	#		id.collect { |one_id| idx += 1; update(one_id, attrs[idx]) }
+	#	else
+	#		object = find(id)
+	#		object.attributes = attrs
+	#		object
+	#	end
+	#end
+	
 	def attr_accessible?(key)
-		self.class.accessible_attrs.include? key
+		self.class.accessible_attrs.include?(key.to_s)
 	end
 	
-	def attributes=(a)
-		unless a.nil?
-			a.each do |k, v|
-				send(k + "=", v) if attr_accessible?(k)
-			end
-		end
-	end
 	def attributes
 		{'page_id'=>page_id, 'part'=>part, 'position'=>position,
 			'flavour'=>flavour}
+	end
+	def attributes=(a)
+		unless a.nil?
+			a.each do |k, v|
+				send(k.to_s + "=", v) if attr_accessible?(k)
+			end
+		end
 	end
 	
 	# Required method for subclasses
@@ -189,7 +191,7 @@ class Chunk
 		attributes.each do |k,v|
 			attr_strs << "#{k}=\"#{v}\"" unless v.blank? or k == 'content'
 		end
-		"<wg:chunk type=\"#{chunk_type}\"#{attr_strs.nil? ? '' : ' '}#{attr_strs.join(' ')}#{content.blank? ? ' /' : ''}>"
+		"<wg:chunk type=\"#{chunk_type}\"#{attr_strs.size == 0 ? '' : ' '}#{attr_strs.join(' ')}#{content.blank? ? ' /' : ''}>"
 	end
 	def content
 		nil
@@ -225,13 +227,13 @@ class Chunk
 		@page_id = p.to_i
 	end
 	def page
-		@page ||= !(page_id > 0) ? nil : Page.find(page_id)
+		@page ||= (page_id && page_id > 0) ? Page.find(page_id) : nil
 	rescue ActiveRecord::RecordNotFound
 		nil
 	end
 	def page=(p)
 		@page = p
-		page_id = @page.nil? ? nil : @page.id
+		@page_id = @page.nil? ? nil : @page.id
 		@page
 	end
 	
@@ -250,12 +252,12 @@ class Chunk
 		['Article', 'Document', 'Event', 'Group', 'Page', 'Petition', 'Signature', 'User', 'Weblink']
 	end
 	
-	# t must be a class name for a descendent of ActiveRecord::Base
 	def item_type
 		@item_type || nil
 	end
 	def item_type=(t)
 		raise Wayground::InvalidItemType unless recognized_item_types.include?(t)
+		@item = nil # reset item
 		@item_type = t
 		@item_class = eval(@item_type)
 	end
@@ -263,24 +265,50 @@ class Chunk
 		raise Wayground::InvalidItemType unless !(item_type.blank?)
 		@item_class ||= eval(item_type)
 	end
-	
-	def template_id
-		@template_id || nil
+	def item_id
+		@item_id || nil
 	end
-	def template_id=(t)
-		@template = nil # reset template
-		@template_id = t.to_i
+	def item_id=(i)
+		@item = nil # reset item
+		@item_id = i.to_i
 	end
-	def template
-		@template ||= !(template_id > 0) ? nil : Template.find(template_id)
+	def item
+		#debugger
+		@item ||= (item_class.nil? || !(item_id > 0)) ? nil :
+			item_class.find(item_id, :conditions=>item_class.search_conditions,
+				:include=>item_class.default_include)
 	rescue ActiveRecord::RecordNotFound
 		nil
 	end
-	def template=(t)
-		@template = t
-		template_id = @template.nil? ? nil : @template.id
-		@template
+	def item=(i)
+		@item = i
+		if @item.nil?
+			@item_type = nil
+			@item_id = nil
+		else
+			@item_type = @item.class.name
+			@item_id = @item.id
+		end
+		@item
 	end
+	
+	#def template_id
+	#	@template_id || nil
+	#end
+	#def template_id=(t)
+	#	@template = nil # reset template
+	#	@template_id = t.to_i
+	#end
+	#def template
+	#	@template ||= !(template_id > 0) ? nil : Template.find(template_id)
+	#rescue ActiveRecord::RecordNotFound
+	#	nil
+	#end
+	#def template=(t)
+	#	@template = t
+	#	template_id = @template.nil? ? nil : @template.id
+	#	@template
+	#end
 end
 
 
@@ -308,93 +336,45 @@ class RawChunk < Chunk
 end    
        
 class ItemChunk < Chunk
-	# attr_accessor :item_type, :item_id, :template_id
+	# attr_accessor :item_type, :item_id #, :template_id
 	
 	def self.accessible_attrs
-		super + ['item_type', 'item_id', 'template_id']
+		super + ['item_type', 'item_id'] #, 'template_id']
 	end
 	
 	def attributes
-		super.merge({'item_type'=>item_type, 'item_id'=>item_id,
-			'template_id'=>template_id})
+		super.merge({'item_type'=>item_type, 'item_id'=>item_id #, 'template_id'=>template_id
+			})
 	end
 	
 	def chunk_type
 		'item'
 	end
-	
-	def item_type=(t)
-		@item = nil #reset item
-		super
-	end
-	def item_id
-		@item_id || nil
-	end
-	def item_id=(i)
-		@item = nil # reset item
-		@item_id = i.to_i
-	end
-	
-	def item
-		@item ||= (item_class.nil? || !(item_id.to_i > 0)) ? nil :
-			item_class.find(item_id.to_i)
-	rescue ActiveRecord::RecordNotFound
-		nil
-	end
-	def item=(i)
-		@item = i
-		if @item.nil?
-			item_type = nil
-			item_id = nil
-		else
-			item_type = @item.class.name
-			item_id = @item.id
-		end
-		@item
-	end
-	
 end
 
 
 class ListChunk < Chunk
 	attr_accessor :before_date, :after_date, :tags, :key, :author, :issue
-		# :item_type, :parent_id, :user_id, :max, :paginate, :template_id
+		# :item_type, :item_id, :user_id, :max, :paginate #, :template_id
 	
 	def self.accessible_attrs
-		super + ['item_type', 'parent_id', 'user_id', 'before_date', 'after_date', 'tags', 'key', 'author', 'issue', 'max', 'paginate', 'template_id']
+		super + ['item_type', 'item_id', 'user_id', 'before_date', 'after_date', 'tags', 'key', 'author', 'issue', 'max', 'paginate' #, 'template_id'
+			]
 	end
 	
 	def attributes
-		super.merge({'item_type'=>item_type, 'parent_id'=>parent_id,
+		super.merge({'item_type'=>item_type, 'item_id'=>item_id,
 			'user_id'=>user_id, 'before_date'=>before_date,
 			'after_date'=>after_date, 'tags'=>tags, 'key'=>key, 'author'=>author,
-			'issue'=>issue, 'max'=>max,	'paginate'=>paginate,
-			'template_id'=>template_id})
+			'issue'=>issue, 'max'=>max, 'paginate'=>paginate #, 'template_id'=>template_id
+			})
 	end
 	
 	def chunk_type
 		'list'
 	end
 	
-	def parent_id
-		@parent_id || nil
-	end
-	def parent_id=(p)
-		@parent = nil # reset parent
-		@parent_id = p.to_i
-	end
-	def parent
-		# TODO: implement the parent constraint for list chunks
-		nil
-	#	@parent ||= !(parent_id > 0) ? nil : Parent.find(parent_id)
-	#rescue ActiveRecord::RecordNotFound
-	#	nil
-	end
-	def parent=(p)
-		@parent = p
-		parent_id = @parent.nil? ? nil : @parent.id
-		@parent
-	end
+	# item_type and item_id implemented in parent class
 	
 	def user_id
 		@user_id || nil
@@ -404,15 +384,17 @@ class ListChunk < Chunk
 		@user_id = u.to_i
 	end
 	def user
-		@user ||= !(user_id > 0) ? nil : User.find(user_id)
+		@user ||= (@user_id > 0) ? User.find(@user_id) : nil
 	rescue ActiveRecord::RecordNotFound
 		nil
 	end
 	def user=(u)
 		@user = u
-		user_id = @user.nil? ? nil : @user.id
+		@user_id = @user.nil? ? nil : @user.id
 		@user
 	end
+	
+	# TODO: before_date, after_date, tags accessors
 	
 	def max
 		@max || nil
@@ -432,11 +414,12 @@ class ListChunk < Chunk
 		end
 	end
 	
+	# template_id implemented in parent class
+	
 	def items(for_user=nil, page=nil) #, offset=nil)
-		#debugger
 		return @items unless @items.nil?
-		return nil if item_class.nil?
-		# TODO: ••• restrict by parent, user, before_date, after_date, tags
+		return nil if item_type.blank?
+		# TODO: ••• restrict by item, user, before_date, after_date, tags
 		condition_params = {:u=>for_user, :key=>key, :only_active=>true}
 		if item_type == 'Article'
 			condition_params.merge({:author=>author, :issue=>issue})

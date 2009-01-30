@@ -14,7 +14,9 @@ class PagesController < ApplicationController
 			@page_title = "Site Index: #{@page.title}"
 		elsif !(@key.blank?)
 			@page = nil
-			@pages = Page.find_by_key(@key)
+			@pages = Page.find(:all,
+				:conditions=>Page.search_conditions({:key=>@key, :u=>current_user}),
+				:order=>Page.default_order, :include=>Page.default_include)
 			@page_title = "Site Index: ‘#{params[:key]}’"
 		else
 			# find all top-level pages

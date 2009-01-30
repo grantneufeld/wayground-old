@@ -10,7 +10,9 @@ class PathsController < ApplicationController
 			@page_title = "Site Paths"
 		else
 			@path = nil
-			@paths = Path.find_by_key(params[:key])
+			@paths = Path.find(:all,
+				:conditions=>Path.search_conditions({:key=>params[:key], :u=>current_user}),
+				:order=>Path.default_order, :include=>Path.default_include)
 			@page_title = "Site Paths: ‘#{params[:key]}’"
 		end
 		respond_to do |format|

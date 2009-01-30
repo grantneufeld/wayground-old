@@ -25,6 +25,6 @@ class Article < Page
 			strs << 'pages.issue like ?'
 			vals << "%#{p[:issue]}%"
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 end
