@@ -74,15 +74,15 @@ class EventTest < ActiveSupport::TestCase
 	
 	def test_event_search_conditions
 		# no conditions
-		assert_equal [''], Event.search_conditions
+		assert_equal nil, Event.search_conditions
 	end
 	def test_event_search_conditions_custom
 		assert_equal ['a AND b',1,2], Event.search_conditions({}, ['a','b'], [1,2])
 	end
 	def test_event_search_conditions_keyword
 		assert_equal([
-				'(events.title LIKE ? OR events.description LIKE ? OR events.content LIKE ?)',
-				'%keyword%', '%keyword%', '%keyword%'],
+			'(events.title LIKE ? OR events.description LIKE ? OR events.content LIKE ?)',
+			'%keyword%', '%keyword%', '%keyword%'],
 			Event.search_conditions({:key=>'keyword'}))
 	end
 	def test_event_search_conditions_restrict_upcoming

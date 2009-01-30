@@ -106,8 +106,8 @@ class PetitionTest < ActiveSupport::TestCase
 	# CLASS METHODS
 	
 	def test_petition_search_conditions
-		assert_equal [''], Petition.search_conditions
-		assert_equal [''], Petition.search_conditions({:u=>users(:admin)})
+		assert_equal nil, Petition.search_conditions
+		assert_equal nil, Petition.search_conditions({:u=>users(:admin)})
 		assert_equal ['(petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)',
 				'%keyword%', '%keyword%', '%keyword%'],
 			Petition.search_conditions({:key=>'keyword'})

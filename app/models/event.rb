@@ -112,7 +112,7 @@ class Event < ActiveRecord::Base
 		elsif p[:restrict] == :past
 			strs << '(events.next_at IS NULL)'
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	def before_validation

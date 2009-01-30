@@ -63,7 +63,7 @@ class Document < ActiveRecord::Base
 			strs << 'documents.filename LIKE ?'
 			vals << "%#{p[:key]}%"
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	

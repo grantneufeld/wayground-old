@@ -51,7 +51,7 @@ class Petition < ActiveRecord::Base
 			strs << "(petitions.title LIKE ? OR petitions.subpath LIKE ? OR petitions.description LIKE ?)"
 			vals += ["%#{p[:key]}%"] * 3
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	

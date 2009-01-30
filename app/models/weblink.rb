@@ -24,6 +24,12 @@ class Weblink < ActiveRecord::Base
 	
 	# CLASS METHODS
 	
+	def self.default_include
+		nil
+	end
+	def self.default_order
+		'weblinks.category, weblinks.position, weblinks.title'
+	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
 	# - :key is a search restriction key
@@ -35,13 +41,7 @@ class Weblink < ActiveRecord::Base
 			strs << '(weblinks.title LIKE ? OR weblinks.url LIKE ?)'
 			vals += ["%#{p[:key]}%"] * 2
 		end
-		[strs.join(' AND ')] + vals
-	end
-	def self.default_order
-		'weblinks.category, weblinks.position, weblinks.title'
-	end
-	def self.default_include
-		nil
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	

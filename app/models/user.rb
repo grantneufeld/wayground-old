@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
 			strs << 'users.nickname like ?'
 			vals << "%#{p[:key]}%"
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	# Encrypts some data with the salt.

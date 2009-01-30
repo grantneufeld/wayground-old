@@ -54,7 +54,7 @@ class Signature < ActiveRecord::Base
 			strs << 'signatures.name LIKE ?'
 			vals += ["%#{p[:key]}%"] * 3
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	def self.confirm(confirmation_code, user=nil)
