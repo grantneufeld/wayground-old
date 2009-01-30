@@ -1,5 +1,9 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
+# FIXME: because the db_file storage used by attachment_fu isn’t a regular class, fixtures don’t work quite right. So, I’ve made a mock DbFile class in the test file so the fixtures will load. There is probably a better way to do this.
+class DbFile < ActiveRecord::Base
+end
+
 class DocumentsControllerTest < ActionController::TestCase
 	fixtures :documents, :sites, :users, :db_files
 	
