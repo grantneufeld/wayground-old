@@ -59,6 +59,12 @@ class DocumentTest < ActiveSupport::TestCase
 			' AND documents.type != "DocPrivate"'],
 			Document.search_conditions
 	end
+	def test_document_search_conditions_custom
+		assert_equal ['a AND b' +
+			' AND (documents.thumbnail IS NULL OR documents.thumbnail = "")' +
+			' AND documents.type != "DocPrivate"',1,2],
+			Document.search_conditions({}, ['a','b'], [1,2])
+	end
 	def test_document_search_conditions_only_public
 		assert_equal ['(documents.thumbnail IS NULL OR documents.thumbnail = "")' +
 			' AND documents.type != "DocPrivate"'],
