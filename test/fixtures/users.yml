@@ -1,3 +1,6 @@
+minimal:
+  fullname: Minimal User
+
 login:
   email: login_test@wayground.ca
   activated_at: <%= 1.day.ago.to_s(:db) %>

@@ -89,9 +89,6 @@ class User < ActiveRecord::Base
 		Digest::SHA1.hexdigest("--#{salt}--#{pass}--")
 	end
 	
-	
-	# INSTANCE METHODS
-	
 	# Finds a user login by their email and unencrypted password.
 	# Returns the user or nil.
 	def self.authenticate(email, pass)
@@ -102,10 +99,14 @@ class User < ActiveRecord::Base
 		u && u.password_matches?(pass) ? u : nil
 	end
 	
+	
+	# INSTANCE METHODS
+	
 	def password_changed?
 		!(password.blank?)
 	end
 	
+	# Used by controllers to flag email as required when creating/registering a new user
 	def email_required
 		@email_required || false
 	end|
