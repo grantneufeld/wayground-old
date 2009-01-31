@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class GroupTest < ActiveSupport::TestCase
-	fixtures :groups, :users, :locations
+	fixtures :groups, :users, :memberships, :locations
 	
 	def test_associations
 		assert check_associations
@@ -75,10 +75,18 @@ class GroupTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
+	def test_group_default_include
+		assert_nil Group.default_include
+	end
+	
+	def test_group_default_order
+		assert_equal 'groups.name', Group.default_order
+	end
+	
 	def test_group_search_conditions
 		assert_equal ['(groups.is_visible = 1)'], Group.search_conditions
 		assert_equal ['(groups.is_visible = 1)'], Group.search_conditions({:only_visible=>true})
-		assert_equal [''], Group.search_conditions({:u=>users(:admin)})
+		assert_equal nil, Group.search_conditions({:u=>users(:admin)})
 		assert_equal ['(groups.is_visible = 1)'],
 			Group.search_conditions({:only_visible=>true, :u=>users(:admin)})
 		assert_equal ['(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)',
@@ -89,11 +97,48 @@ class GroupTest < ActiveSupport::TestCase
 			Group.search_conditions({:only_visible=>true, :key=>'keyword'})
 	end
 	
+	def test_group_find_by_subpath_as_param_id
+		assert_equal groups(:one), Group.find('one')
+	end
+	def test_group_find_by_subpath_as_param_id_with_string_conditions
+		assert_equal groups(:one), Group.find('one', 'true')
+		assert_raise ActiveRecord::RecordNotFound do
+			Group.find('one', :conditions=>'false')
+		end
+	end
+	def test_group_find_by_subpath_as_param_id_with_array_of_conditions
+		assert_equal groups(:one), Group.find('one',
+			:conditions=>['groups.name LIKE ?', 'Group%'])
+		assert_raise ActiveRecord::RecordNotFound do
+			Group.find('one',  :conditions=>['groups.name = ?', 'false'])
+		end
+	end
+	def test_group_find_by_subpath_as_param_id_with_array_of_conditions_hash_params
+		assert_equal groups(:one),
+			Group.find('one', :conditions=>['groups.name LIKE :name', {:name=>'Group%'}])
+		assert_raise ActiveRecord::RecordNotFound do
+			Group.find('one',  :conditions=>['groups.name = :name', {:name=>'false'}])
+		end
+	end
+	def test_group_find_by_subpath_as_param_id_with_invalid_conditions
+		assert_raise Exception do
+			Group.find('one', :conditions=>:invalid)
+		end
+	end
+		
 	
 	# INSTANCE METHODS
 	
-	def test_group_title
-		assert_equal 'Group One', groups(:one).title
+	def test_group_to_param
+		assert_equal 'one', groups(:one).to_param
+	end
+	
+	def test_group_user_membership
+		assert_equal memberships(:owner),
+			groups(:membered_group).user_membership(users(:login))
+	end
+	def test_group_user_membership_nonmember
+		assert_nil groups(:membered_group).user_membership(users(:nonmember))
 	end
 	
 	# user access/non-access
@@ -114,6 +159,58 @@ class GroupTest < ActiveSupport::TestCase
 	end
 	def test_private_group_invited_member_has_no_access
 		assert !(groups(:private_group).user_can_access?(users(:plain)))
+	end
+	
+	def test_group_user_can_admin
+		assert groups(:membered_group).user_can_admin?(users(:login))
+	end
+	def test_group_user_can_admin_fail_nonmember
+		assert !(groups(:membered_group).user_can_admin?(users(:nonmember)))
+	end
+	def test_group_user_can_admin_fail_nonadmin
+		assert !(groups(:membered_group).user_can_admin?(users(:regular)))
+	end
+	def test_group_user_can_admin_fail_no_user
+		assert !(groups(:membered_group).user_can_admin?(nil))
+	end
+	
+	def test_group_user_can_join
+		assert groups(:membered_group).user_can_join?(users(:nonmember))
+	end
+	def test_group_user_can_join_fail_invite_only
+		assert !(groups(:private_group).user_can_join?(users(:nonmember)))
+	end
+	def test_group_user_can_join_fail_existing_member
+		assert !(groups(:membered_group).user_can_join?(users(:regular)))
+	end
+	
+	def test_group_email_addresses
+		# TODO: implement this test and the email_addresses method
+		assert_equal([], groups(:one).email_addresses)
+	end
+	
+	def test_group_email_addresses_with_details
+		# TODO: implement this test and the email_addresses_with_details method
+		assert_equal({}, groups(:one).email_addresses_with_details)
+	end
+	
+	def test_group_css_class
+		assert_equal 'group', groups(:one).css_class
+	end
+	def test_group_css_class_with_prefix
+		assert_equal 'test-group', groups(:one).css_class('test-')
+	end
+	
+	def test_group_link
+		assert_equal groups(:one), groups(:one).link
+	end
+	
+	def test_group_title
+		assert_equal 'Group One', groups(:one).title
+	end
+	
+	def test_group_title_prefix
+		assert_nil groups(:one).title_prefix
 	end
 	
 end

@@ -4,9 +4,14 @@ if @user
 	%><%= hidden_field_tag :user_id, @user.id, {:id=>'membership_user_id'} %>
 <%
 end
+
 %><table cellspacing="0">
-<thead><tr><th colspan="2"><h3>Access Permissions</h3></th></tr></thead>
-<tbody>
+<%
+
+if @group.user_can_admin?(current_user) 
+
+%><tbody>
+<tr class="inforow"><th colspan="2"><h3>Access Permissions</h3></th></tr>
 <tr><th></th>
 	<td><%= f.check_box :is_admin %><label for="membership_is_admin">Administrator</label>. Member has full administrative access for the group.</td></tr>
 <tr class="alternate"><th></th>
@@ -17,22 +22,16 @@ end
 	<td><%= f.check_box :can_moderate %><label for="membership_can_moderate">Moderator</label>. Member can moderate the group’s messages and forums.</td></tr>
 <tr><th></th>
 	<td><%= f.check_box :can_manage_members %><label for="membership_can_manage_members">Membership Management</label>. Member can manage other member’s (invite, expiry, blocking, title). Only Administrator’s can give members this permission, or assign Administrator access.</td></tr>
-</tbody></table>
 
-<table cellspacing="0">
-<thead><tr><th colspan="2"><h3>Expiry</h3></th></tr></thead>
-<tbody>
+<tr class="inforow"><th colspan="2"><h3>Expiry</h3></th></tr>
 <tr><th><label for="membership_expires_at">Expiry Date:</label></th>
 	<td><%= f.text_field :expires_at %>
 	<br />Enter the date the membership expires on.
 	<br />Leave blank if the membership doesn’t have an expiry.</td></tr>
-</tbody></table>
 <%
 
 if false %>
-<table cellspacing="0">
-<thead><tr><th colspan="2"><h3>Block Access</h3></th></tr></thead>
-<tbody>
+<tr class="inforow"><th colspan="2"><h3>Block Access</h3></th></tr>
 <tr><th></th>
 	<td><%= f.check_box :block_membership %><label for="membership_block_membership">Block User From Group:</label>
 	<br />Setting this checkbox will prevent the user from accessing the group.</td></tr>
@@ -40,18 +39,20 @@ if false %>
 	<td><%= f.text_field :block_expires_at %>
 	<br />If you want the block to be temporary, enter a date here when it will be lifted.
 	<br />Leave this blank if you want the block to be permanent.</td></tr>
-</tbody></table>
 <%
-end
+end # if false
 
 %>
-<table cellspacing="0">
-<thead><tr><th colspan="2"><h3>Member’s Organizational Title</h3></th></tr></thead>
-<tbody>
+<tr class="inforow"><th colspan="2"><h3>Member’s Organizational Title</h3></th></tr>
 <tr><th><label for="membership_title">Title:</label></th>
 	<td><%= f.text_field :title %>
 	<br />E.g., “Treasurer”, “Events Coordinator”, etc.</td></tr>
 </tbody>
+<%
+end # if user can admin
+
+%>
+
 <tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
 </table>
 <% end %>

@@ -1,6 +1,8 @@
 module Wayground
 	# A parameter does not match any known option.
 	class UnrecognizedParameter < Exception; end
+	# The User cannot be added to the Group
+	class CannotAddUserMembership < Exception; end
 end
 
 class Membership < ActiveRecord::Base
@@ -73,15 +75,52 @@ class Membership < ActiveRecord::Base
 	# INSTANCE METHODS
 	
 	
+	def validate
+		if @track_errors
+			@track_errors.each do |k,v|
+				errors.add(k,v)
+			end
+			@track_errors = {}
+		end
+	end
+	
+	# there ought to be a Rails way to add an error to a field before validation
+	# instead of this approach that feels a bit hacky
+	def track_error(field, msg)
+		@track_errors ||= {}
+		@track_errors[field.to_s] = msg
+	end
+	def clear_error(field)
+		if @track_errors
+			@track_errors.delete(field.to_s)
+		end
+	end
+	
+	def expires_at=(t)
+		if t.is_a? String and !(t.blank?)
+			t.gsub! ',', ' '
+			s = Chronic.parse(t)
+			s = s.utc if s
+			s ||= DateTime.parse(t) rescue ArgumentError
+			if s
+				write_attribute('expires_at', s)
+			else
+				track_error('expires_at',
+					'not a recognized text format for a date and time')
+			end
+		else
+			write_attribute('expires_at', t)
+		end
+	end
+	
 	def active?
-		!(expired?) && !(invited?) && !(blocked?)
+		!(group.nil?) && !(user.nil?) && !(expired?) && !(invited?) && !(blocked?)
 	end
 	
 	def blocked?
 		!(blocked_at.nil?) && blocked_at <= Time.current && (block_expires_at.nil? || block_expires_at > Time.current)
 	end
 	def block!(blocker, expires=nil)
-		
 		blocker_membership = Membership.find_for(group, blocker)
 		if blocker_membership and blocker_membership.active? and (blocker_membership.is_admin or blocker_membership.can_manage_members)
 			# check if membership is already blocked
@@ -117,23 +156,31 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def expired?
-		!(expires_at.nil?) && expires_at <= Time.current
+		!(expires_at.nil?) && (expires_at <= Time.current)
 	end
 	
 	def invited?
 		!(invited_at.nil?)
 	end
 	
+	# s - a symbol or an array of symbols (which any of which matching will return true)
 	def has_access_to?(s)
-		case s
-		when :member_list
-			self.active? and (self.is_admin or self.can_manage_members or self.group.is_members_visible)
-		when :manage_members
-			self.active? and (self.is_admin or self.can_manage_members)
-		when :inviting
-			self.active? and (self.is_admin or self.can_invite)
-		else
-			raise Wayground::UnrecognizedParameter
+		if s.is_a? Symbol
+			s = [s]
 		end
+		has_access = false
+		s.each do |sym|
+			case sym
+			when :member_list
+				has_access ||= (self.active? and (self.is_admin or self.can_manage_members or self.group.is_members_visible))
+			when :manage_members
+				has_access ||= (self.active? and (self.is_admin or self.can_manage_members))
+			when :inviting
+				has_access ||= (self.active? and (self.is_admin or self.can_invite))
+			else
+				raise Wayground::UnrecognizedParameter
+			end
+		end
+		has_access
 	end
 end

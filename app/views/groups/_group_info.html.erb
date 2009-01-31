@@ -1,0 +1,89 @@
+<%
+@current_membership ||= @group.user_membership(current_user) || Membership.new
+
+render_sidebar do
+	%><h2>Membership</h2>
+<p><%
+	if @current_membership.active?
+		%><%=
+		link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" /> Edit your membership',
+			edit_group_membership_path(@group, @current_membership),
+			{:class=>'button', :title=>"Change the options for your membership for this group"})
+		%><span class="separator">.</span><%
+		unless @group.is_no_unsubscribe %>
+<br /><%=	link_to '<img src="/icon/delete.png" width="16" height="16"' +
+					' alt="Delete" class="diricon" /> Quit this group',
+				group_membership_path(@group, @current_membership),
+				{:method=>'delete',
+				:confirm=>"Are you sure you want to remove your membership from the group “#{@group.name}”?",
+				:href=>group_membership_path(@group, @current_membership),
+				:class=>'button', :title=>"remove your membership from this group"
+				} %><span class="separator">.</span><%
+		end
+	else
+		%><%= link_to(
+			(@group.is_invite_only ? 'Request an invitation to join this group' :
+				'Join this group'),
+			new_group_membership_path(@group), {:class=>'button'}) %>.<%
+	end %></p>
+<%
+end
+
+
+render_sidebar do
+	%><h2><img src="/icon/info_24.png" width="24" height="24" alt=" " class="icon" />
+Group Details</h2>
+<p><b><%= link_to h(@group.name), group_path(@group) %></b>
+<br /><% if @group.is_public
+		%><b>Public</b> group.<%
+	else
+		%><b>Private</b> group.<% 
+	end %>
+<br />Owner: <%= link_to @group.owner.nickname, @group.owner.profile_path %>
+<br /><%=
+	member_count_msg = "#{@group.active_memberships.count} members"
+	if @group.is_members_visible or @current_membership.has_access_to?(:member_list) or @group.user_can_admin?(current_user)
+		link_to(member_count_msg, group_memberships_path(@group),
+			{:title=>"View member list for this group"})
+	else
+		member_count_msg
+	end
+	%>.</p>
+<%
+end
+
+
+if @group.user_can_admin?(current_user)
+	render_sidebar do
+		%><h2><img src="/icon/admin_24.png" width="24" height="24" alt=" " class="icon" />
+Manage This Group</h2>
+<p><%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt=" " class="icon" /> Edit this group',
+		edit_group_path(@group),
+		{:class=>'button', :title=>"Edit this group"})
+		%><span class="separator">.</span>
+<br /><%=
+	link_to '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="icon" /> Delete this group',
+		group_path(@group),
+		{:method=>'delete',
+		:confirm=>
+			"Are you sure you want to permanently delete the group “#{@group.name}”?",
+		:href=>group_path(@group),
+		:class=>'button', :title=>"Permanently delete this group"
+		} %>
+<br /><%=
+	link_to('<img src="/icon/email.png" width="16" height="16" alt=" " class="icon" /> Send Message',
+		'',
+		{:class=>'button', :title=>"Send an email message to the members of this group (and any sub-groups)"})
+		%><span class="separator">.</span>
+<%				# Send Message (bulk email)
+		# Create Event
+		# manage members link
+		# Add Members
+		# Add sub-group
+		# Create Sub-group
+		# Add to parent group
+%></p>
+<%	end
+end -%>

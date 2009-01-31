@@ -69,7 +69,7 @@ class Group < ActiveRecord::Base
 			strs << "(groups.name LIKE ? OR groups.subpath LIKE ? OR groups.description LIKE ?)"
 			vals += ["%#{p[:key]}%"] * 3
 		end
-		[strs.join(' AND ')] + vals
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
 	
 	# override the default find to allow first argument to be a string -
@@ -124,16 +124,36 @@ class Group < ActiveRecord::Base
 		subpath
 	end
 	
+	# Return the membership for the user, if there is one
+	def user_membership(u)
+		memberships.find_by_user_id(u.id) rescue nil
+	end
 	def user_can_access?(u)
 		if is_public
 			return true
 		else
-			m = Membership.find_for(self,u)
-			if m
-				return m.active?
-			else
-				false
-			end
+			m = user_membership(u)
+			return (m and m.active?)
+		end
+	end
+	def user_can_admin?(u)
+		if u.nil?
+			return false
+		elsif u.admin? or (u == self.owner)
+			return true
+		else
+			m = user_membership(u)
+			return (m and m.is_admin and m.active?)
+		end
+	end
+	def user_can_join?(u=nil)
+		m = user_membership(u)
+		if m.nil?
+			# users cannot self-subscribe to invite only groups
+			!(is_invite_only)
+		else
+			# user already has a membership
+			false
 		end
 	end
 	
