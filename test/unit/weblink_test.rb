@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class WeblinkTest < ActiveSupport::TestCase
-	fixtures :users
+	fixtures :weblinks, :users
 	
 	def test_weblink_associations
 		assert check_associations
@@ -9,6 +9,7 @@ class WeblinkTest < ActiveSupport::TestCase
 	
 	
 	# VALIDATIONS
+	
 	def test_weblink_valid_url
 		l = Weblink.new({:url=>'http://wayground.ca/'})
 		l.user = users(:login)
@@ -23,26 +24,45 @@ class WeblinkTest < ActiveSupport::TestCase
 		assert !(l.valid?)
 	end
 	
-	# IS_CONFIRMED
-	def test_weblink_admin_confirms
-		l = Weblink.new({:url=>'http://wayground.ca/'})
-		l.user = users(:admin)
-		assert l.valid?
-		assert l.is_confirmed?
-	end
-	def test_weblink_staff_confirms
-		l = Weblink.new({:url=>'http://wayground.ca/'})
-		l.user = users(:staff)
-		assert l.valid?
-		assert l.is_confirmed?
-	end
-	def test_weblink_plain_user_does_not_confirm
-		l = Weblink.new({:url=>'http://wayground.ca/'})
-		l.user = users(:plain)
-		assert l.valid?
-		assert !(l.is_confirmed)
+	
+	# CLASS METHODS
+	
+	def test_weblink_default_include
+		assert_nil Weblink.default_include
 	end
 	
+	def test_weblink_default_order
+		assert_equal 'weblinks.category, weblinks.position, weblinks.title',
+			Weblink.default_order
+	end
+	
+	def test_weblink_search_conditions
+		assert_nil Weblink.search_conditions
+	end
+	def test_weblink_search_conditions_custom
+		assert_equal ['a AND b',1,2], Weblink.search_conditions({}, ['a','b'], [1,2])
+	end
+	def test_weblink_search_conditions_key
+		assert_equal ['(weblinks.title LIKE ? OR weblinks.url LIKE ?)',
+			'%keyword%', '%keyword%'],
+			Weblink.search_conditions({:key=>'keyword'})
+	end
+	def test_weblink_search_conditions_all
+		assert_equal ['a AND b AND (weblinks.title LIKE ? OR weblinks.url LIKE ?)',
+			1, 2, '%keyword%', '%keyword%'],
+			Weblink.search_conditions({:key=>'keyword'}, ['a','b'], [1,2])
+	end
+	
+	
+	# INSTANCE METHODS
+	
+	def test_weblink_set_confirmation
+		
+	end
+	
+	def test_weblink_set_title
+		
+	end
 	# AUTO-SET TITLE
 	def test_weblink_title_autoset
 		l = Weblink.new({:url=>'http://wayground.ca/'})
@@ -69,6 +89,9 @@ class WeblinkTest < ActiveSupport::TestCase
 		assert_equal 'Wayground', l.title
 	end
 	
+	def test_weblink_set_site
+		
+	end
 	# AUTO-SET SITE
 	def test_weblink_site_autoset
 		l = Weblink.new({:url=>'http://wayground.ca/'})
@@ -111,6 +134,44 @@ class WeblinkTest < ActiveSupport::TestCase
 		l.user = users(:login)
 		assert l.valid?
 		assert_equal 'delicious', l.site
+	end
+	
+	def test_weblink_is_confirmed
+		
+	end
+	# IS_CONFIRMED
+	def test_weblink_admin_confirms
+		l = Weblink.new({:url=>'http://wayground.ca/'})
+		l.user = users(:admin)
+		assert l.valid?
+		assert l.is_confirmed?
+	end
+	def test_weblink_staff_confirms
+		l = Weblink.new({:url=>'http://wayground.ca/'})
+		l.user = users(:staff)
+		assert l.valid?
+		assert l.is_confirmed?
+	end
+	def test_weblink_plain_user_does_not_confirm
+		l = Weblink.new({:url=>'http://wayground.ca/'})
+		l.user = users(:plain)
+		assert l.valid?
+		assert !(l.is_confirmed)
+	end
+	
+	def test_weblink_css_class
+		assert_equal 'url', weblinks(:one).css_class
+	end
+	def test_weblink_css_class_with_prefix
+		assert_equal 'test-url', weblinks(:one).css_class('test-')
+	end
+	
+	def test_weblink_link
+		assert_equal weblinks(:one).url, weblinks(:one).link
+	end
+	
+	def test_weblink_title_prefix
+		assert_nil weblinks(:one).title_prefix
 	end
 	
 end

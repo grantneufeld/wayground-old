@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'mocha'
 
 class PetitionTest < ActiveSupport::TestCase
 	fixtures :users, :petitions, :signatures
@@ -105,6 +106,14 @@ class PetitionTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
+	def test_petition_default_include
+		assert_nil Petition.default_include
+	end
+	
+	def test_petition_default_order
+		assert_equal 'petitions.title', Petition.default_order
+	end
+	
 	def test_petition_search_conditions
 		assert_equal nil, Petition.search_conditions
 		assert_equal nil, Petition.search_conditions({:u=>users(:admin)})
@@ -123,8 +132,8 @@ class PetitionTest < ActiveSupport::TestCase
 	
 	def test_petition_sign
 		s = petitions(:one).sign({:is_public=>true, :name=>'Test Sign',
-			:email=>'test-sign@wayground.ca', :city=>'Calgary',
-			:province=>'Alberta', :country=>'Canada',
+			:email=>'test-sign@wayground.ca',
+			:city=>'Calgary', :province=>'Alberta', :country=>'Canada',
 			:comment=>'Testing signing a petition'})
 		assert_equal 'Test Sign', s.name
 	end
@@ -135,6 +144,31 @@ class PetitionTest < ActiveSupport::TestCase
 		end
 	end
 	# TODO: test notifier failure (raises Wayground::NotifierSendFailure)
+	def test_petition_sign_notifier_failure
+		# mock Notifier.deliver_signature_confirmation(self, s, signer)
+		Notifier.expects(:deliver_signature_confirmation).returns(nil)
+		assert_raise(Wayground::NotifierSendFailure) do
+			s = petitions(:one).sign({:is_public=>true, :name=>'Test Sign Notifier Failure',
+				:email=>'test-sign-notifier-failure@wayground.ca',
+				:city=>'Calgary', :province=>'Alberta', :country=>'Canada',
+				:comment=>'Testing notification failure when signing a petition'})
+		end
+	end
+	
+	def test_petition_css_class
+		assert_equal 'petition', petitions(:one).css_class
+	end
+	def test_petition_css_class_with_prefix
+		assert_equal 'test-petition', petitions(:one).css_class('test-')
+	end
+	
+	def test_petition_link
+		assert_equal petitions(:one), petitions(:one).link
+	end
+	
+	def test_petition_title_prefix
+		assert_nil petitions(:one).title_prefix
+	end
 	
 	
 end

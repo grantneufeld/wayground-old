@@ -52,7 +52,7 @@ class Signature < ActiveRecord::Base
 		end
 		unless p[:key].blank?
 			strs << 'signatures.name LIKE ?'
-			vals += ["%#{p[:key]}%"] * 3
+			vals << "%#{p[:key]}%"
 		end
 		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
 	end
@@ -95,6 +95,6 @@ class Signature < ActiveRecord::Base
 		name
 	end
 	def title_prefix
-		position > 0 ? "#{position}." : nil
+		(position && (position > 0)) ? "#{position}." : nil
 	end
 end
