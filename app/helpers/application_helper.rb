@@ -329,4 +329,9 @@ module ApplicationHelper
 		return content
 	end
 	
+	def link_to_add_to_list(item, content=nil)
+		content ||= '<img src="/icon/list_add.png" alt="Add to List" width="16" height="16" class="icon" />'
+		link_to(content, new_listitem_path(:item_type=>item.class.name, :item_id=>item.id), {:title=>'Add this item to a list'})
+	end
+	
 end

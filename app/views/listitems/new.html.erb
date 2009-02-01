@@ -1,0 +1,20 @@
+<div class="steps">
+<h1>Add <%= h @listitem.item.class.name %> “<%= h @listitem.item.title %>” to your list</h1>
+<%= error_messages_for :listitem %>
+<div class="step_form">
+<% form_for(:listitem, :url=>listitems_path) do |f|
+	%>
+<%= f.hidden_field :item_type %>
+<%= f.hidden_field :item_id %>
+<table cellspacing="0"><tbody>
+<tr><th><label for="listitem_title">Title:</label></th>
+	<td><%= f.text_field :title %>
+		<br />(Leave blank to save to your default list.)</td></tr>
+</tbody>
+<tfoot><tr><td></td><td><%= submit_tag "Save", :disable_with=>"Saving…" %></td></tr></tfoot>
+</table>
+<% end -%>
+</div>
+</div>
+<% #= render :partial=>'standard'
+%>

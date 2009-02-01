@@ -1,0 +1,27 @@
+<h1><%= h @page_title %></h1>
+<p id="listitems_count"><%= pluralize @listitems.size, 'item' %> in list.</p>
+<ul>
+<% @listitems.each do |listitem|
+	row_id = "listitem_#{listitem.id}"
+	%><li id="<%= row_id %>" class="<%= listitem.item.css_class %>"><%=
+	link_to h(listitem.item.title), listitem.item %>
+<%= link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+		' alt="Delete" class="diricon" />',
+	{:url=>listitem_path(listitem), :method=>'delete',
+	:loading=>"Element.update('#{row_id}_delete'," +
+		"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+		" alt=\"Processing…\" class=\"diricon\" />');",
+	:loaded=>"Element.update('#{row_id}_delete'," +
+		"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+		" alt=\"Delete\" class=\"diricon\" />');"
+	#,
+	#:success=>"Element.replace('#{row_id}_delete','');",
+	#:confirm=>
+	#	"Are you sure you want to rem delete the page “#{page.title}”?"
+	},
+	{:href=>listitem_path(listitem),
+	:title=>"Remove this item from the list", :method=>'delete',
+	:id=>"#{row_id}_delete"
+	} %></li>
+<% end
+%></ul>

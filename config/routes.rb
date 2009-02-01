@@ -78,8 +78,10 @@ ActionController::Routing::Routes.draw do |map|
 	end
 	
 	# META
-	map.resources :tags
+	map.resources :lists
+	map.resources :listitems
 	map.resources :sites
+	map.resources :tags
 	
 	# DEMOCRACY
 	map.resources :weblinks

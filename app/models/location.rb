@@ -4,8 +4,6 @@ class Location < ActiveRecord::Base
 		:postal, :longitude, :latitude, :url, :email,
 		:phone1_type, :phone1, :phone2_type, :phone2, :phone3_type, :phone3
 	
-	has_many :memberships, :dependent=>:nullify
-	
 	validates_format_of :url, :allow_nil=>true,
 		:with=>/\A(https?:\/\/[^ \t\r\n]+)?\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'
@@ -18,6 +16,8 @@ class Location < ActiveRecord::Base
 	belongs_to :locatable, :polymorphic=>true
 	# TODO: make locations reusable so the data doesn’t have to be duplicated when multiple items are at the same location.
 
+	has_many :memberships, :dependent=>:nullify
+	
 	include EmailHelper # email validation
 	
 	

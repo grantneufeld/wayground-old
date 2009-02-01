@@ -1,0 +1,26 @@
+#raise Exception.new('document:' + @document_id.to_s + "\nError: " + @err_msg.to_s)
+
+row_id ||= "listitem_#{@listitem.id.to_s}"
+@notice ||= nil
+@err_msg ||= nil
+
+# Display notice or error message:
+if flash.length > 0
+	flashes = ''
+	flash.each do |key, msg|
+		flashes += "<p class=\"#{key}\">#{msg}</p>\n"
+	end
+	page.replace_html 'flash', flashes
+end
+page.visual_effect 'Appear', 'flash'
+
+if @success
+	#page.replace_html row_id, "-deleted-"
+	page.visual_effect 'Puff', "#{row_id}_sub"
+	page.visual_effect 'Puff', row_id
+	page.delay(1) do
+		page.replace_html 'listitems_count', "#{pluralize @listitem_count, 'item'} in list."
+	end
+else
+	page.visual_effect 'Highlight', row_id #, :endcolor=>"#ffCCCC" #, :startcolor=>'#ff0000', :endcolor=>'#ffcccc'
+end

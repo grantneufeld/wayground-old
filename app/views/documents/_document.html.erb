@@ -24,4 +24,5 @@ else
 	%><%
 end
 %></td><td><%= document.size_str %></td>
-<td><input type="text" value="<%= h document.siteurl %>" /></td></tr>
+<td><input type="text" value="<%= h document.siteurl %>" /></td>
+<td><%= link_to_add_to_list(document) %></td></tr>

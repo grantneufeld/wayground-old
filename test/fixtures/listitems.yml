@@ -1,0 +1,22 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  item: one (Event)
+  user: login
+  title: Test List
+
+two:
+  item: two (Page)
+  user: login
+  title: Test List
+
+destroy_this:
+  item: one (Event)
+  user: regular
+  title: Destroy This
+
+destroy_this2:
+  item: two (Page)
+  user: regular
+  title: Destroy This
+

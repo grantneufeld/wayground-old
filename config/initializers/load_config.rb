@@ -17,6 +17,8 @@ WAYGROUND = YAML.load(raw_config)[RAILS_ENV]
 #	end
 #end
 module Wayground
+	# an expected object is missing
+	class NilObject < Exception; end
 	# it looks like an automated form submission has been received
 	class SpammerDetected < Exception; end
 	
