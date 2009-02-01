@@ -1,8 +1,9 @@
 class Article < Page
 	# standard Wayground class methods for displayable items
-	def self.default_order
+	def self.default_order(p={})
 		# TODO: refine sorting of Articles
-		'pages.created_at DESC, pages.title'
+		(p[:recent].blank? ? '' : 'pages.updated_at DESC, ') +
+			'pages.created_at DESC, pages.title'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

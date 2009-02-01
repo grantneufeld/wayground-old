@@ -113,6 +113,10 @@ class PetitionTest < ActiveSupport::TestCase
 	def test_petition_default_order
 		assert_equal 'petitions.title', Petition.default_order
 	end
+	def test_petition_default_order_recent
+		assert_equal 'petitions.updated_at DESC, petitions.title',
+			Petition.default_order({:recent=>true})
+	end
 	
 	def test_petition_search_conditions
 		assert_equal nil, Petition.search_conditions

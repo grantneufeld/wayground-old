@@ -20,6 +20,10 @@ class UserTest < ActiveSupport::TestCase
 	def test_user_default_order
 		assert_equal 'users.nickname, users.id', User.default_order
 	end
+	def test_user_default_order_recent
+		assert_equal 'users.updated_at DESC, users.nickname, users.id',
+			User.default_order({:recent=>true})
+	end
 	
 	def test_user_search_conditions
 		assert_nil User.search_conditions

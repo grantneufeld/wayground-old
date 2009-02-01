@@ -78,6 +78,10 @@ class PageTest < ActiveSupport::TestCase
 	def test_page_default_order
 		assert_equal 'pages.title', Page.default_order
 	end
+	def test_page_default_order_recent
+		assert_equal 'pages.updated_at DESC, pages.title',
+			Page.default_order({:recent=>true})
+	end
 	
 	def test_page_search_conditions
 		assert_equal nil, Page.search_conditions

@@ -12,6 +12,10 @@ class ArticleTest < ActiveSupport::TestCase
 	def test_article_default_order
 		assert_equal 'pages.created_at DESC, pages.title', Article.default_order
 	end
+	def test_article_default_order_recent
+		assert_equal 'pages.updated_at DESC, pages.created_at DESC, pages.title',
+			Article.default_order({:recent=>true})
+	end
 	
 	def test_article_search_conditions
 		assert_equal nil, Article.search_conditions

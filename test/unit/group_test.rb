@@ -82,6 +82,10 @@ class GroupTest < ActiveSupport::TestCase
 	def test_group_default_order
 		assert_equal 'groups.name', Group.default_order
 	end
+	def test_group_default_order_recent
+		assert_equal 'groups.updated_at DESC, groups.name',
+			Group.default_order({:recent=>true})
+	end
 	
 	def test_group_search_conditions
 		assert_equal ['(groups.is_visible = 1)'], Group.search_conditions

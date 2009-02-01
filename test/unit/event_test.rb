@@ -151,6 +151,10 @@ class EventTest < ActiveSupport::TestCase
 	def test_event_default_order
 		assert_equal 'events.next_at, events.start_at', Event.default_order
 	end
+	def test_event_default_order_recent
+		assert_equal 'events.updated_at DESC, events.next_at, events.start_at',
+			Event.default_order({:recent=>true})
+	end
 	
 	
 	# INSTANCE METHODS

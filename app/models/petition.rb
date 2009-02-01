@@ -32,8 +32,8 @@ class Petition < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'petitions.title'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'petitions.updated_at DESC, ') + 'petitions.title'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

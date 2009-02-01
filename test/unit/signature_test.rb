@@ -99,6 +99,10 @@ class SignatureTest < ActiveSupport::TestCase
 	def test_signature_default_order
 		assert_equal 'signatures.id', Signature.default_order
 	end
+	def test_signature_default_order_recent
+		assert_equal 'signatures.updated_at DESC, signatures.id',
+			Signature.default_order({:recent=>true})
+	end
 	
 	def test_signature_search_conditions
 		assert_nil Signature.search_conditions

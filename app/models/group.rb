@@ -50,8 +50,8 @@ class Group < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'groups.name'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'groups.updated_at DESC, ') + 'groups.name'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

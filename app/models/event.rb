@@ -90,9 +90,10 @@ class Event < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
+	def self.default_order(p={})
 		# TODO: should NULL next_at sort after non-NULL?
-		'events.next_at, events.start_at'
+		(p[:recent].blank? ? '' : 'events.updated_at DESC, ') +
+			'events.next_at, events.start_at'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

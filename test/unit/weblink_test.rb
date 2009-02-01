@@ -35,6 +35,10 @@ class WeblinkTest < ActiveSupport::TestCase
 		assert_equal 'weblinks.category, weblinks.position, weblinks.title',
 			Weblink.default_order
 	end
+	def test_weblink_default_order_recent
+		assert_equal 'weblinks.updated_at DESC, weblinks.category, weblinks.position, weblinks.title',
+			Weblink.default_order({:recent=>true})
+	end
 	
 	def test_weblink_search_conditions
 		assert_nil Weblink.search_conditions

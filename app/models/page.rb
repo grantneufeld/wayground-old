@@ -58,8 +58,8 @@ class Page < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'pages.title'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'pages.updated_at DESC, ') + 'pages.title'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

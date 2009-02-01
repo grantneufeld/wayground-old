@@ -27,8 +27,9 @@ class Weblink < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'weblinks.category, weblinks.position, weblinks.title'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'weblinks.updated_at DESC, ') +
+			'weblinks.category, weblinks.position, weblinks.title'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

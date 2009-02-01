@@ -67,8 +67,9 @@ class User < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'users.nickname, users.id'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'users.updated_at DESC, ') +
+			'users.nickname, users.id'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

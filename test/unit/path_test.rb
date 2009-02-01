@@ -75,6 +75,10 @@ class PathTest < ActiveSupport::TestCase
 	def test_path_default_order
 		assert_equal 'paths.sitepath', Path.default_order
 	end
+	def test_path_default_order_recent
+		assert_equal 'paths.updated_at DESC, paths.sitepath',
+			Path.default_order({:recent=>true})
+	end
 	
 	def test_path_search_conditions
 		assert_equal ['paths.site_id IS NULL'], Path.search_conditions

@@ -35,8 +35,8 @@ class Signature < ActiveRecord::Base
 	def self.default_include
 		nil
 	end
-	def self.default_order
-		'signatures.id'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'signatures.updated_at DESC, ') + 'signatures.id'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:

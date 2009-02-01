@@ -33,8 +33,8 @@ class Path < ActiveRecord::Base
 	def self.default_include
 		:item
 	end
-	def self.default_order
-		'paths.sitepath'
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'paths.updated_at DESC, ') + 'paths.sitepath'
 	end
 	# Returns a conditions array for find.
 	# p is a hash of parameters:
