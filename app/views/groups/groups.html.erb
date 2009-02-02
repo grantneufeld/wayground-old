@@ -1,0 +1,16 @@
+<%
+subsection ||= @subsection || 'groups'
+
+%><%= render :partial=>'header', :locals=>{:subsection=>subsection} %>
+
+<h2><%= pluralize(@groups.size, 'group') %> <%= @groups.size == 1 ? 'belongs' : 'belong' %> to this group</h2>
+<%
+
+@groups.each do |group|
+	%><p class="group"><%= link_to h(group.title), group_path(group) %>.</p>
+<%
+end
+
+%>
+<%= render :partial=>'footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'standard'%>

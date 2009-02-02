@@ -29,23 +29,49 @@ class GroupsController < ApplicationController
 		missing
 	end
 	
+	# display a list of groups belonging to this group
+	def groups
+		@section = 'groups'
+		@subsection = 'groups'
+		@group = Group.find(params[:id])
+		@groups = @group.children
+		@page_title = "Group: #{@group.name}: Subgroups"
+	rescue ActiveRecord::RecordNotFound
+		missing
+	end
+	
 	def new
 		@section = 'groups'
 		@group = Group.new(params[:group])
 		@group.creator = @group.owner = current_user
 		@page_title = 'New Group'
 	end
+	# subgroup is a version of new when the user wants to create a new subgroup for a group
+	def subgroup
+		@section = 'groups'
+		@parent = Group.find(params[:id])
+		@group = Group.new(params[:group])
+		@group.parent = @parent
+		@group.creator = @group.owner = current_user
+		@page_title = "Group: #{@parent.name}: New Subgroup"
+		render :action=>'new'
+	end
 	
 	def create
+		@parent = Group.find(params[:id]) rescue nil
 		@group = Group.new(params[:group])
+		@group.parent = @parent
 		@group.creator = @group.owner = current_user
 		@group.save!
 		flash[:notice] = 'New group was successfully saved.'
 		redirect_to :action=>'show', :id=>@group
 	rescue ActiveRecord::RecordInvalid
 		@section = 'groups'
-		@page_title = 'New Group'
+		@page_title = @parent.nil? ? 'New Group' : "Group: #{@parent.name}: New Subgroup"
 		render :action=>:new
+	end
+	def createsub
+		create
 	end
 	
 	def edit

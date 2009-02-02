@@ -3,21 +3,37 @@
 # @group
 subsection ||= @subsection
 
-%><h1><img src="/icon/group_24.png" alt="Group:" title="Group" width="24" height="24" class="icon" />
+%>
+<img src="/icon/group_24.png" alt="Group:" title="Group" width="24" height="24" class="icon" align="left" />
+<div>
+<h1>
 <%= h @group.name %></h1>
 <% unless @group.parent.nil?
 	%><p class="meta">Member Group of: <%= link_to @group.parent.name, group_path(@group.parent) %>.</p><%
 end -%>
 <%= format_content(@group.description, 'text/plain', false) %>
+</div>
 <div class="tabbed-content">
 <p class="tabs">
 <a href="<%= group_path(@group) %>" class="tab<%= subsection == 'update' ? ' active' : nil
 	%>">Updates</a><% # activity log
-%><a href="" class="tab<%= subsection == 'event' ? ' active' : nil %>">Events</a><%
-%><a href="" class="tab<%= subsection == 'discussion' ? ' active' : nil %>">Discussions</a><%
+if false
+	%><a href="" class="tab<%= subsection == 'event' ? ' active' : nil %>">Events</a><%
+	%><a href="" class="tab<%= subsection == 'discussion' ? ' active' : nil
+		%>">Discussions</a><%
+end
 %><a href="" class="tab<%= subsection == 'message' ? ' active' : nil %>">Messages</a><%
-%><a href="<%= group_memberships_path(@group) %>" class="tab<%= subsection == 'member' ? ' active' : nil %>">Members</a><%
-%><a href="" class="tab<%= subsection == 'group' ? ' active' : nil
-	%>">Groups</a><% # parent groups and sub-groups
+%><a href="<%= group_memberships_path(@group) %>" class="tab<%= subsection == 'member' ? ' active' : nil %>"><%= pluralize(@group.memberships.count, 'Member') %></a><%
+%><a href="<%=
+
+
+
+'' #groups_group_path(@group)
+
+
+
+
+%>" class="tab<%= subsection == 'group' ? ' active' : nil
+	%>"><%= pluralize(@group.children.count, 'Group') %></a><% # parent groups and sub-groups
 %>
 </p>

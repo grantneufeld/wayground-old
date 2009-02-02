@@ -78,6 +78,12 @@ Manage This Group</h2>
 		{:class=>'button', :title=>"Edit this group"})
 		%><span class="separator">.</span>
 <br /><%=
+	# New Sub Group
+	link_to('<img src="/icon/new.png" width="16" height="16" alt=" " class="icon" /> Add New Subgroup',
+		subgroup_group_path(@group),
+		{:class=>'button', :title=>"Add new sub-group to this group"})
+		%><span class="separator">.</span>
+<br /><%=
 	# Delete Group
 	link_to '<img src="/icon/delete.png" width="16" height="16"' +
 			' alt="Delete" class="icon" /> Delete this group',
@@ -91,8 +97,7 @@ Manage This Group</h2>
 <%		# Create Event
 		# manage members link
 		# Add Members
-		# Add sub-group
-		# Create Sub-group
+		# Add existing sub-group
 		# Add to parent group
 %></p>
 <%	end

@@ -12,8 +12,9 @@ class GroupsControllerTest < ActionController::TestCase
 	
 	# ROUTING
 	def test_groups_resource_routing
-		# map.resources :groups
-		assert_routing_for_resources 'groups', [], [], {}
+		# map.resources(:groups, :member=>{:groups=>:get}) do |groups|
+		assert_routing_for_resources 'groups', [], [], {},
+			{:groups=>:get, :subgroup=>:get, :createsub=>:post}
 	end
 	
 	

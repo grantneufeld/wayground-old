@@ -1,8 +1,14 @@
 <div class="steps">
-<h1>New Group</h1>
+<h1>New <%
+if @parent.nil?
+	%>Group<%
+else
+	%>Subgroup for <img src="/icon/group_24.png" alt="Group:" width="24" height="24" class="icon" />
+	<%= link_to h(@parent.title), @parent %><%
+end %></h1>
 <%= error_messages_for :group %>
 <div class="step_form">
-<% form_for(:group, :url=>groups_path) do |f|
+<% form_for(:group, :url=>(@parent.nil? ? groups_path : createsub_group_path(@parent))) do |f|
 	%><%= render :partial=>'form' %>
 <% end -%>
 </div>
