@@ -188,6 +188,59 @@ class GroupTest < ActiveSupport::TestCase
 		assert !(groups(:membered_group).user_can_join?(users(:regular)))
 	end
 	
+	def test_has_access_to_by_owner
+		assert groups(:private_group).has_access_to?(nil, groups(:private_group).owner)
+	end
+	def test_has_access_to_by_admin_user
+		assert groups(:private_group).has_access_to?(nil, users(:admin))
+	end
+	def test_has_access_to_by_staff_user
+		assert groups(:private_group).has_access_to?(nil, users(:staff))
+	end
+	def test_has_access_to_admin_by_admin_member
+		assert groups(:private_group).has_access_to?(:admin, memberships(:private_admin).user)
+	end
+	def test_has_access_to_self_join_by_existing_member
+		assert !(groups(:private_group).has_access_to?(:self_join,
+			memberships(:private_member).user))
+	end
+	def test_has_access_to_self_join_by_blocked
+		assert !(groups(:private_group).has_access_to?(:self_join,
+			memberships(:blockee).user))
+	end
+	def test_has_access_to_self_join_by_invitee
+		assert groups(:private_group).has_access_to?(:self_join,
+			memberships(:invitee).user)
+	end
+	def test_has_access_to_self_join_by_uninvited
+		assert !(groups(:private_group).has_access_to?(:self_join, users(:nonmember)))
+	end
+	def test_has_access_to_self_join_open_group_by_nonmember
+		assert groups(:public_group).has_access_to?(:self_join, users(:nonmember))
+	end
+	def test_has_access_to_member_list_open_group_by_nonmember
+		assert groups(:public_group).has_access_to?(:member_list, users(:nonmember))
+	end
+	def test_has_access_to_member_list_private_group_by_nonmember
+		assert !(groups(:private_group).has_access_to?(:member_list, users(:nonmember)))
+	end
+	def test_has_access_to_member_list_private_group_by_member
+		assert !(groups(:private_group).has_access_to?(:member_list,
+			memberships(:private_member).user))
+	end
+	def test_has_access_to_member_list_private_group_by_member_with_member_manage
+		# set the can_manage_members for a member with no other special permissions
+		memberships(:private_member).update_attribute(:can_manage_members, true)
+		assert groups(:private_group).has_access_to?(:member_list,
+			memberships(:private_member).user)
+		# reset the flag
+		memberships(:private_member).update_attribute(:can_manage_members, false)
+	end
+	def test_has_access_to_member_list_private_group_by_admin_member
+		assert groups(:private_group).has_access_to?(:member_list,
+			memberships(:private_admin).user)
+	end
+	
 	def test_group_email_addresses
 		# TODO: implement this test and the email_addresses method
 		assert_equal([], groups(:one).email_addresses)

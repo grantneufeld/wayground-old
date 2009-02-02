@@ -12,7 +12,7 @@ class Group < ActiveRecord::Base
 	validates_format_of :subpath,
 		:with=>/\A[A-Za-z]([\w\-]*\w)?\z/,
 		:message=>'must begin with a letter and only consist of letters, numbers and/or dashes (a-z, 0-9, -)'
-	validates_format_of :url, :allow_nil=>true,
+	validates_format_of :url, :allow_blank=>true,
 		:with=>/\Ahttps?:\/\/[^ \t\r\n]+\z/,
 		:message=>'must be a valid URL (starting with ‘http://’)'
 	
@@ -157,6 +157,43 @@ class Group < ActiveRecord::Base
 		end
 	end
 	
+	# s - a symbol or an array of symbols (which any of which matching will return true)
+	# u - the user to check access for
+	def has_access_to?(s, u)
+		if self.owner == u or u.admin? or u.staff?
+			true
+		else
+			has_access = false
+			m = user_membership(u)
+			if s.is_a? Symbol
+				s = [s]
+			end
+			s.each do |sym|
+				case sym
+				when :self_join
+					if m and (m.active? or m.blocked?)
+						# already member, or blocked, so can’t join
+					elsif is_invite_only
+						has_access ||= (m and m.has_access_to?([sym]))
+					elsif m.nil?
+						has_access = true
+					end
+				when :member_list
+					if is_members_visible
+						has_access = true
+					elsif m
+						has_access ||= (m and m.has_access_to?([sym]))
+					end
+				#when :manage_members
+				#when :inviting
+				else
+						has_access ||= (m and m.has_access_to?([sym]))
+				end
+			end
+			has_access
+		end
+	end
+	
 	# Returns an Array of email address Strings for members of the group.
 	def email_addresses(only_validated = false)
 		[]
@@ -176,6 +213,9 @@ class Group < ActiveRecord::Base
 	end
 	def title
 		name
+	end
+	def title=(t)
+		raise 'should not assign to Group#title. use name instead'
 	end
 	def title_prefix
 		nil

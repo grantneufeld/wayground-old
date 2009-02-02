@@ -75,11 +75,11 @@ privateowner:
   position: 1
   user: login
   location: 
-  is_admin: true
-  can_add_event: true
-  can_invite: true
-  can_moderate: true
-  can_manage_members: true
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
   expires_at:
   invited_at: 
   inviter: 
@@ -87,6 +87,24 @@ privateowner:
   block_expires_at: 
   blocker: 
   title: Great Leader
+
+private_admin:
+  group: private_group
+  position: 
+  user: adminmember
+  location: 
+  is_admin: true
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at:
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
 
 private_member:
   group: private_group
