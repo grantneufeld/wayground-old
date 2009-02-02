@@ -56,4 +56,8 @@ class Listitem < ActiveRecord::Base
 			['listitems.user_id = ? AND listitems.title = ?', u.id, title])
 	end
 	
+	# standard Wayground instance methods for displayable items
+	def css_class(name_prefix='')
+		"#{name_prefix}list"
+	end
 end

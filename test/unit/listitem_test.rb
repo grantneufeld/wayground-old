@@ -156,4 +156,14 @@ class ListitemTest < ActiveSupport::TestCase
 			Listitem.count_user_list(nil, listitems(:one).title)
 		end
 	end
+	
+	
+	# INSTANCE METHODS
+	
+	test "css class" do
+		assert_equal 'list', listitems(:one).css_class
+	end
+	test "css class with prefix" do
+		assert_equal 'test-list', listitems(:one).css_class('test-')
+	end
 end
