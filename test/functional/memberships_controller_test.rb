@@ -101,7 +101,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Membership Details for #{assigns(:membership).user.nickname}"
+			assert_select 'h2', assigns(:membership).user.nickname
 		end
 	end
 	def test_memberships_show_invalid_id
@@ -343,7 +343,7 @@ class MembershipsControllerTest < ActionController::TestCase
 	def test_memberships_create_user_without_access
 		assert_difference(Membership, :count, 0) do
 			post :create, {:group_id=>groups(:private_group).subpath,
-				:user_id=>users(:staff).id,
+				:user_id=>users(:nonmember).id,
 				:membership=>{:is_admin=>'0', :can_add_event=>'0',
 					:can_invite=>'0', :can_moderate=>'0',
 					:can_manage_members=>'0',
@@ -351,12 +351,15 @@ class MembershipsControllerTest < ActionController::TestCase
 					:title=>'Test Create Membership Without Access'
 					}
 				},
-				{:user=>users(:staff).id}
+				{:user=>users(:nonmember).id}
 		end
 		assert_response :redirect
 		assert_nil assigns(:membership)
-		assert flash[:error]
+		assert flash[:warning]
 		assert_redirected_to group_path(groups(:private_group))
+	end
+	def test_memberships_create_user_block_special_settings_for_non_admins
+		# TODO: test_memberships_create_user_block_special_settings_for_non_admins
 	end
 	# TODO: test_memberships_create_no_user
 	#def test_memberships_create_no_user

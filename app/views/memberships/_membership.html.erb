@@ -3,4 +3,24 @@ membership ||= @membership
 row_id ||= "membership_#{membership.id}"
 
 -%>
-<tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><%= link_to membership.user.nickname, user_path(membership.user) %></td></tr>
+<tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><%
+if membership.has_access_to?(:admin)
+	%><img src="/icon/admin.png" alt="Admin:" width="16" height="16" class="icon" title="Group Administrator" /><%
+else
+	%><img src="/icon/contact.png" alt="Member:" width="16" height="16" class="icon" title="Group Member" /><%
+end
+%></td>
+<td><%= link_to membership.user.nickname, group_membership_path(membership.group, membership) %></td>
+<td><%=
+link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
+	edit_group_membership_path(membership.group, membership),
+	{:title=>"Change the member’s options for this group"})
+%><span class="separator">.</span>
+<%= link_to '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Remove" class="diricon" />',
+		group_membership_path(membership.group, membership),
+		{:method=>'delete',
+		:confirm=>"Are you sure you want to remove this member, #{membership.user.nickname}, from the group “#{membership.group.name}”?",
+		:href=>group_membership_path(membership.group, membership),
+		:title=>"remove this member from the group"
+		} %><span class="separator">.</span></td></tr>

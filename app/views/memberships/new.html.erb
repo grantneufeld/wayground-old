@@ -9,12 +9,8 @@ end
 <%= error_messages_for :membership %>
 <div class="step_form">
 <% form_for(:membership, :url=>group_memberships_path(@group)) do |f|
-	%>
-
-<p class="warning">••• NEED TO ADD SECTION TO THIS FORM FOR CREATING THE USER RECORD IF THE USER IS NOT LOGGED IN</p>
-
-
-<%= render :partial=>'form' %>
+	# TODO: Need to add section to this form for creating the user record if the user is not logged in
+	%><%= render :partial=>'form' %>
 <% end -%>
 </div>
 </div>

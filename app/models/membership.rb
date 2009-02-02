@@ -38,7 +38,8 @@ class Membership < ActiveRecord::Base
 	def self.invite!(group, user, inviter)
 		# validate that the inviter has authority to invite to this group
 		inviter_membership = Membership.find_for(group, inviter)
-		if inviter_membership and inviter_membership.active? and (inviter_membership.is_admin or inviter_membership.can_invite)
+		
+		if inviter_membership.has_access_to?(:inviting)
 			# determine if user is already a member or invited
 			existing_membership = Membership.find_for(group, user)
 			if existing_membership
@@ -114,7 +115,13 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def active?
-		!(group.nil?) && !(user.nil?) && !(expired?) && !(invited?) && !(blocked?)
+		!(id.nil?) && (id > 0) && !(group.nil?) && !(user.nil?) && !(expired?) && !(invited?) && !(blocked?)
+	end
+	
+	def make_active!
+		invited_at = nil
+		expires_at = nil if membership.expired?
+		clear_block! # saves
 	end
 	
 	def blocked?
@@ -168,17 +175,23 @@ class Membership < ActiveRecord::Base
 		if s.is_a? Symbol
 			s = [s]
 		end
-		has_access = false
-		s.each do |sym|
-			case sym
-			when :member_list
-				has_access ||= (self.active? and (self.is_admin or self.can_manage_members or self.group.is_members_visible))
-			when :manage_members
-				has_access ||= (self.active? and (self.is_admin or self.can_manage_members))
-			when :inviting
-				has_access ||= (self.active? and (self.is_admin or self.can_invite))
-			else
-				raise Wayground::UnrecognizedParameter
+		has_access = (is_admin or user == group.owner)
+		unless has_access
+			s.each do |sym|
+				case sym
+				when :self_join
+					has_access ||= (!(active?) and (invited? or !(group.is_invite_only)))
+				when :member_list
+					has_access ||= (active? and (can_manage_members or group.is_members_visible))
+				when :manage_members
+					has_access ||= (active? and can_manage_members)
+				when :inviting
+					has_access ||= (active? and can_invite)
+				when :admin
+					# covered by default has_access set when user is_admin or group.owner
+				else
+					raise Wayground::UnrecognizedParameter
+				end
 			end
 		end
 		has_access

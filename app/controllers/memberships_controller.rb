@@ -107,27 +107,27 @@ class MembershipsController < ApplicationController
 			else
 				@user = User.find(params[:user_id])
 			end
-			can_admin = false
-			unless (@user == current_user)
-				can_admin = require_group_access([:inviting, :manage_members])
-			end
-			
-			# check existing membership status
 			@membership = @group.user_membership(@user)
+			# check existing membership status
 			if @membership.nil?
-				if @group.is_invite_only and !can_admin
-					# TODO: Handle group membership invite requests
-					flash[:error] = 'The group is invitation only'
-					raise Wayground::CannotAddUserMembership
+				if @user == current_user
+					unless @group.has_access_to?([:self_join], current_user)
+						flash[:warning] = 'You cannot add yourself to the group'
+						raise Wayground::CannotAddUserMembership
+					end
 				else
-					@membership = @group.memberships.new(params[:membership])
-					@membership.user = @user
+					unless @group.has_access_to?([:manage_members, :inviting], current_user)
+						flash[:warning] = 'You are not an administrator for the group'
+						raise Wayground::CannotAddUserMembership
+					end
 				end
-			elsif @membership.active?
-				flash[:notice] = 'User is already a member of the group'
-				raise Wayground::CannotAddUserMembership
+				@membership = @group.memberships.new(params[:membership])
+				@membership.user = @user
 			elsif @membership.blocked?
 				flash[:warning] = 'User does not have access to the group'
+				raise Wayground::CannotAddUserMembership
+			elsif @membership.active?
+				flash[:notice] = 'User is already a member of the group'
 				raise Wayground::CannotAddUserMembership
 			elsif @membership.invited?
 				# clear invitation status since user is now being added
@@ -138,12 +138,15 @@ class MembershipsController < ApplicationController
 				@membership.expires_at = nil
 			end
 		else
-			# not logged-in, so need to create new user
-			@user = User.new(params[:user])
-			@membership = @group.memberships.new(params[:membership])
-			@membership.user = @user
-			# maybe store url to return to if user is logging in (store_location)
-			flash[:notice] = 'You are not logged-in, so you will need to register as a new user, or login to your existing account.'
+			flash[:notice] = 'You must be logged-in to access membership for the group'
+			raise Wayground::CannotAddUserMembership
+			# TODO: create new user when trying to join an open group when not logged-in
+			## not logged-in, so need to create new user
+			#@user = User.new(params[:user])
+			#@membership = @group.memberships.new(params[:membership])
+			#@membership.user = @user
+			## maybe store url to return to if user is logging in (store_location)
+			#flash[:notice] = 'You are not logged-in, so you will need to register as a new user, or login to your existing account.'
 		end
 		@page_title = "#{@group.name}: New Membership"
 	end
@@ -160,19 +163,22 @@ class MembershipsController < ApplicationController
 	
 	# access can be a symbol or an array of symbols
 	# expects @group to be set
+	# throws an exception if current_user does not have access
 	def require_group_access(access)
 		raise Wayground::UserWithoutAccessPermission if current_user.nil?
+		membership = nil
 		unless current_user.staff? or current_user.admin? or (@group.owner == current_user)
-			@current_membership = Membership.find_for(@group, current_user)
-			if @current_membership.nil?	
+			membership = @group.user_membership(current_user)
+			if membership.nil?	
 				# non-members don’t have access permission
 				raise Wayground::UserWithoutAccessPermission
 			else
-				unless @current_membership.has_access_to?(access)
+				unless membership.has_access_to?(access)
 					# user doesn’t have required access permission
 					raise Wayground::UserWithoutAccessPermission
 				end
 			end
 		end
+		membership
 	end
 end

@@ -185,6 +185,7 @@ class MembershipTest < ActiveSupport::TestCase
 		assert memberships(:privateowner).has_access_to?(:member_list)
 		assert memberships(:privateowner).has_access_to?(:manage_members)
 		assert memberships(:privateowner).has_access_to?(:inviting)
+		assert memberships(:privateowner).has_access_to?(:admin)
 		assert !(memberships(:private_member).has_access_to?(:member_list))
 		assert !(memberships(:private_member).has_access_to?(:manage_members))
 		assert !(memberships(:private_member).has_access_to?(:inviting))
@@ -193,10 +194,10 @@ class MembershipTest < ActiveSupport::TestCase
 		assert !(memberships(:regular).has_access_to?(:inviting))
 		
 		assert_raise(Wayground::UnrecognizedParameter) do
-			memberships(:privateowner).has_access_to?('member_list')
+			memberships(:private_member).has_access_to?('member_list')
 		end
 		assert_raise(Wayground::UnrecognizedParameter) do
-			memberships(:privateowner).has_access_to?(:invalid_param)
+			memberships(:private_member).has_access_to?(:invalid_param)
 		end
 	end
 	def test_membership_has_access_to_array

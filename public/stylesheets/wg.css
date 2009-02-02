@@ -26,7 +26,7 @@ h2{font-size:15px;}
 h3{font-size:13px;}
 h4, h5{font-size:11px;}
 h1 + ul{margin-top:1em;}
-h2 + div{margin-top:0.5em;}
+h2 + div, h2 + p{margin-top:0.5em;}
 p, ul{margin-top:0em;}
 p + p{margin-top:0.5em;}
 ul{padding:0em 0em 0em 1.5em;}
@@ -131,6 +131,7 @@ p.indent{margin-left:2em;}
 ul.dir, ul.dir ul{list-style:none outside url('../icon/item.png'); padding-left:24px;}
 ul.dir ul{padding-left:44px;}
 ul.dir li{vertical-align:middle; margin-top:4px; padding:0px 0px;}
+ul.dir li:before{vertical-align:middle;}
 ul.dir li > *{vertical-align:middle;}
 ul.dir li.alternate{background:transparent;}
 ul.dir > li img, ul.dir ul > li img{margin-left:0px; vertical-align:middle;}
@@ -145,9 +146,11 @@ a.dir-document:before{content:url('../icon/document.png'); padding-right:0px;}
 li.dir-event{list-style-image:url('../icon/event.png');}
 a.dir-event:before{content:url('../icon/event.png'); padding-right:0px;}
 li.dir-folder{list-style-image:url('../icon/folder.png');}
+li.dir-group{list-style-image:url('../icon/group.png');}
 li.dir-image{list-style-image:url('../icon/image.png');}
 li.dir-item{list-style-image:url('../icon/item.png');}
 a.dir-item:before{content:url('../icon/item.png'); padding-right:0px;}
+li.dir-list{list-style-image:url('../icon/list.png');}
 li.dir-page{list-style-image:url('../icon/page.png');}
 a.dir-page:before{content:url('../icon/page.png'); padding-right:0px;}
 li.dir-weblink{list-style-image:url('../icon/weblink.png');}
@@ -169,7 +172,7 @@ ul.dir a, ul.dir a:link, ul.dir a:visited, ul.dir a:link:hover, ul.dir a:visited
 .weblink{background-image:url('../icon/weblink.png');}
 
 /* TAB CONTENT */
-.tabbed-content{}
+.tabbed-content{clear:left;}
 .tabs{border-bottom:1px solid #CCC; padding:4px 8px 2px;}
 .tab, .tab:link, .tab:visited{background:#DDD; border:2px outset #CCC; border-bottom:1px solid #CCC; padding:2px 6px; font-size:110%; white-space:nowrap; text-decoration:none;}
 .tab.active{background:white; border:2px outset #999; border-bottom:1px solid white; font-weight:bold; padding:2px 6px;}

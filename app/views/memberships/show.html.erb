@@ -3,9 +3,92 @@ subsection ||= @subsection || 'member'
 
 %><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
 
-<h2>Membership Details for <%= @membership.user.nickname %></h2>
-<% # the content of the tab section
-%>
+<div><img src="/icon/contact.png" alt=" " width="16" height="16" class="icon" align="left" />
+<div style="float:left"><h2><%= link_to @membership.user.nickname, @membership.user.link %></h2>
+<%
+titles = []
+titles << 'Group Owner' if @membership.user == @group.owner
+titles << h(@membership.title) if !(@membership.title.blank?)
+if titles.size > 0
+	%><p><strong><%= titles.join("</strong>\n<br /><strong>") %></strong></p>
+<% end
+%></div>
+<p style="float:right"><%=
+link_to('<img src="/icon/edit.png" width="16" height="16" alt=" " class="diricon" /> Edit Membership',
+	edit_group_membership_path(@membership.group, @membership),
+	{:class=>'button', :title=>"Change the member’s options for this group"})
+%><span class="separator">.</span><%
+ %>
+<br /><%= link_to '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt=" " class="diricon" /> Remove Member',
+		group_membership_path(@membership.group, @membership),
+		{:method=>'delete',
+		:confirm=>"Are you sure you want to remove this member, #{@membership.user.nickname}, from the group “#{@membership.group.name}”?",
+		:href=>group_membership_path(@membership.group, @membership),
+		:class=>'button', :title=>"remove this member from the group"
+		} %><span class="separator">.</span><%
+ %></p>
+<% if @membership.blocked?
+	%><p style="clear:left"><img src="/icon/warning.png" alt=" " width="16" height="16" class="icon" />
+User is blocked from accessing the group.</p>
+<% elsif @membership.invited?
+	%><p style="clear:left"><img src="/icon/warning.png" alt=" " width="16" height="16" class="icon" />
+User has been invited to, but has not yet joined, the group.</p>
+<% end
+%></div>
+
+<table cellspacing="0" width="100%" style="clear:left; margin-top:1em;"><tbody>
+<tr><th align="right">Member Since:</th> <td><%= @membership.created_at.to_s(:event_date) %></td></tr>
+<% unless @membership.expires_at.blank?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Expires:</th> <td><%=
+		@membership.expires_at.to_s(:event_date) %></td></tr>
+<% end
+unless @membership.invited_at.blank?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Invited:</th> <td><%=
+		@membership.invited_at.to_s(:event_date) %></td></tr>
+<% end
+unless @membership.inviter.nil?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Invited by:</th> <td><%=
+		h(@membership.inviter.nickname) %></td></tr>
+<% end
+unless @membership.blocked_at.blank?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Blocked:</th> <td><%=
+		@membership.blocked_at.to_s(:event_date) %></td></tr>
+<% end
+unless @membership.block_expires_at.blank?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Block Expires:</th> <td><%=
+		@membership.block_expires_at.to_s(:event_date) %></td></tr>
+<% end
+unless @membership.blocker.nil?
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Blocked by:</th> <td><%=
+		h(@membership.blocker.nickname) %></td></tr>
+<% end
+if @membership.is_admin or @membership.can_add_event or @membership.can_invite or @membership.can_moderate or @membership.can_manage_members
+	%><tr<%= cycle(' class="alternate"', '') %>><th align="right">Administrative Access:</th>
+<td><ul>
+<% if @membership.is_admin
+%>	<li><img src="/icon/admin.png" alt=" " width="16" height="16" class="icon" />
+	Administrator.</li>
+<% end
+if @membership.can_add_event
+%>	<li><img src="/icon/event.png" alt=" " width="16" height="16" class="icon" />
+	Add Events.</li>
+<% end
+if @membership.can_invite
+%>	<li><img src="/icon/contact.png" alt=" " width="16" height="16" class="icon" />
+	Can invite new members.</li>
+<% end
+if @membership.can_moderate
+%>	<li><img src="/icon/email.png" alt=" " width="16" height="16" class="icon" />
+	Moderator.</li>
+<% end
+if @membership.can_manage_members
+%>	<li><img src="/icon/group.png" alt=" " width="16" height="16" class="icon" />
+	Can manage memberships.</li>
+<% end
+%>	</ul></td></tr>
+<% end
+%></tbody></table>
 
 <%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
 <%= render :partial=>'standard'%>
