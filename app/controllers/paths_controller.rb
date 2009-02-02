@@ -1,5 +1,5 @@
 class PathsController < ApplicationController
-	before_filter :staff_required,
+	before_filter :staff_or_admin_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
 	
 	def index

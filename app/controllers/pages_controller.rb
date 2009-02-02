@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
 	protect_from_forgery :except=>:content_type_switch
-	before_filter :staff_required,
+	before_filter :staff_or_admin_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
 	
 	# site page index (page tree?)

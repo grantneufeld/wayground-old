@@ -1,6 +1,6 @@
 class WeblinksController < ApplicationController
 	before_filter :activation_required, :only=>['new', 'create']
-	before_filter :staff_required, :only=>['edit', 'update', 'destroy']
+	before_filter :staff_or_admin_required, :only=>['edit', 'update', 'destroy']
 	before_filter :shared
 	
 	# common initialization

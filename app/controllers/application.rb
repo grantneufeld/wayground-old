@@ -69,6 +69,9 @@ class ApplicationController < ActionController::Base
 	def staff_required
 		(!(current_user.nil?) && current_user.staff) || access_denied
 	end
+	def staff_or_admin_required
+		(!(current_user.nil?) && (current_user.staff || current_user.admin)) || access_denied
+	end
 	
 	# Redirect as appropriate when an access request fails.
 	#

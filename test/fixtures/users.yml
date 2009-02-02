@@ -23,7 +23,7 @@ admin:
   subpath: admin
   time_zone: Mountain Time (US & Canada)
   admin: true
-  staff: true
+  staff: false
 
 staff:
   email: staff_test@wayground.ca

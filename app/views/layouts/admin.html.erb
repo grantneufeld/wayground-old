@@ -164,6 +164,8 @@ unless @content_for_keywords.blank?
 if current_user
 	if current_user.admin?
 		%><img src="/icon/admin.png" width="16" height="16" alt="(admin)" align="top" class="icon" title="You have administrative access for this website" />
+<%	elsif current_user.staff?
+		%><img src="/icon/staff.png" width="16" height="16" alt="(staff)" align="top" class="icon" title="You have staff access for this website" />
 <%	else
 		%><img src="/icon/contact.png" width="16" height="16" alt="(user)" align="top" class="icon" title="You are a registered user on this website" />
 <% 	end

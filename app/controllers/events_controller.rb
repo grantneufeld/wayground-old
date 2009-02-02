@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-	before_filter :staff_required,
+	before_filter :staff_or_admin_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
 	
 	# special parameter ‘past’ includes past events if set,
