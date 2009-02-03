@@ -116,6 +116,18 @@ class Group < ActiveRecord::Base
 		end
 	end
 	
+	# Expects a string “email@address” or “<email@address>” or “Name <email@address>”.
+	# Returns an array [email, name] or nil if not an email line.
+	# (used by bulk Membership processing for Groups)
+	def self.line_to_email(line)
+		match = line.match(/^ *((.*) +)?<?([A-Za-z0-9]+([A-Za-z0-9_\+=\-]*[A-Za-z0-9])?@[A-Za-z0-9]+[A-Za-z0-9.\-]*\.[A-Za-z0-9]+)>?,?[ \r]*$/)
+		if match
+			[match[3], match[2]]
+		else
+			nil
+		end
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -160,7 +172,7 @@ class Group < ActiveRecord::Base
 	# s - a symbol or an array of symbols (which any of which matching will return true)
 	# u - the user to check access for
 	def has_access_to?(s, u)
-		if self.owner == u or u.admin? or u.staff?
+		if self.owner == u or (u and (u.admin? or u.staff?))
 			true
 		else
 			has_access = false
@@ -204,6 +216,99 @@ class Group < ActiveRecord::Base
 		{}
 	end
 	
+	# Takes a string of email addresses (with optional names)
+	# and adds them as Group members.
+	# Creates new contacts where none match supplied addresses.
+	# Returns a hash:
+	# :memberships - list of 
+	def bulk_add(bulk, admin_user=nil)
+		memberships = []
+		added = 0
+		blanks = 0
+		bad_lines = []
+		lines = bulk.scan(/^.*$/)
+		line_count = 0
+		lines.each do |line|
+			line_count += 1
+			if line.blank?
+				blanks += 1
+			else
+				email, name = Group.line_to_email(line)
+				if email.blank?
+					bad_lines << [line_count, line]
+				else
+					user = User.find_matching_email({:email=>email, :name=>name})
+					if user.nil?
+						# no user matched, so create new one
+						if name.blank?
+							# use the first part of the email address as the user name
+							# (User model requires fullname to be set)
+							fullname = email.sub(/@.+$/, '').gsub(/[^A-Za-z0-9 \-]/, ' ')
+						else
+							fullname = name
+						end
+						user = User.create(:fullname=>fullname, :email=>email)
+					else
+						# check if there is already a membership for the user
+						membership = user_membership(user)
+						# if there is, make sure the membership is active
+						if membership and !(membership.active?)
+							membership.make_active!
+							added += 1
+						end
+					end
+					if membership.nil?
+						# create a Membership if the user doesn’t have one
+						membership = Membership.new()
+						membership.group = self
+						membership.user = user
+						membership.inviter = admin_user
+						membership.save!
+						added += 1
+					end
+					memberships << membership
+				end
+			end
+		end
+		{:memberships=>memberships, :added=>added, :blanks=>blanks, :bad_lines=>bad_lines}
+	end
+	
+	def bulk_remove(bulk)
+		missing = []       # email addresses with no membership
+		users_removed = [] # the users who had their memberships removed
+		blanks = 0         # number of blank lines in bulk
+		bad_lines = []     # number of unparsable lines in bulk
+		lines = bulk.scan(/^.*$/)
+		line_count = 0
+		lines.each do |line|
+			line_count += 1
+			if line.blank?
+				blanks += 1
+			else
+				email, name = Group.line_to_email(line)
+				if email.blank?
+					bad_lines << [line_count, line]
+				else
+					removed_this_one = false
+					users = User.find_all_matching_email(email)
+					users.each do |user|
+						membership = user_membership(user)
+						unless membership.nil? || !(membership.active?)
+							membership.destroy
+							users_removed << user
+							removed_this_one = true
+						end
+					end
+					unless removed_this_one
+						missing << line
+					end
+				end
+			end
+		end
+		{:users_removed=>users_removed, :missing=>missing, :blanks=>blanks,
+			:bad_lines=>bad_lines}
+	end
+	
 	# standard Wayground instance methods for displayable items
 	def css_class(name_prefix='')
 		"#{name_prefix}group"
@@ -215,7 +320,7 @@ class Group < ActiveRecord::Base
 		name
 	end
 	def title=(t)
-		raise 'should not assign to Group#title. use name instead'
+		raise Exception.new('should not assign to Group#title. use name instead')
 	end
 	def title_prefix
 		nil

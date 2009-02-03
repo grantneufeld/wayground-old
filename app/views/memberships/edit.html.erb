@@ -1,7 +1,7 @@
 <h1><%= h @group.name %></h1>
 <div class="steps">
 <h2><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
-Edit Membership for <%= h @membership.user.nickname %></h2>
+Edit Membership for <%= controller.member_name(@membership) %></h2>
 <% #= error_messages_for :membership 
 %>
 <div class="step_form">

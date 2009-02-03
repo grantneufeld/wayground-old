@@ -8,5 +8,10 @@ subsection ||= @subsection || 'member'
 <%= render :partial=>'membership', :collection=>@memberships %>
 </tbody></table>
 
+<p>
+<%= link_to '<img src="/icon/new.png" alt=" " width="16" height="16" class="icon" /> Bulk Member Actions',
+	bulk_group_memberships_path(@group), {:class=>'button', :title=>'Perform bulk actions (add, remove) for members from a list of emails (and names)'} %>
+</p>
+
 <%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
 <%= render :partial=>'groups/standard'%>

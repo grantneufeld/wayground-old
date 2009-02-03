@@ -34,6 +34,42 @@ regular:
   blocker: 
   title: 
 
+one_active_membership:
+  group: one
+  position: 1
+  user: login
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+one_inactive_membership:
+  group: one
+  position: 2
+  user: regular
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: <%= 1.day.ago.to_s(:db) %>
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
 update_membership:
   group: membered_group
   position: 3

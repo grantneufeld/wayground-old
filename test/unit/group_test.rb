@@ -130,6 +130,11 @@ class GroupTest < ActiveSupport::TestCase
 		end
 	end
 		
+	def test_group_line_to_email
+		assert_equal ['line-to-email@wayground.ca', nil],
+			Group.line_to_email('line-to-email@wayground.ca')
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -251,6 +256,54 @@ class GroupTest < ActiveSupport::TestCase
 		assert_equal({}, groups(:one).email_addresses_with_details)
 	end
 	
+	def test_group_bulk_add
+		old_count = groups(:one).memberships.count
+		# FIXME: not sure why assert_difference isn’t working here :-(
+		#assert_difference(groups(:one).memberships, :count, 3) do
+			bulk_result = groups(:one).bulk_add(
+				"bulk-test@wayground.ca\n" +
+				"\n" + "bad line\n" + "\n" + "bad-address@wayground\n" +
+				"<login_test@wayground.ca>\n" + # memberships(:one_active_membership)
+				"regular-user@wayground.ca\n" + # memberships(:one_inactive_membership)
+				"nonmember-user@wayground.ca\n" + # users(:nonmember)
+				"Another Bulk <anotherbulk-test@wayground.ca>\n",
+				users(:login))
+			assert_equal 5, bulk_result[:memberships].size	
+			assert_equal 4, bulk_result[:added]
+			assert_equal 2, bulk_result[:blanks]
+			assert_equal [[3, 'bad line'], [5, 'bad-address@wayground']],
+				bulk_result[:bad_lines]
+		#end
+		assert_equal old_count + 3, groups(:one).memberships.count
+	end
+	
+	def test_group_bulk_remove
+		# load up the group with members to remove
+		bulk_result = groups(:one).bulk_add(
+			"bulk-test@wayground.ca\n" +
+			"nonmember-user@wayground.ca\n" + # users(:nonmember)
+			"Another Bulk <anotherbulk-test@wayground.ca>\n")
+		old_count = groups(:one).memberships.count
+		# FIXME: not sure why assert_difference isn’t working here :-(
+		#assert_difference(groups(:one).memberships, :count, 3) do
+			bulk_result = groups(:one).bulk_remove(
+				"bulk-test@wayground.ca\n" +
+				"\n" + "bad line\n" + "\n" + "bad-address@wayground\n" +
+				"non-existent@wayground.ca\n" +
+				"<login_test@wayground.ca>\n" + # memberships(:one_active_membership)
+				"regular-user@wayground.ca\n" + # memberships(:one_inactive_membership)
+				"nonmember-user@wayground.ca\n" + # users(:nonmember)
+				"Another Bulk <anotherbulk-test@wayground.ca>\n")
+			assert_equal 4, bulk_result[:users_removed].size	
+			assert_equal ['non-existent@wayground.ca', 'regular-user@wayground.ca'],
+				bulk_result[:missing]
+			assert_equal 2, bulk_result[:blanks]
+			assert_equal [[3, 'bad line'], [5, 'bad-address@wayground']],
+				bulk_result[:bad_lines]
+		#end
+		assert_equal old_count - 4, groups(:one).memberships.count
+	end
+	
 	def test_group_css_class
 		assert_equal 'group', groups(:one).css_class
 	end
@@ -264,6 +317,11 @@ class GroupTest < ActiveSupport::TestCase
 	
 	def test_group_title
 		assert_equal 'Group One', groups(:one).title
+	end
+	def test_group_title_assignment
+		assert_raise Exception do
+			groups(:one).title = 'This Should Fail'
+		end
 	end
 	
 	def test_group_title_prefix

@@ -13,9 +13,10 @@ class MembershipsControllerTest < ActionController::TestCase
 	# ROUTING
 	def test_memberships_resource_routing
 		#map.resources :groups do |groups|
-		#	groups.resources :memberships
+		#	groups.resources :memberships, :collection=>{:bulk=>:get, :bulkprocess=>:post}
 		#end
-		assert_routing_for_resources 'memberships', [], ['group']
+		assert_routing_for_resources 'memberships', [], ['group'],
+			{:bulk=>:get, :bulkprocess=>:post}
 	end
 	
 	
@@ -392,14 +393,14 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_equal groups(:membered_group), assigns(:group)
 		assert_equal memberships(:regular), assigns(:membership)
 		assert_nil flash[:notice]
-		assert_equal "Edit Membership for #{memberships(:regular).user.nickname}",
+		assert_equal "Edit Membership for #{memberships(:regular).user.fullname}",
 			assigns(:page_title)
 		# view result
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.fullname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
 				assert_select 'input#membership_user_id', false,
 					'Edit form should not contain the user id'
@@ -520,14 +521,14 @@ class MembershipsControllerTest < ActionController::TestCase
 		# membership was not updated
 		assert_equal original_title, memberships(:update_membership).title
 		assert_nil flash[:notice]
-		assert_equal "Edit Membership for #{memberships(:update_membership).user.nickname}",
+		assert_equal "Edit Membership for #{memberships(:update_membership).user.fullname}",
 			assigns(:page_title)
 		# view result
 		assert_template 'edit'
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.nickname}"
+			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.fullname}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
 				assert_select 'input#membership_user_id', false,
 					'Edit form should not contain the user id'
@@ -605,5 +606,116 @@ class MembershipsControllerTest < ActionController::TestCase
 			delete :destroy, {:group_id=>groups(:membered_group).subpath},
 				{:user=>users(:login).id}
 		end
+	end
+	
+	
+	# BULK ACTIONS
+	
+	def test_memberships_bulk
+		get :bulk, {:group_id=>groups(:membered_group).subpath},
+			{:user=>users(:login).id}
+		assert_response :success
+		assert_equal 'groups', assigns(:section)
+		assert_equal groups(:membered_group), assigns(:group)
+		assert_nil flash[:notice]
+		assert_equal "#{assigns(:group).name}: Bulk Membership Management",
+			assigns(:page_title)
+		# view result
+		assert_template 'bulk'
+		assert_select 'div#flash:empty'
+		assert_select 'div#content' do
+			assert_select 'h1', assigns(:group).name
+			assert_select 'h2', 'Bulk Membership Management'
+			assert_select "form[action=#{bulkprocess_group_memberships_path(assigns(:group))}]"
+		end
+	end
+	
+	def test_memberships_bulkprocess_add_members
+		assert_difference(Membership, :count, 2) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>"bulk-test@wayground.ca\n" +
+					"Another Bulk <anotherbulk-test@wayground.ca>\n",
+				:process=>'Add Members'},
+				{:user=>users(:login).id}
+		end
+		assert flash[:notice]
+		assert_nil flash[:report]
+		assert_nil flash[:error]
+		assert_equal 2, assigns(:memberships).size
+		assert_response :redirect
+		assert_redirected_to group_memberships_path(groups(:membered_group))
+	end
+	def test_memberships_bulkprocess_add_members_with_bad_line
+		assert_difference(Membership, :count, 2) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>"bulk-test@wayground.ca\n" +
+					"bad line\n" +
+					"Another Bulk <anotherbulk-test@wayground.ca>\n",
+				:process=>'Add Members'},
+				{:user=>users(:login).id}
+		end
+		assert_nil flash[:notice]
+		assert flash[:report]
+		assert flash[:error]
+		assert_equal 2, assigns(:memberships).size
+		assert_response :redirect
+		assert_redirected_to group_memberships_path(groups(:membered_group))
+	end
+	def test_memberships_bulkprocess_remove_members
+		bulk = "bulk-test@wayground.ca\nAnother Bulk <anotherbulk-test@wayground.ca>\n"
+		# add the members to be removed
+		groups(:membered_group).bulk_add(bulk, users(:login))
+		assert_difference(Membership, :count, -2) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>bulk, :process=>'Remove Members'},
+				{:user=>users(:login).id}
+		end
+		assert flash[:notice]
+		assert_nil flash[:report]
+		assert_nil flash[:error]
+		assert_equal 2, assigns(:users_removed).size
+		assert_response :redirect
+		assert_redirected_to group_memberships_path(groups(:membered_group))
+	end
+	def test_memberships_bulkprocess_remove_members_with_bad_line
+		bulk = "bulk-test@wayground.ca\n" +
+			"bad line\n" +
+			"Another Bulk <anotherbulk-test@wayground.ca>\n"
+		# add the members to be removed
+		groups(:membered_group).bulk_add(bulk, users(:login))
+		assert_difference(Membership, :count, -2) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>bulk, :process=>'Remove Members'},
+				{:user=>users(:login).id}
+		end
+		assert_nil flash[:notice]
+		assert flash[:report]
+		assert flash[:error]
+		assert_equal 2, assigns(:users_removed).size
+		assert_response :redirect
+		assert_redirected_to group_memberships_path(groups(:membered_group))
+	end
+	def test_memberships_bulkprocess_blank_bulk
+		assert_difference(Membership, :count, 0) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>"", :process=>'Add Members'},
+				{:user=>users(:login).id}
+		end
+		assert flash[:error]
+		assert_nil assigns(:memberships)
+		assert_response :success
+		assert_template 'bulk'
+	end
+	def test_memberships_bulkprocess_missing_process
+		assert_difference(Membership, :count, 0) do
+			post :bulkprocess, {:group_id=>groups(:membered_group).subpath,
+				:bulk=>"bulk-test@wayground.ca\n" +
+					"Another Bulk <anotherbulk-test@wayground.ca>\n"},
+				{:user=>users(:login).id}
+		end
+		assert flash[:error]
+		assert_nil assigns(:memberships)
+		assert_response :success
+		assert_template 'bulk'
 	end
 end

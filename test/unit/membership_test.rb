@@ -206,4 +206,21 @@ class MembershipTest < ActiveSupport::TestCase
 		assert memberships(:regular).has_access_to?(
 			[:member_list, :manage_members, :inviting])
 	end
+	
+	def test_membership_email
+		user = User.new(:email=>'test@wayground.ca')
+		membership = Membership.new
+		membership.group = groups(:one)
+		membership.user = user
+		assert_equal 'test@wayground.ca', membership.email
+	end
+	def test_membership_email_from_location
+		user = User.new(:email=>'user-test@wayground.ca')
+		location = Location.new(:email=>'location-test@wayground.ca')
+		membership = Membership.new
+		membership.group = groups(:one)
+		membership.user = user
+		membership.location = location
+		assert_equal 'location-test@wayground.ca', membership.email
+	end
 end

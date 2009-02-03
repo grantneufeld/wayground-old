@@ -65,7 +65,7 @@ ActionController::Routing::Routes.draw do |map|
 	
 	# CONTACT MANAGEMENT
 	map.resources(:groups, :member=>{:groups=>:get, :subgroup=>:get, :createsub=>:post}) do |groups|
-		groups.resources :memberships
+		groups.resources :memberships, :collection=>{:bulk=>:get, :bulkprocess=>:post}
 	end
 	map.resources :locations
 	#map.resources :memberships

@@ -101,6 +101,125 @@ class User < ActiveRecord::Base
 	end
 	
 	
+	# Try to figure out which User, in an array of Users, is closest to the given name.
+	def self.find_best_match_for(name, users)
+		# When checking for name matches, convert to lower-case and strip
+		# all non-alpha characters.
+		name_parts = name.scan(/[A-Za-z]+/)
+		name_parts.collect! {|n| n.downcase}
+		compressed_name = name_parts.join('')
+		scores = []
+		users.each do |u|
+			score = {:u=>u, :score=>0, :missing=>0, :match=>false}
+			if u.fullname == name
+				# exact match
+				score[:match] = :exact
+			else
+				uname_parts = u.fullname.scan(/[A-Za-z]+/)
+				uname = uname_parts.join('').downcase
+				if uname == compressed_name
+					# all alpha characters match in sequence
+					score[:match] = :alpha
+				else
+					# TODO: come up with a better way to find possible matching/similar names
+					# check each part of the name to see if it shows up
+					name_parts.each do |name_part|
+						if uname.match(name_part)
+							score[:score] += 1
+						else
+							score[:missing] += 1
+						end
+					end
+					uname_parts.each do |uname_part|
+						unless compressed_name.match(uname_part)
+							score[:missing] += 1
+						end
+					end
+				end
+			end
+			scores << score
+		end
+		# rant the 
+		scores.sort! {|a,b|
+			# exact matchs come first
+			if a[:match] == :exact and b[:match] != :exact
+				-1
+			elsif a[:match] != :exact and b[:match] == :exact
+				1
+			# alpha matches come first
+			elsif a[:match] == :alpha and b[:match] != :alpha
+				-1
+    		elsif a[:match] != :alpha and b[:match] == :alpha
+    			1
+			# higher scores come first
+			elsif a[:score] < b[:score]
+				1
+			elsif a[:score] > b[:score]
+				-1
+			# lower missing come first
+			elsif a[:missing] > b[:missing]
+				1
+			elsif a[:missing] < b[:missing]
+				-1
+			# equal score
+			else
+				0
+			end
+		}
+		if scores[0]
+			scores[0][:u]
+		else
+			nil
+		end
+	end
+	# Returns a user matching the email address (or with a Location(s) matching it).
+	# attrs is a hash:
+	# - :email [required] the exact email address to match
+	# - :name [optional] a user name to use in attempting to find a match if multiple Locations match the email
+	def self.find_matching_email(attrs)
+		raise Exception.new('missing :email in passed in parameters') if attrs[:email].blank?
+		# determine if there’s an existing user matching the email
+		user = User.find(:first,
+			:conditions=>User.search_conditions({}, ['users.email = ?'], [attrs[:email]]))
+		unless user
+			# determine if there are any Locations (for Users) matching the email
+			locations = Location.find(:all, :conditions=>[
+				'locations.email = ? AND locatable_type = "User"', attrs[:email]])
+			users = locations.collect { |location| location.locatable }
+			users.uniq!
+			if users.size == 1
+				# just one user with the email address
+				user = users[0]
+			elsif users.size > 1
+				# there is more than one user to choose from :-(
+				if attrs[:name].blank?
+					# no way to narrow down the choices, so just go with the first user
+					# TODO: provide a way for user to choose between options
+					user = users[0]
+				else
+					user = User.find_best_match_for(attrs[:name], users)
+				end
+			end
+		end
+		user
+	end
+	# Returns an array of users matching the email address (or with a Location(s) matching it).
+	# attrs is a hash:
+	# email is the exact email address to match
+	def self.find_all_matching_email(email)
+		users = User.find(:all,
+			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
+		# determine if there are any Locations (for Users) matching the email
+		locations = Location.find(:all, :conditions=>[
+			'locations.email = ? AND locatable_type = "User"', email])
+		locations.each do |location|
+			users << location.locatable
+		end
+		users.uniq!
+		users
+	end
+	
+	
 	# INSTANCE METHODS
 	
 	def password_changed?
@@ -172,6 +291,13 @@ class User < ActiveRecord::Base
 		end
 	end
 	
+	def display_name_for_admin(is_admin)
+		if is_admin
+			fullname
+		else
+			title
+		end
+	end
 	
 	# root-relative url pointing to the user’s profile page
 	def profile_path

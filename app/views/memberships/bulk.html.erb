@@ -1,0 +1,27 @@
+<%
+subsection ||= @subsection || 'member'
+
+%><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
+
+<div class="steps">
+<h2>Bulk Membership Management</h2>
+<div class="step_form">
+<%
+
+# using form_for with a throwaway model to ensure the authenticity token gets properly included
+form_for(Membership.new, :url=>bulkprocess_group_memberships_path(@group)) do |f|
+	%><table cellspacing="0">
+<thead><tr><th><h3>Enter a list of email addresses</h3></th></tr></thead>
+<tbody><tr><td><strong>One per line.</strong>
+<br />You can optionally include names in the format: “<code>Name &lt;email@address&gt;</code>”.
+<br /><textarea name="bulk" rows="15"><%= h(@bulk) %></textarea></td></tr></tbody>
+<tfoot><tr><td><input type="submit" name="process" value="Add Members" />
+<input type="submit" name="process" value="Remove Members" /></td></tr></tfoot>
+</table>
+<% end
+
+%></div>
+</div>
+
+<%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'groups/standard'%>

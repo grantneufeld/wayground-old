@@ -1,7 +1,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require 'mocha'
 
 class UserTest < ActiveSupport::TestCase
-	fixtures :users #, :contacts
+	fixtures :users, :locations #, :contacts
 	
 	def test_associations
 		assert check_associations
@@ -54,6 +55,112 @@ class UserTest < ActiveSupport::TestCase
 	def test_login_authenticate_invalid
 		assert_nil User.authenticate('login_test@wayground.ca', 'invalid password')
 	end
+	
+	# I’ve added a pile of users in these tests to ensure code coverage.
+	# Otherwise, most of these tests would just need 2-3 users.
+	def test_user_find_best_match_for_exact_match
+		match_name = 'Test User'
+		users = []
+		best_user = User.new(:fullname=>match_name)
+		users << User.new(:fullname=>'User Test')
+		users << User.new(:fullname=>'TestUser')
+		users << best_user
+		users << User.new(:fullname=>'UserTest')
+		users << User.new(:fullname=>'No thing')
+		assert_equal best_user, User.find_best_match_for(match_name, users)
+	end
+	def test_user_find_best_match_for_alpha_match
+		match_name = 'Test User'
+		users = []
+		best_user = User.new(:fullname=>'testuser')
+		users << User.new(:fullname=>'User Test')
+		users << User.new(:fullname=>'TestUsers')
+		users << best_user
+		users << User.new(:fullname=>'Tes Tusers')
+		users << User.new(:fullname=>'No Thing')
+		assert_equal best_user, User.find_best_match_for(match_name, users)
+	end
+	def test_user_find_best_match_for_part_match
+		match_name = 'Test User'
+		users = []
+		best_user = User.new(:fullname=>'A Test')
+		users << User.new(:fullname=>'Something Else')
+		users << User.new(:fullname=>'Teslt Usenr')
+		users << best_user
+		users << User.new(:fullname=>'Something')
+		users << User.new(:fullname=>'No Thing')
+		assert_equal best_user, User.find_best_match_for(match_name, users)
+	end
+	def test_user_find_best_match_for_no_match
+		match_name = 'Test User'
+		users = []
+		users << User.new(:fullname=>'ThisOne')
+		users << User.new(:fullname=>'A Thing')
+		users << User.new(:fullname=>'SomeThing')
+		users << User.new(:fullname=>'No Thing')
+		assert_equal users[0], User.find_best_match_for(match_name, users)
+	end
+	def test_user_find_best_match_for_no_users
+		match_name = 'Test User'
+		users = []
+		assert_nil User.find_best_match_for(match_name, users)
+	end
+	
+	def test_user_find_matching_email
+		assert_equal users(:login),
+			User.find_matching_email({:email=>users(:login).email})
+	end
+	def test_user_find_matching_email_no_match
+		assert_nil User.find_matching_email({:email=>'non-existent@wayground.ca'})
+	end
+	def test_user_find_matching_email_one_location
+		email = 'test@wayground.ca'
+		user = User.new(:fullname=>'Test User')
+		location = Location.new(:email=>email)
+		location.locatable = user
+		# stub out find to return what we want it to for this test
+		User.expects(:find).returns(nil)
+		Location.expects(:find).returns([location])
+		assert_equal user, User.find_matching_email({:email=>email})
+	end
+	def test_user_find_matching_email_multiple_locations
+		email = 'test@wayground.ca'
+		user = User.new(:fullname=>'Test User')
+		location = Location.new(:email=>email)
+		location.locatable = user
+		user2 = User.new(:fullname=>'Test User 2')
+		location2 = Location.new(:email=>email)
+		location2.locatable = user2
+		# stub out find to return what we want it to for this test
+		User.expects(:find).returns(nil)
+		Location.expects(:find).returns([location, location2])
+		assert_equal user, User.find_matching_email({:email=>email})
+	end
+	def test_user_find_matching_email_multiple_locations_with_name
+		email = 'test@wayground.ca'
+		name = 'Test User 2'
+		user = User.new(:fullname=>'Test User 1')
+		location = Location.new(:email=>email)
+		location.locatable = user
+		user2 = User.new(:fullname=>name)
+		location2 = Location.new(:email=>email)
+		location2.locatable = user2
+		# stub out find to return what we want it to for this test
+		User.expects(:find).returns(nil)
+		Location.expects(:find).returns([location, location2])
+		assert_equal user2, User.find_matching_email({:email=>email, :name=>name})
+	end
+	
+	def test_user_find_all_matching_email
+		email = users(:login).email
+		assert_equal [users(:login)], User.find_all_matching_email(email)
+	end
+	def test_user_find_all_matching_email_location
+		# locations(:one) is linked to users(:login)
+		email = locations(:one).email
+		assert_equal [users(:login)], User.find_all_matching_email(email)
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -138,6 +245,15 @@ class UserTest < ActiveSupport::TestCase
 		assert users(:change_pass).change_password(old_pass,new_pass)
 		# confirm that the new password is set
 		assert users(:change_pass).password_matches?(new_pass)
+	end
+	
+	def test_user_display_name_for_admin
+		user = User.new(:fullname=>'Full Name', :nickname=>'Nick Name')
+		assert_equal 'Full Name', user.display_name_for_admin(true)
+	end
+	def test_user_display_name_for_admin_not_admin
+		user = User.new(:fullname=>'Full Name', :nickname=>'Nick Name')
+		assert_equal 'Nick Name', user.display_name_for_admin(false)
 	end
 	
 	def test_user_profile_path

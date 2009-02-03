@@ -1,6 +1,7 @@
 <%
 membership ||= @membership
 row_id ||= "membership_#{membership.id}"
+member_name = controller.member_name(membership)
 
 -%>
 <tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><%
@@ -10,7 +11,7 @@ else
 	%><img src="/icon/contact.png" alt="Member:" width="16" height="16" class="icon" title="Group Member" /><%
 end
 %></td>
-<td><%= link_to membership.user.nickname, group_membership_path(membership.group, membership) %></td>
+<td><%= link_to member_name, group_membership_path(membership.group, membership) %></td>
 <td><%=
 link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
 	edit_group_membership_path(membership.group, membership),
@@ -20,7 +21,7 @@ link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diri
 			' alt="Remove" class="diricon" />',
 		group_membership_path(membership.group, membership),
 		{:method=>'delete',
-		:confirm=>"Are you sure you want to remove this member, #{membership.user.nickname}, from the group “#{membership.group.name}”?",
+		:confirm=>"Are you sure you want to remove this member, #{member_name}, from the group “#{membership.group.name}”?",
 		:href=>group_membership_path(membership.group, membership),
 		:title=>"remove this member from the group"
 		} %><span class="separator">.</span></td></tr>

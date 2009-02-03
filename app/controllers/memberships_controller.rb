@@ -7,6 +7,7 @@ class MembershipsController < ApplicationController
 	
 	def index
 		# TODO: Key search for memberships controller index action
+		# TODO: ••• PAGINATE MEMBERSHIPS!!!
 		@memberships = @group.memberships
 		@page_title = "#{@group.name} Memberships"
 		@key = params[:key]
@@ -17,7 +18,7 @@ class MembershipsController < ApplicationController
 	
 	def show
 		@membership = @group.memberships.find(params[:id])
-		@page_title = "#{@group.name} Membership for #{@membership.user.nickname}"
+		@page_title = "#{@group.name} Membership for #{member_name(@membership)}"
 	rescue ActiveRecord::RecordNotFound
 		missing
 	end
@@ -50,7 +51,7 @@ class MembershipsController < ApplicationController
 	
 	def edit
 		@membership = Membership.find(params[:id])
-		@page_title = "Edit Membership for #{@membership.user.nickname}"
+		@page_title = "Edit Membership for #{member_name(@membership)}"
 	rescue ActiveRecord::RecordNotFound
 		missing
 	end
@@ -61,7 +62,7 @@ class MembershipsController < ApplicationController
 			# can’t update - was caught in edit
 		else
 			if params[:membership] && params[:membership].size > 0 && @membership.update_attributes(params[:membership])
-				flash[:notice] = "Updated membership information for #{@membership.user.nickname}."
+				flash[:notice] = "Updated membership information for #{member_name(@membership)}."
 				redirect_to group_membership_path(@group, @membership)
 			else
 				# failed to save, back to edit form
@@ -73,10 +74,76 @@ class MembershipsController < ApplicationController
 	def destroy
 		@membership = Membership.find(params[:id], :include=>:user)
 		@membership.destroy
-		flash[:notice] = "The membership for ‘#{@membership.user.nickname}’ has been permanently removed."
+		flash[:notice] = "The membership for ‘#{member_name(@membership)}’ has been permanently removed."
 		redirect_to group_memberships_path(@group)
 	rescue ActiveRecord::RecordNotFound
 		missing
+	end
+	
+	def bulk
+		@page_title = "#{@group.name}: Bulk Membership Management"
+		@bulk = params[:bulk]
+	end
+	
+	def bulkprocess
+		bulk
+		if @bulk.blank?
+			flash.now[:error] = 'Nothing to process - the bulk list of addresses was empty.'
+			render :action=>:bulk
+		elsif params[:process] == 'Add Members'
+			bulk_result = @group.bulk_add(@bulk, current_user)
+			# {:memberships=>memberships, :added=>added, :blanks=>blanks,
+			#	:bad_lines=>bad_lines}
+			@memberships = bulk_result[:memberships]
+			@added = bulk_result[:added]
+			@blanks = bulk_result[:blanks]
+			@bad_lines = bulk_result[:bad_lines]
+			if @bad_lines.size > 0
+				badline_msgs = []
+				@bad_lines.each do |num, line|
+					badline_msgs << "#{num}: #{h(line)}"
+				end
+				flash[:error] = "Added #{pluralize(@added, 'member')} to the group.\n" +
+					"<br />#{pluralize(@bad_lines.size, 'line')} could not be processed:\n"
+				flash[:report] = badline_msgs.join("\n<br />")
+			else
+				flash[:notice] = "Added #{pluralize(@added, 'member')} to the group."
+			end
+			# TODO: save @memberships to a Quicklist the user can then review or process
+			# TODO: option for notifying the new members
+			redirect_to group_memberships_path(@group)
+		elsif params[:process] == 'Remove Members'
+			bulk_result = @group.bulk_remove(@bulk)
+			#{:users_removed=>users_removed, :missing=>missing, :blanks=>blanks,
+			#	:bad_lines=>bad_lines}
+			@users_removed = bulk_result[:users_removed]
+			@missing = bulk_result[:missing]
+			@blanks = bulk_result[:blanks]
+			@bad_lines = bulk_result[:bad_lines]
+			msg = "Removed #{pluralize(@users_removed.size, 'member')} from the group."
+			if @bad_lines.size > 0
+				badline_msgs = []
+				@bad_lines.each do |num, line|
+					badline_msgs << "#{num}: #{h(line)}"
+				end
+				flash[:error] = "#{msg}\n" +
+					"<br />#{pluralize(@bad_lines.size, 'line')} could not be processed:\n"
+				flash[:report] = badline_msgs.join("\n<br />")
+			else
+				flash[:notice] = msg
+			end
+			# TODO: save @users_removed to a Quicklist the user can then review or process
+			# TODO: option for notifying the removed users
+			redirect_to group_memberships_path(@group)
+		else
+			flash.now[:error] = 'Unrecognized bulk process name ‘h(params[:process])’.'
+			render :action=>:bulk
+		end
+	end
+	
+	
+	def member_name(membership)
+		h(membership.user.display_name_for_admin(membership.group.has_access_to?(:admin, current_user)))
 	end
 	
 	

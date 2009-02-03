@@ -191,4 +191,8 @@ class ApplicationController < ActionController::Base
 		Time.zone = current_user.time_zone if current_user
 	end
 	
+	# copied from vendor/rails/actionpack/lib/action_view/helpers/text_helper.rb
+	def pluralize(count, singular, plural = nil)
+		"#{count || 0} " + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
+	end
 end

@@ -120,7 +120,7 @@ class Membership < ActiveRecord::Base
 	
 	def make_active!
 		invited_at = nil
-		expires_at = nil if membership.expired?
+		expires_at = nil if expired?
 		clear_block! # saves
 	end
 	
@@ -195,5 +195,13 @@ class Membership < ActiveRecord::Base
 			end
 		end
 		has_access
+	end
+	
+	def email
+		if location
+			location.email
+		else
+			user.email
+		end
 	end
 end
