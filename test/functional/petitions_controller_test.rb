@@ -61,12 +61,14 @@ class PetitionsControllerTest < ActionController::TestCase
 	def test_petitions_show
 		# ignore range error on sql explain
 		# OPTIMIZE: I played around with index possibilities, but couldn’t find a way to get the lookup of confirmed_signatures to not produce a range message on the SQL EXPLAIN call. Any suggestions?
-		assert_raise_message Test::Unit::AssertionFailedError,
-		/Pessimistic.*Signature Load.*\| range \|/m do
+		exception = assert_raise Test::Unit::AssertionFailedError do
+		#assert_raise_message Test::Unit::AssertionFailedError,
+		#/Pessimistic.*Signature Load.*\| range \|/m do
 			assert_efficient_sql(:diagnostic=>nil) do
 				get :show, {:id=>petitions(:one).id}
 			end
 		end
+		assert_match /Pessimistic.*Signature Load.*\| range \|/m, exception.message
 		assert_response :success
 		assert_equal 'petitions', assigns(:section)
 		assert_equal petitions(:one), assigns(:petition)
