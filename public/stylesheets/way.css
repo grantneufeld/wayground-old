@@ -53,5 +53,6 @@ h1, h2, h3, h4, h5, h6{background:transparent; color:#593B00;}
 #flash > p + p{margin-top:0.5em;}
 p.warning, p.error{font-weight:bold;}
 p.error{color:#600;}
+p.report{color:#333; font-size:12px;}
 #flash > p.warning{background:transparent url("/icon/warning_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}
 #flash > p.error{background:transparent url("/icon/error_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}

@@ -77,8 +77,6 @@ h1, h2, h3, h4, h5, h6{font-family:Palatino, serif;}
 #flash > p + p{margin-top:0.5em;}
 #flash p.warning, #flash p.error{font-weight:bold;}
 p.error{color:#600;}
+#flash p.report{color:#333; font-size:12px;}
 #flash > p.warning{background:transparent url("/icon/warning_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}
 #flash > p.error{background:transparent url("/icon/error_24.png") no-repeat left top; padding:0px 0px 0px 24px; min-height:24px;}
-
-
-

@@ -211,8 +211,17 @@ flash.each do |key, msg|
 	end
 end
 if flash.length > 0
+	flash_report = nil
 	flash.each do |key, msg|
-		%><p class="<%= key %>"><%= msg %></p>
+		if key.to_s == 'report'
+			# make sure report comes last
+			flash_report = msg
+		else
+			%><p class="<%= key %>"><%= msg %></p>
+<%		end
+	end
+	unless flash_report.blank?
+		%><p class="report"><%= flash_report %></p>
 <%	end
 end %></div>
 <div id="content">
