@@ -1,7 +1,9 @@
 require 'iconv'
 class Tag < ActiveRecord::Base
-	attr_accessible :title
+	attr_accessible :item_id, :item_type, :title
 	
+	validates_presence_of :item
+	validates_presence_of :user
 	validates_presence_of :title
 	validates_presence_of :tag
 	validates_format_of :tag, :with=>/\A([a-z0-9]+)\z/
