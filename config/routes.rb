@@ -90,6 +90,7 @@ ActionController::Routing::Routes.draw do |map|
 	# META
 	map.resources :lists
 	map.resources :listitems
+	map.resources :notes
 	map.resources :sites
 	map.resources :tags
 	

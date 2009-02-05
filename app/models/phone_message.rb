@@ -60,7 +60,7 @@ class PhoneMessage < ActiveRecord::Base
 			vals << p[:category]
 		end
 		unless p[:key].blank?
-			strs << 'phone_messages.category like ? OR phone_messages.phone like ? OR phone_messages.content like ?'
+			strs << '(phone_messages.category like ? OR phone_messages.phone like ? OR phone_messages.content like ?)'
 			vals += ["%#{p[:key]}%"] * 3
 		end
 		strs.size > 0 ? [strs.join(' AND ')] + vals : nil

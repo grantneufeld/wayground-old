@@ -48,7 +48,7 @@ class EmailMessage < ActiveRecord::Base
 			vals += [p[:item].id, p[:item].class.name]
 		end
 		unless p[:key].blank?
-			strs << 'email_messages.subject like ? OR email_messages.to like ? OR email_messages.from like ?'
+			strs << '(email_messages.subject like ? OR email_messages.to like ? OR email_messages.from like ?)'
 			vals += ["%#{p[:key]}%"] * 3
 		end
 		strs.size > 0 ? [strs.join(' AND ')] + vals : nil

@@ -6,6 +6,7 @@ one:
   status: sent
   from: login-test@wayground.ca
   to: recipient-test@wayground.ca
+  subject: test email 1
   content_type: text/plain
   content: Test email message 1.
 
@@ -15,5 +16,6 @@ two:
   status: draft
   from: Wayground Staff <staff-test@wayground.ca>
   to: recipient-test@wayground.ca
+  subject: test email 2
   content_type: text/plain
   content: Test email message 2.
