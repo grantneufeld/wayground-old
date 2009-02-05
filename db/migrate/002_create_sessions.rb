@@ -6,8 +6,10 @@ class CreateSessions < ActiveRecord::Migration
 			t.text :data
 			t.timestamps
 		end
-		add_index :sessions, :session_id
-		add_index :sessions, :updated_at
+		change_table :sessions do |t|
+			t.index [:session_id], :name=>'session_id'
+			t.index [:updated_at], :name=>'updated_at'
+		end
 	end
 
 	def self.down

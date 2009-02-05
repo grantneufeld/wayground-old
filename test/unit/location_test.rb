@@ -21,20 +21,20 @@ class LocationTest < ActiveSupport::TestCase
 		assert !(l.valid?)
 	end
 	
-	def test_location_valid_email
-		l = Location.new({:email=>'test@wayground.ca'})
-		assert l.valid?
-	end
-	def test_location_invalid_email
-		l = Location.new({:email=>'invalid'})
-		assert !(l.valid?)
-		l = Location.new({:email=>'invalid@email'})
-		assert !(l.valid?)
-		l = Location.new({:email=>'invalid@fake.email.domain.tld'})
-		assert !(l.valid?)
-		l = Location.new({:email=>'invalid chars@wayground.ca'})
-		assert !(l.valid?)
-	end
+	#def test_location_valid_email
+	#	l = Location.new({:email=>'test@wayground.ca'})
+	#	assert l.valid?
+	#end
+	#def test_location_invalid_email
+	#	l = Location.new({:email=>'invalid'})
+	#	assert !(l.valid?)
+	#	l = Location.new({:email=>'invalid@email'})
+	#	assert !(l.valid?)
+	#	l = Location.new({:email=>'invalid@fake.email.domain.tld'})
+	#	assert !(l.valid?)
+	#	l = Location.new({:email=>'invalid chars@wayground.ca'})
+	#	assert !(l.valid?)
+	#end
 	
 	
 	# CLASS METHODS

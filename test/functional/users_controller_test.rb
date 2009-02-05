@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class UsersControllerTest < ActionController::TestCase
-	fixtures :users #, :contacts
+	fixtures :users
 
 	def setup
 		@controller = UsersController.new

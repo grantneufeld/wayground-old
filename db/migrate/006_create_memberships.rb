@@ -5,6 +5,7 @@ class CreateMemberships < ActiveRecord::Migration
 			t.belongs_to :group
 			t.integer :position # order members within the group
 			t.belongs_to :user
+			t.belongs_to :email_address
 			t.belongs_to :location
 			t.boolean :is_admin
 			t.boolean :can_add_event
@@ -13,10 +14,10 @@ class CreateMemberships < ActiveRecord::Migration
 			t.boolean :can_manage_members
 			t.datetime :expires_at
 			t.datetime :invited_at
-			t.belongs_to :inviter
+			t.belongs_to :inviter # User
 			t.datetime :blocked_at
 			t.datetime :block_expires_at
-			t.belongs_to :blocker
+			t.belongs_to :blocker # User
 			t.string :title
 			t.timestamps
 		end

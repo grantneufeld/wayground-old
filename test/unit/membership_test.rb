@@ -214,13 +214,14 @@ class MembershipTest < ActiveSupport::TestCase
 		membership.user = user
 		assert_equal 'test@wayground.ca', membership.email
 	end
-	def test_membership_email_from_location
+	def test_membership_email_from_addr
 		user = User.new(:email=>'user-test@wayground.ca')
-		location = Location.new(:email=>'location-test@wayground.ca')
+		addr = EmailAddress.new(:email=>'location-test@wayground.ca')
+		addr.user = user
 		membership = Membership.new
 		membership.group = groups(:one)
 		membership.user = user
-		membership.location = location
+		membership.email_address = addr
 		assert_equal 'location-test@wayground.ca', membership.email
 	end
 end

@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user: login
+  position: 1
+  email: extra-address+test@wayground.ca
+  name: Extra Address For Login
+  activation_code: 
+  activated_at: 2009-02-04 14:59:26
+
+two:
+  user: admin
+  position: 1
+  email: extra-regular+test@wayground.ca
+  name: Extra Address For Regular
+  activation_code: 
+  activated_at: 2009-02-04 14:59:26

@@ -1,8 +1,7 @@
 # Pages for display on the website.
 class Page < ActiveRecord::Base
 	# restrict which attributes users can set directly
-	attr_accessible :subpath, :title, :description, :content, :content_type,
-		:keywords,
+	attr_accessible :subpath, :title, :description, :content, :content_type, :keywords,
 		:author, :issue, :published_on # fields for Article
 	
 	validates_presence_of :subpath

@@ -23,9 +23,9 @@ class CreateGroups < ActiveRecord::Migration
 			t.index [:name, :is_visible], :name=>'group_name_visible'
 			t.index [:parent_id, :is_visible, :name],
 				:name=>'group_parent'
-			t.index [:owner_id, :is_visible, :name], :name=>'group_owner'
 			t.index [:creator_id, :is_visible, :name],
 				:name=>'group_creator'
+			t.index [:owner_id, :is_visible, :name], :name=>'group_owner'
 		end
 	end
 

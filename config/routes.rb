@@ -44,7 +44,9 @@ ActionController::Routing::Routes.draw do |map|
 	map.activate '/activate/:activation_code', :controller=>'users',
 		:action=>'activate'
 	map.profile '/people/:id', :controller=>'users', :action=>'profile'
-	map.resources :users, :collection=>{:activate=>:get, :account=>:get}
+	map.resources :users, :collection=>{:activate=>:get, :account=>:get} do |users|
+		users.resources :email_addresses
+	end
 	
 	# PAGES
 	# special path: the home page
