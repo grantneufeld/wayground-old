@@ -7,11 +7,11 @@ class CreateDocuments < ActiveRecord::Migration
 		
 		create_table :documents, :force=>true,
 			:options=>'COMMENT="Metadata for files." ENGINE=InnoDB CHARSET=utf8' do |t|
+			t.string :type, :null=>false
 			t.integer :db_file_id
-			t.integer :user_id, :null=>false
-			t.integer :site_id
-			t.integer :parent_id
-			t.string :type
+			t.belongs_to :user, :null=>false
+			t.belongs_to :site
+			t.belongs_to :parent
 			t.string :content_type, :null=>false
 			t.string :filename, :null=>false
 			t.string :thumbnail
@@ -21,17 +21,16 @@ class CreateDocuments < ActiveRecord::Migration
 
 			t.timestamps
 		end
-		add_index :documents, :user_id
-		add_index :documents, :parent_id
-		add_index :documents, [:type, :thumbnail, :user_id], :name=>'type'
-		add_index :documents, :filename, :name=>'filename'
-		add_index :documents, [:thumbnail, :type, :user_id], :name=>'thumbnail'
-		add_index :documents, :size
-		add_index :documents, :created_at
-		add_index :documents, [:thumbnail, :type, :filename],
-		 	:name=>'thumbnail_filename'
-		add_index :documents, [:type, :thumbnail, :filename],
-		 	:name=>'type_filename'
+		change_table :documents do |t|
+			t.index [:user_id], :name=>'user'
+			t.index [:parent_id], :name=>'parent'
+			t.index [:site_id, :filename], :name=>'site'
+			t.index [:type, :thumbnail, :filename], :name=>'type'
+			t.index [:filename], :name=>'filename', :unique=>true
+			t.index [:thumbnail, :type, :filename], :name=>'thumbnail'
+			t.index [:size], :name=>'size'
+			t.index [:created_at], :name=>'created_at'
+		end
 	end
 
 	def self.down

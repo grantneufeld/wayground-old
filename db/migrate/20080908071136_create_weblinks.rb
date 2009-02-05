@@ -9,17 +9,17 @@ class CreateWeblinks < ActiveRecord::Migration
 			t.string :category
 			t.string :title
 			t.string :site # abbreviation of website for the link, primarily used for css rendering of the link with a site-specific icon
-			t.text :url
+			t.text :url, :null=>false
 			t.text :description
 
 			t.timestamps
 		end
 		change_table :weblinks do |t|
-			t.index [:item_id, :category, :position, :title, :site],
+			t.index [:item_id, :item_type, :category, :position, :title, :site],
 				:name=>'weblink_item'
-			t.index [:user_id, :item_id, :category, :position, :title, :site],
+			t.index [:user_id, :item_id, :item_type, :category, :position, :title, :site],
 				:name=>'weblink_user'
-			t.index [:item_id, :is_confirmed], :name=>'weblink_is_confirmed'
+			t.index [:item_id, :item_type, :is_confirmed], :name=>'weblink_is_confirmed'
 		end
 	end
 

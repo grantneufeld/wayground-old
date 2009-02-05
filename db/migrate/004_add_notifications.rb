@@ -9,8 +9,10 @@ class AddNotifications < ActiveRecord::Migration
 			t.timestamp :created_at
 			#t.timestamps
 		end
-		add_index :notifications, :last_send_attempt
-		add_index :notifications, :created_at
+		change_table :notifications do |t|
+			t.index [:last_send_attempt]
+			t.index [:created_at]
+		end
 	end
 
 	def self.down
