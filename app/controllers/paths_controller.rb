@@ -4,17 +4,12 @@ class PathsController < ApplicationController
 	
 	def index
 		@section = 'paths'
-		if params[:key].blank?
-			# find all paths
-			@paths = Path.find(:all, :order=>'paths.sitepath', :include=>:item)
-			@page_title = "Site Paths"
-		else
-			@path = nil
-			@paths = Path.find(:all,
-				:conditions=>Path.search_conditions({:key=>params[:key], :u=>current_user}),
-				:order=>Path.default_order, :include=>Path.default_include)
-			@page_title = "Site Paths: ‘#{params[:key]}’"
-		end
+		@path = nil
+		@page_title = "Site Paths"
+		@page_title += ": ‘#{params[:key]}’" unless params[:key].blank?
+		@paths = Path.find(:all,
+			:conditions=>Path.search_conditions({:key=>params[:key], :u=>current_user}),
+			:order=>Path.default_order, :include=>Path.default_include)
 		respond_to do |format|
 			format.html # index.rhtml
 			format.xml  { render :xml => @paths.to_xml }
