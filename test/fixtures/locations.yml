@@ -10,7 +10,6 @@ one:
   longitude: ''
   latitude: ''
   url: http://wayground.ca/test/location_one
-  email: location_one_test@wayground.ca
   phone1_type: w
   phone1: 123-456-7890
   phone2_type: f
@@ -29,7 +28,6 @@ two:
   longitude: ''
   latitude: ''
   url: http://wayground.ca/test/location_two
-  email: location_two_test@wayground.ca
   phone1_type: h
   phone1: "1 (234) 567-8901"
   phone2_type: c

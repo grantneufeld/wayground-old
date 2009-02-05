@@ -11,16 +11,17 @@ class Membership < ActiveRecord::Base
 		:can_moderate, :can_manage_members, :expires_at, :invited_at,
 		:blocked_at, :block_expires_at, :title
 	
+	belongs_to :group
+	belongs_to :user
+	belongs_to :email_address # if nil, use the user’s default address
+	belongs_to :location
+	belongs_to :inviter, :class_name=>"User"
+	belongs_to :blocker, :class_name=>"User"
+	
 	validates_presence_of :group
 	validates_presence_of :user
 	
 	validates_uniqueness_of :user_id, :scope=>:group_id
-	
-	belongs_to :group
-	belongs_to :user
-	belongs_to :location
-	belongs_to :inviter, :class_name=>"User"
-	belongs_to :blocker, :class_name=>"User"
 	
 	
 	# CLASS METHODS
@@ -198,8 +199,8 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def email
-		if location
-			location.email
+		if email_address
+			email_address.email
 		else
 			user.email
 		end

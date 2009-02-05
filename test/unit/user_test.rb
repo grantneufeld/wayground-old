@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'mocha'
 
 class UserTest < ActiveSupport::TestCase
-	fixtures :users, :locations #, :contacts
+	fixtures :users, :locations, :email_addresses
 	
 	def test_associations
 		assert check_associations
@@ -113,41 +113,41 @@ class UserTest < ActiveSupport::TestCase
 	def test_user_find_matching_email_no_match
 		assert_nil User.find_matching_email({:email=>'non-existent@wayground.ca'})
 	end
-	def test_user_find_matching_email_one_location
+	def test_user_find_matching_email_one_addr
 		email = 'test@wayground.ca'
 		user = User.new(:fullname=>'Test User')
-		location = Location.new(:email=>email)
-		location.locatable = user
+		addr = EmailAddress.new(:email=>email)
+		addr.user = user
 		# stub out find to return what we want it to for this test
 		User.expects(:find).returns(nil)
-		Location.expects(:find).returns([location])
+		EmailAddress.expects(:find).returns([addr])
 		assert_equal user, User.find_matching_email({:email=>email})
 	end
-	def test_user_find_matching_email_multiple_locations
+	def test_user_find_matching_email_multiple_addrs
 		email = 'test@wayground.ca'
 		user = User.new(:fullname=>'Test User')
-		location = Location.new(:email=>email)
-		location.locatable = user
+		addr = EmailAddress.new(:email=>email)
+		addr.user = user
 		user2 = User.new(:fullname=>'Test User 2')
-		location2 = Location.new(:email=>email)
-		location2.locatable = user2
+		addr2 = EmailAddress.new(:email=>email)
+		addr2.user = user2
 		# stub out find to return what we want it to for this test
 		User.expects(:find).returns(nil)
-		Location.expects(:find).returns([location, location2])
+		EmailAddress.expects(:find).returns([addr, addr2])
 		assert_equal user, User.find_matching_email({:email=>email})
 	end
-	def test_user_find_matching_email_multiple_locations_with_name
+	def test_user_find_matching_email_multiple_addrs_with_name
 		email = 'test@wayground.ca'
 		name = 'Test User 2'
 		user = User.new(:fullname=>'Test User 1')
-		location = Location.new(:email=>email)
-		location.locatable = user
+		addr = EmailAddress.new(:email=>email)
+		addr.user = user
 		user2 = User.new(:fullname=>name)
-		location2 = Location.new(:email=>email)
-		location2.locatable = user2
+		addr2 = EmailAddress.new(:email=>email)
+		addr2.user = user2
 		# stub out find to return what we want it to for this test
 		User.expects(:find).returns(nil)
-		Location.expects(:find).returns([location, location2])
+		EmailAddress.expects(:find).returns([addr, addr2])
 		assert_equal user2, User.find_matching_email({:email=>email, :name=>name})
 	end
 	
@@ -155,9 +155,9 @@ class UserTest < ActiveSupport::TestCase
 		email = users(:login).email
 		assert_equal [users(:login)], User.find_all_matching_email(email)
 	end
-	def test_user_find_all_matching_email_location
-		# locations(:one) is linked to users(:login)
-		email = locations(:one).email
+	def test_user_find_all_matching_email_addr
+		# email_addresses(:one) is linked to users(:login)
+		email = email_addresses(:one).email
 		assert_equal [users(:login)], User.find_all_matching_email(email)
 	end
 	

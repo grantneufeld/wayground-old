@@ -39,8 +39,8 @@ class User < ActiveRecord::Base
 		:with=>/\A[A-Za-z]([\w_\-]*\w)?\z/,
 		:allow_nil=>true,
 		:message=>'invalid url subpath - only lowercase letters, numbers, dashes ‘-’ and underscores ‘_’ are permitted, and there must be at least one letter'
-	validates_uniqueness_of :subpath, :email, :allow_nil=>true,
-		:case_sensitive=>false #, :nickname
+	validates_uniqueness_of :email, :nickname, :subpath, :allow_blank=>true,
+		:case_sensitive=>false
 	validates_presence_of :password_confirmation, :if=>:password_changed?
 	validates_confirmation_of :password
 	validates_length_of :password, :minimum=>7, :allow_nil=>true
@@ -183,9 +183,9 @@ class User < ActiveRecord::Base
 			:conditions=>User.search_conditions({}, ['users.email = ?'], [attrs[:email]]))
 		unless user
 			# determine if there are any Locations (for Users) matching the email
-			locations = Location.find(:all, :conditions=>[
-				'locations.email = ? AND locatable_type = "User"', attrs[:email]])
-			users = locations.collect { |location| location.locatable }
+			addrs = EmailAddress.find(:all, :conditions=>[
+				'email_addresses.email = ?', attrs[:email]])
+			users = addrs.collect { |addr| addr.user }
 			users.uniq!
 			if users.size == 1
 				# just one user with the email address
@@ -203,17 +203,17 @@ class User < ActiveRecord::Base
 		end
 		user
 	end
-	# Returns an array of users matching the email address (or with a Location(s) matching it).
+	# Returns an array of Users matching the email address (or with EmailAddress(es) matching it).
 	# attrs is a hash:
 	# email is the exact email address to match
 	def self.find_all_matching_email(email)
 		users = User.find(:all,
 			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
-		# determine if there are any Locations (for Users) matching the email
-		locations = Location.find(:all, :conditions=>[
-			'locations.email = ? AND locatable_type = "User"', email])
-		locations.each do |location|
-			users << location.locatable
+		# determine if there are any EmailAddresses matching the email
+		addrs = EmailAddress.find(:all, :conditions=>[
+			'email_addresses.email = ?', email])
+		addrs.each do |addr|
+			users << addr.user
 		end
 		users.uniq!
 		users
