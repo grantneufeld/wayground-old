@@ -68,7 +68,7 @@ Manage This Group</h2>
 <p><%=
 	# Send Message (bulk email)
 	link_to('<img src="/icon/email.png" width="16" height="16" alt=" " class="icon" /> Send Message',
-		'',
+		new_group_email_path(@group),
 		{:class=>'button', :title=>"Send an email message to the members of this group (and any sub-groups)"})
 		%><span class="separator">.</span>
 <br /><%=

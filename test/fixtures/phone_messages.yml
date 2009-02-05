@@ -1,0 +1,21 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user: login
+  owner: staff
+  contact: 
+  status: open
+  source: walk-in
+  category: Testing
+  phone: 123-4567
+  content: This is phone message 1.
+
+two:
+  user: regular
+  owner: staff
+  contact: admin
+  status: closed
+  source: phone
+  category: Testing
+  phone: 
+  content: This is phone message 2.

@@ -41,6 +41,7 @@ class Group < ActiveRecord::Base
 		:order=>'memberships.position', :dependent=>:destroy
 	has_many :active_members, :through=>:active_memberships, :source=>:user
 	
+	has_many :email_messages, :as=>:item, :dependent=>:nullify
 	has_many :weblinks, :as=>:item, :dependent=>:destroy
 	
 	
@@ -120,7 +121,7 @@ class Group < ActiveRecord::Base
 	# Returns an array [email, name] or nil if not an email line.
 	# (used by bulk Membership processing for Groups)
 	def self.line_to_email(line)
-		match = line.match(/^ *((.*) +)?<?([A-Za-z0-9]+([A-Za-z0-9_\+=\-]*[A-Za-z0-9])?@[A-Za-z0-9]+[A-Za-z0-9.\-]*\.[A-Za-z0-9]+)>?,?[ \r]*$/)
+		match = line.match(/^ *((.*) +)?<?([A-Za-z0-9]+([A-Za-z0-9_\+=.\-]*[A-Za-z0-9])?@[A-Za-z0-9]+[A-Za-z0-9.\-]*\.[A-Za-z0-9]+)>?,?[ \r]*$/)
 		if match
 			[match[3], match[2]]
 		else

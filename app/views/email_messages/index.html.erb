@@ -1,0 +1,31 @@
+<%
+subsection ||= @subsection
+
+unless @group.nil?
+%><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
+<% end
+
+%><h2>Email Messages</h2>
+<table cellspacing="0" class="layout"><tbody>
+<%= render :partial=>'email_message', :collection=>@email_messages %>
+</tbody></table>
+
+<%= will_paginate @events, :params=>params %>
+
+<%
+if @group.nil?
+	%><%= render :partial=>'standard'%>
+<%
+else
+	%>
+<p><%=
+	# Send Message (bulk email)
+	link_to('<img src="/icon/email.png" width="16" height="16" alt=" " class="icon" /> Send Message',
+		new_group_email_path(@group),
+		{:class=>'button', :title=>"Send an email message to the members of this group (and any sub-groups)"})
+		%><span class="separator">.</span></p>
+
+<%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'groups/standard'%><%
+end
+%>

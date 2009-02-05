@@ -22,18 +22,9 @@ if false
 	%><a href="" class="tab<%= subsection == 'discussion' ? ' active' : nil
 		%>">Discussions</a><%
 end
-%><a href="" class="tab<%= subsection == 'message' ? ' active' : nil %>">Messages</a><%
+%><a href="<%= group_emails_path(@group) %>" class="tab<%= subsection == 'message' ? ' active' : nil %>"><%= pluralize(@group.email_messages.count, 'Message') %></a><%
 %><a href="<%= group_memberships_path(@group) %>" class="tab<%= subsection == 'member' ? ' active' : nil %>"><%= pluralize(@group.memberships.count, 'Member') %></a><%
-%><a href="<%=
-
-
-
-'' #groups_group_path(@group)
-
-
-
-
-%>" class="tab<%= subsection == 'group' ? ' active' : nil
+%><a href="<%= groups_group_path(@group) %>" class="tab<%= subsection == 'group' ? ' active' : nil
 	%>"><%= pluralize(@group.children.count, 'Group') %></a><% # parent groups and sub-groups
 %>
 </p>

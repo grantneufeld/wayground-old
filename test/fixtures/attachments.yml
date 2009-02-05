@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  email_message: one
+  document: text
+  position: 1
+
+two:
+  email_message: one
+  document: pic
+  position: 2

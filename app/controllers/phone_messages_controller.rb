@@ -1,0 +1,2 @@
+class PhoneMessagesController < ApplicationController
+end

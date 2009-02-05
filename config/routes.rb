@@ -66,10 +66,18 @@ ActionController::Routing::Routes.draw do |map|
 	# CONTACT MANAGEMENT
 	map.resources(:groups, :member=>{:groups=>:get, :subgroup=>:get, :createsub=>:post}) do |groups|
 		groups.resources :memberships, :collection=>{:bulk=>:get, :bulkprocess=>:post}
+		groups.resources :emails, :controller=>:email_messages
 	end
 	map.resources :locations
 	#map.resources :memberships
 	
+	# MESSAGING
+	map.resources :email_messages do |email_messages|
+		email_messages.resources :attachments
+		email_messages.resources :recipients
+	end
+	map.resources :phone_messages
+
 	# EVENTS
 	map.resources :events do |events|
 		events.resources :schedules do |schedules|

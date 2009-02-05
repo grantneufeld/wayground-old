@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  email_message: one
+  user: login
+  to: A Person <person-test@wayground.ca>
+
+two:
+  email_message: one
+  user: regular
+  to: Second Person <second-test@wayground.ca>

@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class GroupTest < ActiveSupport::TestCase
-	fixtures :groups, :users, :memberships, :locations
+	fixtures :groups, :users, :memberships, :locations, :email_messages
 	
 	def test_associations
 		assert check_associations

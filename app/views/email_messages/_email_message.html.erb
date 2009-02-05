@@ -1,0 +1,9 @@
+<%
+email_message ||= @email_message
+row_id ||= "email_message_#{email_message.id}"
+
+%><tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><img src="/icon/email.png" alt="Email:" width="16" height="16" class="icon" title="Email Message" /></td>
+<td><%= link_to email_message.title,
+	(@group.nil? ? email_message_path(email_message)
+		: group_email_message_path(@group, email_message)) %></td>
+</tr>
