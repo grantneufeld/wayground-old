@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
 	 	:foreign_key=>'inviter_id', :dependent=>:destroy
 	has_many :blocked_memberships, :class_name=>'Membership',
 	 	:foreign_key=>'blocker_id', :dependent=>:nullify
+	has_many :email_addresses, :order=>'email_addresses.position', :dependent=>:destroy
 	has_many :events, :dependent=>:nullify
 	has_many :rsvps, :dependent=>:destroy
 	has_many :weblinks, :as=>:item, :dependent=>:destroy
@@ -172,21 +173,20 @@ class User < ActiveRecord::Base
 			nil
 		end
 	end
+	
 	# Returns a user matching the email address (or with a Location(s) matching it).
 	# attrs is a hash:
 	# - :email [required] the exact email address to match
 	# - :name [optional] a user name to use in attempting to find a match if multiple Locations match the email
-	def self.find_matching_email(attrs)
-		raise Exception.new('missing :email in passed in parameters') if attrs[:email].blank?
+	def self.find_matching_email(attrs, require_confirmed=false)
+		email = attrs[:email]
+		raise Exception.new('missing :email in passed in parameters') if email.blank?
 		# determine if there’s an existing user matching the email
 		user = User.find(:first,
-			:conditions=>User.search_conditions({}, ['users.email = ?'], [attrs[:email]]))
+			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
 		unless user
-			# determine if there are any Locations (for Users) matching the email
-			addrs = EmailAddress.find(:all, :conditions=>[
-				'email_addresses.email = ?', attrs[:email]])
-			users = addrs.collect { |addr| addr.user }
-			users.uniq!
+			# determine if there are any EmailAddresses matching the email
+			users = EmailAddress.find_users_for_email(email, require_confirmed)
 			if users.size == 1
 				# just one user with the email address
 				user = users[0]
@@ -204,17 +204,12 @@ class User < ActiveRecord::Base
 		user
 	end
 	# Returns an array of Users matching the email address (or with EmailAddress(es) matching it).
-	# attrs is a hash:
 	# email is the exact email address to match
-	def self.find_all_matching_email(email)
+	def self.find_all_matching_email(email, require_confirmed=false)
 		users = User.find(:all,
 			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
 		# determine if there are any EmailAddresses matching the email
-		addrs = EmailAddress.find(:all, :conditions=>[
-			'email_addresses.email = ?', email])
-		addrs.each do |addr|
-			users << addr.user
-		end
+		users += EmailAddress.find_users_for_email(email, require_confirmed)
 		users.uniq!
 		users
 	end
@@ -332,6 +327,16 @@ class User < ActiveRecord::Base
 		self.remember_token_expires_at = nil
 		self.remember_token = nil
 		save(false)
+	end
+	
+	def email
+		e = read_attribute('email')
+		if e.blank?
+			if email_addresses[0]
+				e = email_addresses[0].email
+			end
+		end
+		e
 	end
 	
 	# standard Wayground instance methods for displayable items

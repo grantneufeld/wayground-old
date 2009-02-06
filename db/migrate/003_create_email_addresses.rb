@@ -3,8 +3,8 @@ class CreateEmailAddresses < ActiveRecord::Migration
 		create_table :email_addresses, :force=>true,
 		:options=>'COMMENT="Additional, secondary, email addresses for users." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.belongs_to :user
-			t.integer :position
-			t.string :email
+			t.integer :position, :null=>false, :default=>0
+			t.string :email, :null=>false
 			t.string :activation_code, :limit=>40
 			t.datetime :activated_at
 			t.string :name
@@ -12,7 +12,7 @@ class CreateEmailAddresses < ActiveRecord::Migration
 		end
 		change_table :email_addresses do |t|
 			t.index [:user_id, :position], :name=>'user'
-			t.index [:email], :name=>'email', :unique=>true
+			t.index [:email, :user_id], :name=>'email'
 			t.index [:activated_at, :activation_code], :name=>':activation'
 			t.index [:name], :name=>'name'
 		end

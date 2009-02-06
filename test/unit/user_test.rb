@@ -289,6 +289,25 @@ class UserTest < ActiveSupport::TestCase
 		
 	end
 	
+	def test_user_email
+		email = 'email+test@wayground.ca'
+		u = User.new(:fullname=>'Email Test')
+		e = EmailAddress.new(:email=>email)
+		u.email_addresses << e
+		assert_equal email, u.email
+	end
+	def test_user_email_when_user_has_email
+		email = 'user-email+test@wayground.ca'
+		u = User.new(:fullname=>'User Email', :email=>email)
+		e = EmailAddress.new(:email=>'emailaddress-email+test@wayground.ca')
+		u.email_addresses << e
+		assert_equal email, u.email
+	end
+	def test_user_email_when_user_has_none
+		u = User.new(:fullname=>'No Email')
+		assert_nil u.email
+	end
+	
 	def test_user_css_class
 		assert_equal 'user', users(:login).css_class
 	end
@@ -314,6 +333,7 @@ class UserTest < ActiveSupport::TestCase
 	def test_user_title_prefix
 		assert_nil users(:login).title_prefix
 	end
+	
 	
 	# •••••••••••  TESTS TO BE WRITTEN  •••••••••••••••••••••••••••••
 	
