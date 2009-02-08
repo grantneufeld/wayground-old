@@ -11,6 +11,12 @@ subsection ||= @subsection || 'groups'
 <%
 end
 
-%>
+%><p>
+<%=	# New Sub Group
+link_to('<img src="/icon/new.png" width="16" height="16" alt=" " class="icon" /> Add New Subgroup',
+	subgroup_group_path(@group),
+	{:class=>'button', :title=>"Add new sub-group to this group"})
+%><span class="separator">.</span></p>
+
 <%= render :partial=>'footer', :locals=>{:subsection=>subsection} %>
 <%= render :partial=>'standard'%>

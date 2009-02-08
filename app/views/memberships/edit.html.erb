@@ -1,4 +1,8 @@
-<h1><%= h @group.name %></h1>
+<%
+subsection ||= @subsection || 'member'
+
+%><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
+
 <div class="steps">
 <h2><img src="/icon/edit_24.png" width="24" height="24" alt=" " class="icon" />
 Edit Membership for <%= controller.member_name(@membership) %></h2>
@@ -10,4 +14,6 @@ Edit Membership for <%= controller.member_name(@membership) %></h2>
 <% end -%>
 </div>
 </div>
-<%= render :partial=>'standard'%>
+
+<%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'groups/standard'%>

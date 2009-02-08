@@ -16,7 +16,7 @@ render_sidebar do
 end
 
 # ADMIN
-if !(current_user.nil?) && current_user.staff
+if !(current_user.nil?) and (current_user.staff or current_user.admin)
 	render_sidebar do
 		%><h2><img src="/icon/admin_24.png" width="24" height="24" alt=" " class="icon" />
 Admin</h2>
