@@ -39,6 +39,7 @@ class UsersController < ApplicationController
 	
 	# new user registration form
 	def new
+		missing unless WAYGROUND['ALLOW_SIGNUP']
 		@user = User.new(params[:user])
 		@user.valid? if params[:user]
 		@user.time_zone = Time.zone.name unless params[:user]
@@ -82,6 +83,7 @@ class UsersController < ApplicationController
 	
 	# user registration confirmation
 	def activate
+		missing unless WAYGROUND['ALLOW_SIGNUP']
 		@user = current_user
 		if @user
 			if params[:activation_code].blank?
