@@ -9,8 +9,8 @@ log/*.log
 public/cache/**/*
 public/file/*
 public/file/**/*
-public/icon/*.png
-public/icon/*.zip
+public/icon/*
+public/icon/**/*
 public/pic/*
 public/pic/**/*
 tmp/*
