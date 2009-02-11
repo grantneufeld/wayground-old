@@ -1,0 +1,340 @@
+<%
+# SPECIAL VARIABLES:
+#
+# @page_title || @content_for_title: will append to the page title
+# @content_for_description: will set the value of the description meta tag
+# @content_for_keywords: will set the value of the keywords meta tag
+# @content_for_head: extra content to put in the head (meta) of the document
+# @body_attrs: attributes for the body element
+# @content_for_sidebar: will add as the page sidebar if not empty
+# @content_columns: an array of content columns (strings)
+# @page: will use to determine title and other metadata if set
+#
+# Generate the content_for_ variables using the content_for function.
+# E.g.:
+# 	content_for("head") do
+# 		print "<meta />"
+# 	end
+
+
+# CONFIGURATION
+website_title = WAYGROUND['TITLE']
+website_prefix = WAYGROUND['TITLE_PREFIX']
+
+
+# special case this on the front page so that links don't refer to the page they're already on:
+if request.request_uri == "/"
+	website_root_link = nil
+	website_root_title_link = website_title
+	if @page_title.blank?
+		# set the page title to the website title for the front page only
+		@page_title = website_title
+	end
+	# ••• SPECIAL CONTENT FOR FRONT PAGE FEATURES •••
+	# ••• SHOULD EMBED THIS IN THE ACTUAL PAGE CONTENT INSTEAD OF THE LAYOUT •••
+	@body_attrs ||= ''
+	@body_attrs += ' onload="set_feature(\'feature1\');"'
+	content_for :head do
+		%><script type="text/javascript" language="javascript">
+var current_feature = '';
+
+function set_feature(inFeature){
+	if ( inFeature != current_feature ) {
+		if ( current_feature != "" ) {
+			$(current_feature + "-link").removeClassName('active');
+			Effect.Fade(current_feature);
+			Effect.Fade(current_feature + "-photo");
+			$(current_feature).removeClassName('active');
+			$(current_feature + "-photo").removeClassName('active');
+		}
+		$(inFeature + "-link").addClassName('active');
+		Effect.Appear(inFeature);
+		$(inFeature).addClassName('active');
+		Effect.Appear(inFeature + "-photo");
+		$(inFeature + "-photo").addClassName('active');
+		current_feature = inFeature;
+	}
+	return false;
+}
+</script>
+<%	end
+	
+else
+	if @page_title.blank?
+		if @page and !(@page.title.blank?)
+			@page_title = h @page.title
+			unless @content_for_title.blank?
+				@page_title += ": #{h @content_for_title}"
+			end
+		elsif !(@content_for_title.blank?)
+			@page_title = h @content_for_title
+		else
+			@page_title = controller.controller_name()
+			unless controller.action_name.blank?
+				@page_title = ": #{controller.action_name}"
+			end
+		end
+	end
+	website_root_link = '/'
+	website_root_title_link = '<a href="/">' + website_title + '</a>'
+end
+
+
+
+-%>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 For Accessible Adaptable Applications//EN"
+	"http://www.w3.org/2005/07/aaa/xhtml11-aaa.dtd"> -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title><%
+if @page_title == website_title or @page_title == website_prefix
+	%><%= h @page_title %><%
+else
+	%><%= website_prefix %>: <%= h @page_title %><%
+end
+%></title>
+<%
+# set this tag to the width of the page in pixels.
+# optimizes display on iPhone
+-%>
+<meta name="viewport" content="width=964" />
+<% if current_user
+	%><%= stylesheet_link_tag 'wg' #, :cache=>'cache/all'
+%>
+<% end
+%><%= stylesheet_link_tag 'grant', :media=>'screen' #, :cache=>'cache/all'
+%>
+<link rel="shortcut icon" href="/favicon.png" type="image/png" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/scriptaculous/1.8.2/scriptaculous.js"></script>
+<%= @content_for_head
+	# You can include content for the head (meta) by wrapping it in
+	# a call to: content_for("head") do ... end
+-%>
+<link rel="apple-touch-icon" href="/pic/grantneufeld_icon.png" />
+<% unless @content_for_description.blank?
+	%><meta name="description" content="<%=h @content_for_description %>" />
+<% end
+unless @content_for_keywords.blank?
+	%><meta name="keywords" content="<%=h @content_for_keywords %>" />
+<% end -%>
+<link rel="license" href="http://creativecommons.org/licenses/by/2.5/ca/" title="Creative Commons License" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<link rel="bookmark" href="#content" title="Skip Navigation" />
+</head>
+<body<%= @body_attrs %>>
+<ul class="cue" id="skiplinks">
+<li><a rel="bookmark" href="#content">Skip to content</a>.</li>
+</ul>
+
+
+<div id="header"><div id="avatar">
+
+<div id="top" role="banner">
+<h1><%= website_root_title_link %></h1>
+<p>working for social change</p>
+</div>
+
+<div id="nav" role="navigation">
+<ul>
+<li><a href="http://blog.grantneufeld.ca/" title="Voice of Grant: Grant Neufeld’s Blog">Blog</a></li>
+<li><a href="/project" title="Projects Grant Neufeld is working on">Projects</a></li>
+<li><a href="/group" title="Groups and organization Grant Neufeld works with">Groups</a></li>
+<li><a href="http://upcoming.org/user/2987/" title="Grant Neufeld’s public calendar of events">Events</a></li>
+<li><a href="http://www.flickr.com/photos/grantneufeld/" title="Grant Neufeld’s photos on Flickr">Photos</a></li>
+<li><a href="/press" title="Press kit, media clippings, releases">Press</a></li>
+<li><a href="/bio" title="Biography of Grant Neufeld">Bio</a></li>
+<li><a href="/contact" title="How to contact Grant Neufeld">Contact</a></li>
+</ul>
+</div>
+
+</div></div>
+
+
+<% if request.request_uri == "/" -%>
+<div id="featured" role="complementary">
+<h1>Featured</h1>
+
+<div id="featured-left">
+
+<div id="feature1" class="feature">
+<h2>Determining <span class="subject">Grant’s Future</span></h2>
+<p>I’m in the midst of a “sabbatical” to think through my next steps. You can contribute to the discussion of projects I should work on next.</p>
+<p class="feature-link"><span class="left"></span><a href="http://grant.uservoice.com/">What Next for Grant?</a><span class="right"></span></p>
+</div>
+<div id="feature2" class="feature">
+<h2>Recreating <span class="minor">the</span> <span class="subject">Activist Network</span></h2>
+<p>A hub for coordinating communications for Calgarians working on social justice and the environment. Website calendars, group listings, email lists, print newsletters, etc. There’s lots of work to be done to build an effective infrastructure in this city.</p>
+<p class="feature-link"><span class="left"></span><a href="http://activist.ca/">Activist Network</a><span class="right"></span></p>
+</div>
+<div id="feature3" class="feature">
+<h2><span class="minor">A</span> Centre <span class="minor">for</span> <span class="subject">Social Change</span></h2>
+<p>Bringing diverse individuals and groups together to develop a physical space for social change work in Calgary. Ground-level retail (café, bookstore, gallery, eco-shop,…?), meeting rooms, event space (performance, speaker, film, conference,…?), offices, multi-use…</p>
+<p class="feature-link"><span class="left"></span><a href="/project/centre-for-social-change">Social Change Centre</a><span class="right"></span></p>
+</div>
+<div id="feature4" class="feature">
+<h2><span class="subject">Wayground:</span> Open Source Web Tools</h2>
+<p>I’m developing web tools for democracy and social change. This software is used by sites like Calgary Democracy, Arusha Centre and the Activist Network. I’m looking for Ruby on Rails developers, and web &amp; graphic designers, to contribute.</p>
+<p class="feature-link"><span class="left"></span><a href="http://wayground.ca/">Wayground</a><span class="right"></span></p>
+</div>
+
+<div id="featured-links">
+<ul>
+<li id="feature1-link" onclick="return set_feature('feature1');">Determining Grant’s Future</li>
+<li id="feature2-link" onclick="return set_feature('feature2');">Recreating the Activist Network</li>
+<li id="feature3-link" onclick="return set_feature('feature3');">A Centre for Social Change</li>
+<li id="feature4-link" onclick="return set_feature('feature4');">Wayground: Open Source Web Tools</li>
+</ul>
+</div>
+
+</div>
+
+<!-- width="640" height="385" -->
+<div id="feature1-photo" class="featured-photo" style="background-image:url('pic/feature/grant-haymarket.jpg');">
+<p class="featured-photo-spacer"></p>
+<p class="featured-photo-credit">Photo by Juliet Burgess.</p>
+</div>
+<div id="feature2-photo" class="featured-photo" style="background-image:url('pic/feature/criticalmass.jpg');">
+<p class="featured-photo-spacer"></p>
+</div>
+<div id="feature3-photo" class="featured-photo" style="background-image:url('pic/feature/feature-space.jpg');">
+<p class="featured-photo-spacer"></p>
+<p class="featured-photo-credit">Photo by <a href="http://www.flickr.com/photos/scallop_holden/2920989042/">Scallop Holden</a>.</p>
+</div>
+<div id="feature4-photo" class="featured-photo" style="background-image:url('pic/feature/wayground.jpg');">
+<p class="featured-photo-spacer"></p>
+</div>
+
+</div>
+<% end # /if request.request_uri == "/"
+-%>
+
+
+<div id="content" role="main">
+
+<div id="flash"<%= flash.length <= 0 ? ' style="display:none"' : '' %>><%
+# clear any empty flash messages
+flash.each do |key, msg|
+	if msg.blank?
+		flash.delete(key)
+	end
+end
+if flash.length > 0
+	flash_report = nil
+	flash.each do |key, msg|
+		if key.to_s == 'report'
+			# make sure report comes last
+			flash_report = msg
+		else
+			%><p class="<%= key %>"><%= msg %></p>
+<%		end
+	end
+	unless flash_report.blank?
+		%><p class="report"><%= flash_report %></p>
+<%	end
+end %></div>
+
+<%
+unless @content_for_sidebar.blank?
+	%><div class="column">
+<% end
+%><%=
+#@content_for_layout
+yield
+%>
+<%
+unless @content_for_sidebar.blank?
+	%></div>
+
+<%
+end
+
+unless @content_for_sidebar.blank?
+	%><div class="column">
+<%= @content_for_sidebar %>
+</div>
+<%
+end
+-%>
+
+<div class="close"></div>
+</div>
+
+
+<div id="links">
+<h1>Links</h1>
+<p>
+<a rel="me" href="http://twitter.com/grant" title="Short updates, news, announcements, and comments. “Micro-blogging”"><img src="/icon/site/twitter.png" alt=" " width="16" height="16" class="icon" />
+Twitter</a><span class="separator">.</span>
+<a rel="me" href="http://www.facebook.com/p/Grant_Neufeld/740140716" title="Social networking"><img src="/icon/site/facebook.png" alt=" " width="16" height="16" class="icon" />
+Facebook</a><span class="separator">.</span>
+<a rel="me" href="http://www.flickr.com/photos/grantneufeld/"  title="My photography"><img src="/icon/site/flickr.png" alt=" " width="16" height="16" class="icon" />
+Flickr</a><span class="separator">.</span>
+<a rel="me" href="http://del.icio.us/GrantNeufeld" title="Interesting weblinks"><img src="/icon/site/delicious.png" alt=" " width="16" height="16" class="icon" />
+del.icio.us</a><span class="separator">.</span>
+<a rel="me" href="http://www.youtube.com/GrantNeufeld" title="Videos I have produced"><img src="/icon/site/youtube.png" alt=" " width="16" height="16" class="icon" />
+YouTube</a><span class="separator">.</span>
+<a rel="me" href="http://seesmic.com/grantneufeld" title="video conversations"><img src="/icon/site/seesmic.png" alt=" " width="16" height="16" class="icon" />
+Seesmic</a><span class="separator">.</span>
+<a rel="me" href="http://www.viddler.com/explore/grantneufeld/" title="Videos"><img src="/icon/site/viddler.png" alt=" " width="16" height="16" class="icon" />
+Viddler</a><span class="separator">.</span>
+<a rel="me" href="http://vimeo.com/grantneufeld" title="Videos"><img src="/icon/site/vimeo.png" alt=" " width="16" height="16" class="icon" />
+Vimeo</a><span class="separator">.</span>
+<a rel="me" href="http://www.meetup.com/member/944431/" title="local meets of people around specific topics"><img src="/icon/site/meetup.png" alt=" " width="16" height="16" class="icon" />
+Meetup</a><span class="separator">.</span>
+<a rel="me" href="http://upcoming.org/user/2987/" title="calendar of events"><img src="/icon/site/upcoming.png" alt=" " width="16" height="16" class="icon" />
+Upcoming</a><span class="separator">.</span>
+<a rel="me" href="http://en.wikipedia.org/wiki/User:GrantNeufeld" title="My userpage for Wikipedia"><img src="/icon/site/wikipedia.png" alt=" " width="16" height="16" class="icon" />
+Wikipedia</a><span class="separator">.</span>
+<a rel="me" href="http://my.nowpublic.com/grant_neufeld" title="independent news media"><img src="/icon/site/nowpublic.png" alt=" " width="16" height="16" class="icon" />
+NowPublic</a><span class="separator">.</span>
+<a rel="me" href="http://www.goodreads.com/user/show/262300" title="What I’ve been reading"><img src="/icon/site/goodreads.png" alt=" " width="16" height="16" class="icon" />
+Good Reads</a><span class="separator">.</span>
+<a rel="me" href="http://www.ravelry.com/people/grantneufeld" title="Social networking for crafts — knitting!"><img src="/icon/site/ravelry.png" alt=" " width="16" height="16" class="icon" />
+Ravelry</a><span class="separator">.</span>
+<a rel="me" href="http://github.com/grantneufeld" title="computer source code repository"><img src="/icon/site/github.png" alt=" " width="16" height="16" class="icon" />
+GitHub</a><span class="separator">.</span>
+<a rel="me" href="http://grant.uservoice.com/" title="feedback on my projects"><img src="/icon/site/uservoice.png" alt=" " width="16" height="16" class="icon" />
+UserVoice</a><span class="separator">.</span>
+</p>
+<div class="close"></div>
+</div>
+
+
+<div id="footer" role="contentinfo">
+<h1>Credits</h1>
+<p>Copyright ©1993-2009 <a href="http://grantneufeld.ca/">Grant Neufeld</a>.
+This work is licensed under a <a href="http://creativecommons.org/licenses/by-nc/2.0/ca/" title="Attribution, Non-Commercial">Creative Commons License</a> with the following exceptions: Photographs, materials designated as belonging to people other than Grant Neufeld, logos and trademarks. Some photographs may also be subject to a Creative Commons License (see the original link with the photo for details).
+<br />Logos and trademarks remain property of their respective holders.</p>
+<%
+
+# ### USER ACCESS LINKS
+if current_user
+	%><p id="usernav">
+<%=	link_to 'Logout', logout_path, {:method=>'delete', :href=>logout_path,
+	:class=>'button', :title=>'Sign-out from this website'}
+	%><span class="separator">.</span>
+<%= link_to '<img src="/icon/document.png" width="16" height="16" alt=" " /> Files &amp; Pics', documents_path, {:class=>'button',
+	:title=>'Manage the files &amp; pictures (documents)'
+	} %><span class="separator">.</span>
+<%= link_to '<img src="/icon/page.png" width="16" height="16" alt=" " /> Pages', pages_path, {
+	:class=>'button', :title=>'Manage web pages, including articles'
+	} %><span class="separator">.</span>
+</p>
+<%
+end
+
+unless @content_for_footermenu.blank?
+	%><p id="footer-menu">
+<%=	@content_for_footermenu
+	%></p>
+<%
+end
+%>
+</div>
+
+
+</body></html>
