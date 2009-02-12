@@ -115,6 +115,7 @@ class Page < ActiveRecord::Base
 			path.sitepath = p
 		else
 			self.path = Path.new(:sitepath=>p)
+			self.path.site = self.site
 			self.path.item = self
 			self.path.valid?
 		end
