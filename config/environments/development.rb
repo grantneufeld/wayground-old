@@ -35,21 +35,3 @@ config.action_mailer.delivery_method = :sendmail
 #    #:password => "MyPassword",
 #    #:authentication => :login
 #}
-
-
-# this should be set in the initializer, which might not actually get called until after this
-module Wayground
-	unless defined?(SITES)
-		SITES = {
-			4=>{:name=>'Arusha', :abbrev=>'arusha', :url=>'http://arusha.org'},
-			8=>{:name=>'Calgary Dollars', :abbrev=>'caldol',
-				:url=>'http://calgarydollars.ca'},
-			16=>{:name=>'Action Films', :abbrev=>'actionfilms',
-				:url=>'http://films.arusha.org'}
-			}
-	end
-end
-# override site urls to go to localhost while in development mode
-Wayground::SITES.each_key do |key|
-	Wayground::SITES[key][:url] = 'http://localhost:3000'
-end
