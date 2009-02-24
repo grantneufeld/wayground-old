@@ -1,5 +1,10 @@
 # Settings specified here will take precedence over those in config/environment.rb
 
+config.gem 'ruby-debug'
+config.gem 'ZenTest'
+config.gem 'assert2'
+config.gem 'mocha'
+
 # The test environment is used exclusively to run your application's
 # test suite.  You never need to work with it otherwise.  Remember that
 # your test database is "scratch space" for the test suite and is wiped
@@ -38,6 +43,11 @@ begin
 	require 'ruby-debug'
 rescue
 end
+
+require 'mocha'
+Mocha::Configuration.prevent(:stubbing_non_existent_method)
+Mocha::Configuration.prevent(:stubbing_method_unnecessarily)
+Mocha::Configuration.prevent(:stubbing_non_public_method)
 
 # for testing assignment to protected attributes.
 # based on http://almosteffortless.com/2008/11/27/raising-protected-attribute-assignment-errors/

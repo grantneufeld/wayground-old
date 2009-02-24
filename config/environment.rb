@@ -30,9 +30,6 @@ Rails::Initializer.run do |config|
 	# config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
 	# config.gem "sqlite3-ruby", :lib => "sqlite3"
 	# config.gem "aws-s3", :lib => "aws/s3"
-	config.gem 'ruby-debug'
-	config.gem 'ZenTest'
-	config.gem 'assert2'
 	config.gem 'ruby-prof'
 ##	config.gem 'ruby-openid'
 	config.gem 'ar_mailer', :lib=>'action_mailer/ar_mailer'
