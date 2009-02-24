@@ -72,6 +72,7 @@ tbody > tr > td, tbody > tr > th{border-top:1px solid #DDD;}
 .rowgroup, .rowgroup > tr:first-child > th,
 .rowgroup > tr:first-child > td{border-top:1px solid #AAA;}
 */
+tbody > tr > th:first-child{text-align:right;}
 .alternate, tr.alternate, th.alternate, td.alternate{background:#ecf2fe; color:#000;}
 tr.new, th.new, td.new{background:#FFFFDD; color:#000;}
 td, th{margin:0em; padding:3px;}
