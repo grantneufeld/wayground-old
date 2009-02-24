@@ -26,14 +26,15 @@ class CreateMemberships < ActiveRecord::Migration
 				:unique=>true
 			t.index [:email_address_id, :group_id], :name=>'email_group',
 				:unique=>true
-			t.index [:group_id, :position, :user_id], :name=>'membership_position'
+			t.index [:group_id, :position], :name=>'membership_position'
+			t.index [:group_id, :user_id, :position], :name=>'group_user_position'
 			t.index [:user_id, :group_id], :name=>'membership_user'
 			t.index [:group_id, :invited_at], :name=>'membership_invitation'
 			t.index [:group_id, :blocked_at], :name=>'membership_blocked'
 			t.index [:group_id, :expires_at, :position],
 				:name=>'membership_expiry'
-			t.index [:group_id, :title, :position, :user_id],
-				:name=>'membership_title'
+			#t.index [:group_id, :title, :position, :user_id],
+			#	:name=>'membership_title'
 		end
 	end
 
