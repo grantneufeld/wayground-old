@@ -41,7 +41,7 @@ ActionController::Routing::Routes.draw do |map|
 	map.resource :session, :controller=>'sessions'
 	# USER
 	map.signup '/signup', :controller=>'users', :action=>'new'
-	map.activate '/activate/:activation_code', :controller=>'users',
+	map.activate '/activate/:activation_code/:encrypt_code', :controller=>'users',
 		:action=>'activate'
 	map.profile '/people/:id', :controller=>'users', :action=>'profile'
 	map.resources :users, :collection=>{:activate=>:get, :account=>:get} do |users|

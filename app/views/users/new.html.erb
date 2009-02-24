@@ -9,6 +9,7 @@ By registering on the <%= WAYGROUND['TITLE'] %> website, you agree that any data
 <p><strong>All fields must be filled in.</strong></p>
 
 <%= error_messages_for :user, :header_message=>'Your registration could not be completed as submitted.<br />Please try again.' %>
+<%= error_messages_for :email_address, :header_message=>'Your registration could not be completed as submitted.<br />Please try again.' %>
 <% form_for(@user) do |f| -%>
 
 <h2>Private Info</h2>
@@ -18,7 +19,8 @@ By registering on the <%= WAYGROUND['TITLE'] %> website, you agree that any data
 <td><%= f.text_field :email %>
 <br />You will use your email address to sign-in to the website.
 It will also be used to confirm your registration.</td></tr>
-<% # anti-spam field
+<%
+# anti-spam field
 %><tr><th><label for="user_login">Login:</label></th>
 	<td><input id="user_login" name="user[login]" size="30" type="text" /></td></tr>
 <tr class="alternate"><th><label for="user_name">Full name</label><br/></th>

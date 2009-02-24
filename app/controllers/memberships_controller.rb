@@ -92,35 +92,35 @@ class MembershipsController < ApplicationController
 			render :action=>:bulk
 		elsif params[:process] == 'Add Members'
 			bulk_result = @group.bulk_add(@bulk, current_user)
-			# {:memberships=>memberships, :added=>added, :blanks=>blanks,
+			# {:memberships=>memberships, :add_count=>add_count, :blank_count=>blank_count,
 			#	:bad_lines=>bad_lines}
 			@memberships = bulk_result[:memberships]
-			@added = bulk_result[:added]
-			@blanks = bulk_result[:blanks]
+			@add_count = bulk_result[:add_count]
+			@blank_count = bulk_result[:blank_count]
 			@bad_lines = bulk_result[:bad_lines]
 			if @bad_lines.size > 0
 				badline_msgs = []
 				@bad_lines.each do |num, line|
 					badline_msgs << "#{num}: #{h(line)}"
 				end
-				flash[:error] = "Added #{pluralize(@added, 'member')} to the group.\n" +
+				flash[:error] = "Added #{pluralize(@add_count, 'member')} to the group.\n" +
 					"<br />#{pluralize(@bad_lines.size, 'line')} could not be processed:\n"
 				flash[:report] = badline_msgs.join("\n<br />")
 			else
-				flash[:notice] = "Added #{pluralize(@added, 'member')} to the group."
+				flash[:notice] = "Added #{pluralize(@add_count, 'member')} to the group."
 			end
 			# TODO: save @memberships to a Quicklist the user can then review or process
 			# TODO: option for notifying the new members
 			redirect_to group_memberships_path(@group)
 		elsif params[:process] == 'Remove Members'
 			bulk_result = @group.bulk_remove(@bulk)
-			#{:users_removed=>users_removed, :missing=>missing, :blanks=>blanks,
+			#{:removed=>removed, :missing=>missing, :blank_count=>blank_count,
 			#	:bad_lines=>bad_lines}
-			@users_removed = bulk_result[:users_removed]
-			@missing = bulk_result[:missing]
-			@blanks = bulk_result[:blanks]
+			@removed = bulk_result[:removed]
 			@bad_lines = bulk_result[:bad_lines]
-			msg = "Removed #{pluralize(@users_removed.size, 'member')} from the group."
+			@missing = bulk_result[:missing]
+			@blank_count = bulk_result[:blank_count]
+			msg = "Removed #{pluralize(@removed.size, 'member')} from the group."
 			if @bad_lines.size > 0
 				badline_msgs = []
 				@bad_lines.each do |num, line|
@@ -132,11 +132,11 @@ class MembershipsController < ApplicationController
 			else
 				flash[:notice] = msg
 			end
-			# TODO: save @users_removed to a Quicklist the user can then review or process
+			# TODO: save @removed to a Quicklist the user can then review or process
 			# TODO: option for notifying the removed users
 			redirect_to group_memberships_path(@group)
 		else
-			flash.now[:error] = 'Unrecognized bulk process name ‘h(params[:process])’.'
+			flash.now[:error] = "Unrecognized bulk process name ‘#{h(params[:process])}’."
 			render :action=>:bulk
 		end
 	end

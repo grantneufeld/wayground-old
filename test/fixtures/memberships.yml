@@ -2,6 +2,7 @@ owner:
   group: membered_group
   position: 1
   user: login
+  email_address: login
   location: 
   is_admin: true
   can_add_event: true
@@ -20,6 +21,7 @@ regular:
   group: membered_group
   position: 2
   user: regular
+  email_address: regular
   location: 
   is_admin: false
   can_add_event: false
@@ -38,6 +40,45 @@ one_active_membership:
   group: one
   position: 1
   user: login
+  email_address: login
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+one_membership_with_email_address:
+  group: one
+  position: 2
+  user: someone
+  email_address: someone
+  location: 
+  is_admin: false
+  can_add_event: false
+  can_invite: false
+  can_moderate: false
+  can_manage_members: false
+  expires_at: 
+  invited_at: 
+  inviter: 
+  blocked_at: 
+  block_expires_at: 
+  blocker: 
+  title: 
+
+one_membership_with_no_user_or_email_address:
+  group: one
+  position: 3
+  user: 
+  email_address: 
   location: 
   is_admin: false
   can_add_event: false
@@ -54,8 +95,9 @@ one_active_membership:
 
 one_inactive_membership:
   group: one
-  position: 2
+  position: 4
   user: regular
+  email_address: regular
   location: 
   is_admin: false
   can_add_event: false
@@ -74,6 +116,7 @@ update_membership:
   group: membered_group
   position: 3
   user: another
+  email_address: another
   location: 
   is_admin: false
   can_add_event: false
@@ -92,6 +135,7 @@ expired_blockee:
   group: membered_group
   position: 
   user: plain
+  email_address: plain
   location: 
   is_admin: false
   can_add_event: false
@@ -110,6 +154,7 @@ privateowner:
   group: private_group
   position: 1
   user: login
+  email_address: login
   location: 
   is_admin: false
   can_add_event: false
@@ -128,6 +173,7 @@ private_admin:
   group: private_group
   position: 
   user: adminmember
+  email_address: adminmember
   location: 
   is_admin: true
   can_add_event: false
@@ -146,6 +192,7 @@ private_member:
   group: private_group
   position: 
   user: regular
+  email_address: regular
   location: 
   is_admin: false
   can_add_event: false
@@ -164,6 +211,7 @@ blockee:
   group: private_group
   position: 
   user: another
+  email_address: another
   location: 
   is_admin: false
   can_add_event: false
@@ -182,6 +230,7 @@ invitee:
   group: private_group
   position: 
   user: plain
+  email_address: plain
   location: 
   is_admin: false
   can_add_event: false
@@ -200,6 +249,7 @@ expired:
   group: private_group
   position: 
   user: someone
+  email_address: someone
   location: 
   is_admin: false
   can_add_event: false

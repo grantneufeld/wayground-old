@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class UsersControllerTest < ActionController::TestCase
-	fixtures :users
+	fixtures :users, :email_addresses
 
 	def setup
 		@controller = UsersController.new
@@ -22,13 +22,14 @@ class UsersControllerTest < ActionController::TestCase
 		assert_generates("/signup", {:controller=>"users", :action=>"new"})
 		assert_recognizes({:controller=>"users", :action=>"new"}, "/signup")
 		
-		#map.activate '/activate/:activation_code', :controller=>'users',
+		#map.activate '/activate/:activation_code/:encrypt_code', :controller=>'users',
 		#	:action=>'activate'
-		assert_generates("/activate/code",
+		assert_generates("/activate/code/encrypt",
 			{:controller=>"users", :action=>"activate",
-				:activation_code=>'code'})
-		assert_recognizes({:controller=>"users", :action=>"activate",
-			:activation_code=>'code'}, "/activate/code")
+				:activation_code=>'code', :encrypt_code=>'encrypt'})
+		assert_recognizes({:controller=>'users', :action=>'activate',
+			:activation_code=>'code', :encrypt_code=>'encrypt'},
+			'/activate/code/encrypt')
 
 		# map.profile '/people/:id', :controller=>'users', :action=>'profile'
 		assert_generates("/people/1",
@@ -71,22 +72,38 @@ class UsersControllerTest < ActionController::TestCase
 	# CREATE (signup submit)
 	
 	def test_signup_submit
+		# stub the emailing method
+		Notifier.expects(:deliver_signup_confirmation).returns(true)
 		new_email = 'create_functional_test@wayground.ca'
 		assert_difference(User, :count, 1) do
-			post :create, :user=>{ :email=>new_email,
+			post :create, :user=>{:email=>new_email,
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Test', :nickname=>'User Func Test'}
 		end
-		assert_response :redirect
-		assert assigns(:user)
 		assert_equal new_email, assigns(:user).email
 		assert flash[:notice]
+		assert_response :redirect
+		assert_redirected_to account_users_path
+		# TODO assert email sent
+	end
+	def test_signup_submit_email_notification_fails
+		# stub the emailing method to simulate failure
+		Notifier.expects(:deliver_signup_confirmation).returns(nil)
+		new_email = 'create_functional_test@wayground.ca'
+		assert_difference(User, :count, 1) do
+			post :create, :user=>{:email=>new_email,
+				:password=>'password', :password_confirmation=>'password',
+				:fullname=>'User Controller Test', :nickname=>'User Func Test'}
+		end
+		assert_equal new_email, assigns(:user).email
+		assert flash[:error]
+		assert_response :redirect
 		assert_redirected_to account_users_path
 		# TODO assert email sent
 	end
 	def test_signup_submit_invalid
 		assert_no_difference(User, :count) do
-			post :create, :user=>{ :email=>'bad email',
+			post :create, :user=>{:email=>'bad email',
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Fail', :nickname=>'User Create Fail'}
 		end
@@ -131,29 +148,27 @@ class UsersControllerTest < ActionController::TestCase
 	def test_user_create_invalid_method_get
 		new_email = 'test+user_create_invalid_method_get@wayground.ca'
 		assert_difference(User, :count, 0) do
-			get :create, :user=>{ :email=>new_email,
+			get :create, :user=>{:email=>new_email,
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Test', :nickname=>'Create Invalid Method'}
 		end
 		assert_response :redirect
-		assert_nil assigns(:user)
 		assert_redirected_to({:action=>'new'})
 	end
 	def test_user_create_invalid_method_put
 		new_email = 'test+user_create_invalid_method_put@wayground.ca'
 		assert_difference(User, :count, 0) do
-			put :create, :user=>{ :email=>new_email,
+			put :create, :user=>{:email=>new_email,
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Test', :nickname=>'Create Invalid Method'}
 		end
 		assert_response :redirect
-		assert_nil assigns(:user)
 		assert_redirected_to({:action=>'new'})
 	end
 	def test_user_create_spam_attempt_login
 		new_email = 'test+user_create_spam_login@wayground.ca'
 		assert_difference(User, :count, 0) do
-			post :create, :user=>{:login=>'spamlogin', :email=>new_email,
+			post :create, :user=>{:email=>new_email, :login=>'spamlogin',
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Spam Login Test', :nickname=>'Spam Login'}
 		end
@@ -166,7 +181,8 @@ class UsersControllerTest < ActionController::TestCase
 	def test_user_create_spam_attempt_url
 		new_email = 'test+user_create_spam_url@wayground.ca'
 		assert_difference(User, :count, 0) do
-			post :create, :user=>{:url=>'http://spamurl.tld/', :email=>new_email,
+			post :create, :user=>{:email=>new_email,
+				:url=>'http://spamurl.tld/',
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Spam URL Test', :nickname=>'Spam URL'}
 		end
@@ -179,8 +195,8 @@ class UsersControllerTest < ActionController::TestCase
 	def test_user_create_spam_attempt_all
 		new_email = 'test+user_create_spam_all@wayground.ca'
 		assert_difference(User, :count, 0) do
-			post :create, :user=>{:login=>'spamall', :url=>'http://spamall.tld/',
-				:email=>new_email,
+			post :create, :user=>{:email=>new_email,
+				:login=>'spamall', :url=>'http://spamall.tld/',
 				:password=>'password', :password_confirmation=>'password',
 				:fullname=>'User Controller Spam All Test', :nickname=>'Spam All'}
 		end
@@ -195,20 +211,21 @@ class UsersControllerTest < ActionController::TestCase
 	# ACTIVATE
 	
 	def test_user_activate
-		# user has not been activated:
-		assert !(users(:activate_this).activation_code.blank?)
-		assert_nil users(:activate_this).activated_at
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		u = User.new(:fullname=>'User To Activate')
+		u.save!
 		# activate the user
 		get :activate,
-			{:activation_code=>users(:activate_this).activation_code},
-			{:user=>users(:activate_this).id}
+			{:activation_code=>e.activation_code, :encrypt_code=>e.encrypt_code},
+			{:user=>u.id}
 		assert_response :redirect
 		assert flash[:notice]
 		assert_redirected_to account_users_path
-		# user has been activated:
-		assert assigns(:user)
-		assert_nil assigns(:user).activation_code
-		assert !(assigns(:user).activated_at.blank?)
+		# user’s email address has been activated:
+		assert_nil assigns(:email_address).activation_code
+		assert !(assigns(:email_address).activated_at.blank?)
+		assert_kind_of User, assigns(:email_address).user
 	end
 	def test_user_activate_no_params
 		get :activate
@@ -219,18 +236,16 @@ class UsersControllerTest < ActionController::TestCase
 	end
 	def test_user_activate_invalid_code
 		# user has not been activated:
-		assert !(users(:activate_this_fail).activation_code.blank?)
-		assert_nil users(:activate_this_fail).activated_at
+		assert !(email_addresses(:activate_this_fail).activation_code.blank?)
+		assert_nil email_addresses(:activate_this_fail).activated_at
 		# submit an invalid activation
-		get :activate, {:activation_code=>'not the right code'},
+		get :activate, {:activation_code=>'not the right code',
+			:encrypt_code=>email_addresses(:activate_this_fail).encrypt_code},
 			{:user=>users(:activate_this_fail).id}
 		assert_response :redirect
 		assert flash[:notice]
 		assert_redirected_to account_users_path
-		# user should still not be activated:
-		assert assigns(:user)
-		assert !(assigns(:user).activation_code.blank?)
-		assert_nil assigns(:user).activated_at
+		assert_nil assigns(:email_address)
 	end
 	def test_user_activate_already_activated
 		assert true

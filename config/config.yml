@@ -8,6 +8,7 @@ production: &production_settings
   TITLE_SHORT: 'WG'
   SENDER: 'Wayground <wayground@wayground.ca>'
   EMAIL: 'wayground@wayground.ca'
+  EMAIL_BOUNCE: 'bounce@wayground.ca'
   DEFAULT_DOMAIN: 'wayground.ca'
   RESERVED_SUBPATHS: ["index", "show", "list", "new", "create", "edit", "update", "destroy", "delete", "search", "about", "addresses", "admin", "archive", "archives", "attachments", "bin", "blogs", "boards", "calendar", "calendars", "campaigns", "candidates", "categories", "chunks", "classified", "classifieds", "comments", "contacts", "description", "docs", "documents", "elections", "emails", "events", "files", "forums", "functions", "groups", "images", "layouts", "levels", "links", "listings", "locations", "media", "members", "memberships", "messages", "news", "offices", "pages", "parties", "paths", "petitions", "photos", "pics", "pictures", "podcasts", "policies", "polls", "ratings", "replies", "resources", "rss", "rsvp", "rsvps", "schedules", "signatures", "surveys", "tag", "tags", "topics", "trash", "users", "videos", "vids", "votes", "weblinks", "welcome", "wiki"]
   ALLOW_SIGNUP: true
@@ -24,6 +25,7 @@ test:
   TITLE_SHORT: 'WG'
   SENDER: 'Wayground <wayground@wayground.ca>'
   EMAIL: 'wayground@wayground.ca'
+  EMAIL_BOUNCE: 'bounce@wayground.ca'
   DEFAULT_DOMAIN: 'wayground.ca'
   RESERVED_SUBPATHS: ["index", "show", "list", "new", "create", "edit", "update", "destroy", "delete", "search", "about", "addresses", "admin", "archive", "archives", "attachments", "bin", "blogs", "boards", "calendar", "calendars", "campaigns", "candidates", "categories", "chunks", "classified", "classifieds", "comments", "contacts", "description", "docs", "documents", "elections", "emails", "events", "files", "forums", "functions", "groups", "images", "layouts", "levels", "links", "listings", "locations", "media", "members", "memberships", "messages", "news", "offices", "pages", "parties", "paths", "petitions", "photos", "pics", "pictures", "podcasts", "policies", "polls", "ratings", "replies", "resources", "rss", "rsvp", "rsvps", "schedules", "signatures", "surveys", "tag", "tags", "topics", "trash", "users", "videos", "vids", "votes", "weblinks", "welcome", "wiki"]
   ALLOW_SIGNUP: true

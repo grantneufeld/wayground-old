@@ -40,24 +40,44 @@ class User < ActiveRecord::Base
 		:with=>/\A[A-Za-z]([\w_\-]*\w)?\z/,
 		:allow_nil=>true,
 		:message=>'invalid url subpath - only lowercase letters, numbers, dashes ‘-’ and underscores ‘_’ are permitted, and there must be at least one letter'
-	validates_uniqueness_of :email, :nickname, :subpath, :allow_blank=>true,
+	validates_uniqueness_of :nickname, :subpath, :allow_blank=>true, # :email, 
 		:case_sensitive=>false
 	validates_presence_of :password_confirmation, :if=>:password_changed?
 	validates_confirmation_of :password
 	validates_length_of :password, :minimum=>7, :allow_nil=>true
-	validate :valid_email?
+	#validate :valid_email?
 	
 	before_save :encrypt_password
-	before_create :make_activation_code
 	
 	
-	include EmailHelper # email validation
+	#include EmailHelper # email validation
 	
 	# based on http://lindsaar.net/2008/4/15/tip-6-validating-the-domain-of-an-email-address-with-ruby-on-rails
-	def valid_email?
-		unless email.blank?
-			err = domain_error(domain_of(email))
-			errors.add(:email, err) unless err.blank?
+	#def valid_email?
+	#	unless email.blank?
+	#		err = domain_error(domain_of(email))
+	#		errors.add(:email, err) unless err.blank?
+	#	end
+	#end
+	
+	def before_validation
+		unless self.email.blank?
+			# check that the email is not taken
+			addrs = EmailAddress.find_all_by_email(self.email)
+			addrs.each do |e|
+				if e.activated? and e.user and e.user != self
+					# the email address is already taken by another user
+					self.email = nil
+					break
+				end
+			end
+		end
+		if self.email_required and self.email.blank?
+			if self.email_addresses.size > 0
+				self.email = self.email_addresses[0].email
+			else
+				self.email = nil
+			end
 		end
 	end
 	
@@ -93,11 +113,11 @@ class User < ActiveRecord::Base
 	
 	# Finds a user login by their email and unencrypted password.
 	# Returns the user or nil.
-	def self.authenticate(email, pass)
+	def self.authenticate(e, pass)
 		# append the default email domain if user didn’t enter their full email address
-		email += "@#{WAYGROUND['DEFAULT_DOMAIN']}" unless email.match /.*@.*/
-		u = find(:first, :conditions=>['email = ? AND crypted_password IS NOT NULL', email])
-			#' and activated_at IS NOT NULL', email]) # need to get the salt
+		e += "@#{WAYGROUND['DEFAULT_DOMAIN']}" unless e.match /.*@.*/
+		u = find(:first, :conditions=>['email = ? AND crypted_password IS NOT NULL', e])
+			#' and activated_at IS NOT NULL', e]) # need to get the salt
 		u && u.password_matches?(pass) ? u : nil
 	end
 	
@@ -179,14 +199,14 @@ class User < ActiveRecord::Base
 	# - :email [required] the exact email address to match
 	# - :name [optional] a user name to use in attempting to find a match if multiple Locations match the email
 	def self.find_matching_email(attrs, require_confirmed=false)
-		email = attrs[:email]
-		raise Exception.new('missing :email in passed in parameters') if email.blank?
+		e = attrs[:email]
+		raise Exception.new('missing :email in passed in parameters') if e.blank?
 		# determine if there’s an existing user matching the email
 		user = User.find(:first,
-			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
+			:conditions=>User.search_conditions({}, ['users.email = ?'], [e]))
 		unless user
 			# determine if there are any EmailAddresses matching the email
-			users = EmailAddress.find_users_for_email(email, require_confirmed)
+			users = EmailAddress.find_users_for_email(e, require_confirmed)
 			if users.size == 1
 				# just one user with the email address
 				user = users[0]
@@ -204,18 +224,25 @@ class User < ActiveRecord::Base
 		user
 	end
 	# Returns an array of Users matching the email address (or with EmailAddress(es) matching it).
-	# email is the exact email address to match
-	def self.find_all_matching_email(email, require_confirmed=false)
+	# e is the exact email address string to match
+	def self.find_all_matching_email(e, require_confirmed=false)
 		users = User.find(:all,
-			:conditions=>User.search_conditions({}, ['users.email = ?'], [email]))
+			:conditions=>User.search_conditions({}, ['users.email = ?'], [e]))
 		# determine if there are any EmailAddresses matching the email
-		users += EmailAddress.find_users_for_email(email, require_confirmed)
+		users += EmailAddress.find_users_for_email(e, require_confirmed)
 		users.uniq!
 		users
 	end
 	
 	
 	# INSTANCE METHODS
+	
+	def after_save
+		unless self.email.blank? or EmailAddress.find_by_email(self.email)
+			# the email used by this User has not been saved to an EmailAddress
+			self.email_addresses.create(:email=>self.email)
+		end
+	end
 	
 	def password_changed?
 		!(password.blank?)
@@ -241,30 +268,18 @@ class User < ActiveRecord::Base
 	def encrypt_password
 		return if password.blank?
 		if new_record?
-			self.salt = Digest::SHA1.hexdigest("--#{Time.current.to_s}--#{email}--")
+			self.salt = Digest::SHA1.hexdigest("--#{Time.current.to_s}--#{self.email}--")
 		end
 		self.crypted_password = encrypted(password)
 	end
 	
-	def make_activation_code
-		self.activation_code = Digest::SHA1.hexdigest(
-			Time.current.to_s.split(//).sort_by {rand}.join )
-	end
-	
-	# Activates the user in the database.
-	def activate(code)
-		if code == activation_code
-			self.activated_at = Time.current # .utc
-			self.activation_code = nil
-			save!
-			@activated = true
-		else
-			false
-		end
-	end
-	
 	def activated?
-		!(activated_at.blank?)
+		a = false
+		email_addresses.each do |e|
+			a ||= e.activated?
+			break if a
+		end
+		a
 	end
 	
 	def admin?
@@ -318,7 +333,7 @@ class User < ActiveRecord::Base
 
 	def remember_me_until(time)
 		self.remember_token_expires_at = time
-		self.remember_token = encrypted("#{email}--#{remember_token_expires_at}")
+		self.remember_token = encrypted("#{self.email}--#{remember_token_expires_at}")
 		save(false)
 	end
 	

@@ -1,17 +1,135 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
 one:
   user: login
-  position: 1
+  position: 2
   email: extra-address+test@wayground.ca
-  name: Extra Address For Login
   activation_code: 
   activated_at: 2009-02-04 14:59:26
+  is_blocked: false
+  name: Extra Address For Login
 
 two:
   user: admin
-  position: 1
+  position: 2
   email: extra-regular+test@wayground.ca
-  name: Extra Address For Regular
   activation_code: 
   activated_at: 2009-02-04 14:59:26
+  is_blocked: false
+  name: Extra Address For Regular
+
+
+login:
+  user: login
+  position: 1
+  email: login_test@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+admin:
+  user: admin
+  position: 1
+  email: admin_test@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+staff:
+  user: staff
+  position: 1
+  email: staff_test@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+activate_this:
+  user: activate_this
+  position: 1
+  email: activatethis@wayground.ca
+  activation_code: abc
+  activated_at:
+  is_blocked: false
+  name: Activate This
+
+activate_this_fail:
+  user: activate_this_fail
+  position: 1
+  email: activatethisfail@wayground.ca
+  activation_code: def
+  activated_at:
+  is_blocked: false
+  name:
+
+change_pass:
+  user: change_pass
+  position: 1
+  email: changepass@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+plain:
+  user: plain
+  position: 1
+  email: plain-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+regular:
+  user: regular
+  position: 1
+  email: regular-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+another:
+  user: another
+  position: 1
+  email: another-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+someone:
+  user: someone
+  position: 1
+  email: someone-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+adminmember:
+  user: adminmember
+  position: 1
+  email: adminmember-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+nonmember:
+  user: nonmember
+  position: 1
+  email: nonmember-user@wayground.ca
+  activation_code: 
+  activated_at: <%= 1.day.ago.to_s(:db) %>
+  is_blocked: false
+  name:
+
+blocked:
+  user: 
+  position: 0
+  email: blocked+test@wayground.ca
+  activation_code: 
+  activated_at: 
+  is_blocked: true
+  name: 

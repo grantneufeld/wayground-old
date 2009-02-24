@@ -36,6 +36,59 @@ class EmailAddressTest < ActiveSupport::TestCase
 	
 	# CLASS METHODS
 	
+	test "activate" do
+		email = 'activate+test@wayground.ca'
+		e = EmailAddress.create(:email=>email)
+		EmailAddress.activate!(users(:login), e.activation_code, e.encrypt_code)
+		e = EmailAddress.find(e.id)
+		assert_nil e.activation_code
+		assert !(e.activated_at.blank?)
+		assert_equal users(:login), e.user
+	end
+	test "activate fails on wrong code" do
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		assert_raise Wayground::ActivationCodeMismatch do
+			EmailAddress.activate!(users(:login), 'wrong', e.encrypt_code)
+		end
+	end
+	test "activate fails when has no code set" do
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		assert_raise Wayground::CannotBeActivated do
+			EmailAddress.activate!(users(:login), nil, e.encrypt_code)
+		end
+	end
+	test "activate fails when has no user set" do
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		assert_raise Wayground::CannotBeActivated do
+			EmailAddress.activate!(nil, e.activation_code, e.encrypt_code)
+		end
+	end
+	test "activate fails when has no encrypt code set" do
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		assert_raise Wayground::CannotBeActivated do
+			EmailAddress.activate!(users(:login), e.activation_code, nil)
+		end
+	end
+	test "activate fails when encrypt code does not match" do
+		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
+		e.save!
+		assert_raise Wayground::ActivationCodeMismatch do
+			EmailAddress.activate!(users(:login), e.activation_code, 'invalid')
+		end
+	end
+	test "activate removes matching email from other users" do
+		email = 'activate+test@wayground.ca'
+		e = EmailAddress.create(:email=>email)
+		u = User.create(:fullname=>'Has Duplicate', :email=>email)
+		EmailAddress.activate!(users(:login), e.activation_code, e.encrypt_code)
+		u.reload
+		assert_nil u.email
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -45,11 +98,11 @@ class EmailAddressTest < ActiveSupport::TestCase
 		e.save!
 		assert !(e.activation_code.blank?)
 	end
-	test "before save does not make activation code when no user" do
-		e = EmailAddress.new(:email=>'before-save-no-code+test@wayground.ca')
-		e.save!
-		assert e.activation_code.blank?
-	end
+	#test "before save does not make activation code when no user" do
+	#	e = EmailAddress.new(:email=>'before-save-no-code+test@wayground.ca')
+	#	e.save!
+	#	assert e.activation_code.blank?
+	#end
 	test "before save defaults to zero position when no user" do
 		e = EmailAddress.new(:email=>'no-user+test@wayground.ca')
 		e.save!
@@ -74,51 +127,34 @@ class EmailAddressTest < ActiveSupport::TestCase
 		e = EmailAddress.new(:email=>'multiple-address1+test@wayground.ca')
 		e2 = EmailAddress.new(:email=>'multiple-address2+test@wayground.ca')
 		u = User.new(:fullname=>'Email User', :email=>'user+test@wayground.ca')
+		u.save!
 		u.email_addresses << e
-		u.save!
 		u.email_addresses << e2
-		u.save!
-		assert_equal 1, e.position
-		assert_equal 2, e2.position
+		e.reload
+		e2.reload
+		assert_equal 2, e.position
+		assert_equal 3, e2.position
 	end
 	
 	test "make activation code" do
 		e = EmailAddress.new
 		e.make_activation_code
+		assert_kind_of String, e.activation_code
 		assert !(e.activation_code.blank?)
 	end
 	
-	test "activate" do
-		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
-		e.activation_code = 'test'
-		e.activate!('test')
-		assert_nil e.activation_code
-		assert e.activated_at
+	test "user activated" do
+		email = 'activate+test@wayground.ca'
+		e = EmailAddress.create(:email=>email)
+		EmailAddress.activate!(users(:login), e.activation_code, e.encrypt_code)
+		e = EmailAddress.find(e.id)
+		assert e.activated?
 	end
-	test "activate fails on wrong code" do
+	test "user not activated" do
 		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
-		e.activation_code = 'test'
-		assert_raise Wayground::ActivationCodeMismatch do
-			e.activate!('wrong')
-		end
-	end
-	test "activate fails when has no code set" do
-		e = EmailAddress.new(:email=>'activate+test@wayground.ca')
-		assert_raise Wayground::CannotBeActivated do
-			e.activate!(nil)
-		end
+		assert !(e.activated?)
 	end
 	
-	test "assign to user moves email and activation" do
-		email = 'move-email+test@wayground.ca'
-		u = User.new(:fullname=>'Move Email')
-		e = EmailAddress.new(:email=>email)
-		e.assign_to_user!(u)
-		assert_equal email, u.email
-		assert u.activation_code
-		assert_nil u.activated_at
-		u.destroy
-	end
 	test "assign to user saves user" do
 		u = User.new(:fullname=>'Save User')
 		e = EmailAddress.new(:email=>'save-user+test@wayground.ca')
@@ -127,17 +163,9 @@ class EmailAddressTest < ActiveSupport::TestCase
 		end
 		u.destroy
 	end
-	test "assign to user destroys emailaddress if moved" do
-		u = User.new(:fullname=>'Destroy EmailAddress')
-		e = EmailAddress.new(:email=>'destroy-emailaddress+test@wayground.ca')
-		e.save!
-		assert_difference(EmailAddress, :count, -1) do
-			e.assign_to_user!(u)
-		end
-		u.destroy
-	end
-	test "assign to user saves emailaddress if user already has email" do
+	test "assign to user saves emailaddress" do
 		u = User.new(:fullname=>'Save EmailAddress', :email=>'user+test@wayground.ca')
+		u.save!
 		e = EmailAddress.new(:email=>'save-emailaddress+test@wayground.ca')
 		assert_difference(EmailAddress, :count, 1) do
 			e.assign_to_user!(u)
@@ -151,50 +179,45 @@ class EmailAddressTest < ActiveSupport::TestCase
 		u.destroy
 	end
 	
-	test "move memberships to user assigns user" do
+	test "assign memberships to user assigns user" do
 		u = User.new(:fullname=>'Move Memberships')
 		e = EmailAddress.new(:email=>'move+test@wayground.ca')
 		e.user = u
+		e.save!
 		m = Membership.new()
 		m.group = groups(:one)
 	#	m.email_address = e
 		e.memberships << m
-		e.move_memberships_to_user!
+		e.assign_memberships_to_user!
+		m = Membership.find(m.id)
 		assert_equal u, m.user
 	end
-	test "move memberships to user removes email address from membership" do
+	test "assign memberships to user saves membership" do
 		u = User.new(:fullname=>'Move Memberships')
 		e = EmailAddress.new(:email=>'move+test@wayground.ca')
 		e.user = u
+		e.save!
 		m = Membership.new()
 		m.group = groups(:one)
 	#	m.email_address = e
 		e.memberships << m
-		e.move_memberships_to_user!
-		assert_nil m.email_address
-	end
-	test "move memberships to user saves membership" do
-		u = User.new(:fullname=>'Move Memberships')
-		e = EmailAddress.new(:email=>'move+test@wayground.ca')
-		e.user = u
-		m = Membership.new()
-		m.group = groups(:one)
-	#	m.email_address = e
-		e.memberships << m
-		e.move_memberships_to_user!
+		e.assign_memberships_to_user!
 		assert m.id > 0
 	end
-	test "move memberships to user does not override existing user" do
+	test "assign memberships to user does not override existing user" do
 		u = User.new(:fullname=>'Move Memberships')
+		u.save!
 		u2 = User.new(:fullname=>'Prior User')
+		u2.save!
 		e = EmailAddress.new(:email=>'move+test@wayground.ca')
 		e.user = u
+		e.save!
 		m = Membership.new()
 		m.user = u2
-		m.group = groups(:one)
+		groups(:one).memberships << m
 	#	m.email_address = e
 		e.memberships << m
-		e.move_memberships_to_user!
+		e.assign_memberships_to_user!
 		assert_equal u2, m.user
 	end
 	
@@ -219,4 +242,27 @@ class EmailAddressTest < ActiveSupport::TestCase
 		assert !(e.is_confirmed?)
 	end
 	
+	test "to string when blocked" do
+		email = 'test@wayground.ca'
+		e = EmailAddress.new(:email=>email)
+		e.is_blocked = true
+		assert_nil e.to_s
+	end
+	test "to string when no name" do
+		email = 'test@wayground.ca'
+		e = EmailAddress.new(:email=>email)
+		assert_equal email, e.to_s
+	end
+	test "to string when just basic name" do
+		email = 'test@wayground.ca'
+		name = 'Test Name'
+		e = EmailAddress.new(:email=>email, :name=>name)
+		assert_equal "#{name} <#{email}>", e.to_s
+	end
+	test "to string when name with complicated chars" do
+		email = 'test@wayground.ca'
+		name = 'Test-This A. Name'
+		e = EmailAddress.new(:email=>email, :name=>name)
+		assert_equal "\"#{name}\" <#{email}>", e.to_s
+	end
 end

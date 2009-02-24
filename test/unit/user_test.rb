@@ -11,6 +11,33 @@ class UserTest < ActiveSupport::TestCase
 	
 	# VALIDATIONS
 	
+	# TODO: most of the User validations still need to be tested
+	
+	def test_user_validation_of_email_not_taken
+		
+	end
+	def test_user_validation_blanks_email_when_email_taken_by_other_user
+		u = User.new(:fullname=>'Validation Test', :email=>users(:login).email)
+		u.valid?
+		assert_nil u.email
+	end
+	def test_user_validation_copies_email_address_when_required_email_blank
+		email = 'user-validation+test@wayground.ca'
+		u = User.new(:fullname=>'Validation Test')
+		u.save!
+		e = EmailAddress.new(:email=>email)
+		u.email_addresses << e
+		u.email = nil
+		u.email_required = true
+		u.valid?
+		assert_equal email, u.email
+	end
+	def test_user_validation_fails_when_required_email_blank_and_no_email_address
+		u = User.new(:fullname=>'Validation Test')
+		u.email_required = true
+		assert_validation_fails_for(u, ['email'])
+	end
+	
 	
 	# CLASS METHODS
 	
@@ -197,24 +224,6 @@ class UserTest < ActiveSupport::TestCase
 		
 	end
 	
-	def test_make_activation_code
-		u = User.new
-		u.make_activation_code
-		assert(u.activation_code.is_a?(String))
-		assert !(u.activation_code.blank?)
-	end
-	
-	def test_activate
-		assert users(:activate_this).activate('abc')
-		assert users(:activate_this).activation_code.blank?
-		assert !(users(:activate_this).activated_at.blank?)
-	end
-	def test_activate_invalid
-		assert !(users(:activate_this_fail).activate(''))
-		assert !(users(:activate_this).activation_code.blank?)
-		assert users(:activate_this).activated_at.blank?
-	end
-	
 	def test_user_activated
 		assert users(:login).activated?
 	end
@@ -347,8 +356,7 @@ class UserTest < ActiveSupport::TestCase
 	#end
 	
 	def test_new_user
-		u_attrs = {:email=>'new_test@wayground.ca',
-			:nickname=>'Newbie', :fullname=>'New User', :subpath=>'new',
+		u_attrs = {:nickname=>'Newbie', :fullname=>'New User', :subpath=>'new',
 			:about=>'This is a new user.'}
 		u = User.new(u_attrs.merge({:password=>'password',
 			:password_confirmation=>'password'}))
@@ -359,7 +367,6 @@ class UserTest < ActiveSupport::TestCase
 		end
 		assert !(u.crypted_password.blank?)
 		assert !(u.salt.blank?)
-		assert !(u.activation_code.blank?)
 	end
 	def test_new_user_minimum_values
 		u_attrs = {:fullname=>'Minimum Values'}
@@ -371,7 +378,6 @@ class UserTest < ActiveSupport::TestCase
 		end
 		assert u.crypted_password.blank?
 		assert u.salt.blank?
-		assert !(u.activation_code.blank?)
 	end
 	def test_new_user_no_values
 		u = User.new()
@@ -387,8 +393,7 @@ class UserTest < ActiveSupport::TestCase
 			 	:message=>"invalid #{k} (“#{v}”) should not validate")
 		end
 		# attributes that should not be settable
-		dont_set_attrs = {:activation_code=>'activate', :activated_at=>Time.now,
-			:admin=>true, :staff=>true, :remember_token=>'remember',
+		dont_set_attrs = {:admin=>true, :staff=>true, :remember_token=>'remember',
 			:remember_token_expires_at=>Time.now, :login_at=>Time.now,
 			:created_at=>Time.now, :updated_at=>Time.now}
 		dont_set_attrs.each_pair do |k,v|

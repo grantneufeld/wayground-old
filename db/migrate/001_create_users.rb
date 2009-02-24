@@ -6,8 +6,8 @@ class CreateUsers < ActiveRecord::Migration
 		:options=>'COMMENT="Basic user record for login." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.string :email
 			# email activation
-			t.string :activation_code, :limit=>40
-			t.datetime :activated_at
+			#t.string :activation_code, :limit=>40
+			#t.datetime :activated_at
 			
 			# Password
 			t.string :crypted_password, :limit=>40

@@ -4,7 +4,7 @@ class CreateMessaging < ActiveRecord::Migration
 		:options=>'COMMENT="Email message sent to one or more recipients." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.belongs_to :user
 			t.belongs_to :item, :polymorphic=>true
-			t.string :status # %w(draft sent)
+			t.string :status, :null=>false, :default=>'draft' # %w(draft sent)
 			t.string :from
 			t.string :to
 			t.string :subject
@@ -38,15 +38,19 @@ class CreateMessaging < ActiveRecord::Migration
 		end
 		
 		create_table :recipients, :force=>true,
-		:options=>'COMMENT="Links a User, as a recipient, to an EmailMessage." ENGINE=InnoDB CHARSET=utf8' do |t|
+		:options=>'COMMENT="Links an EmailAddress, as a recipient, to an EmailMessage." ENGINE=InnoDB CHARSET=utf8' do |t|
 			t.belongs_to :email_message
-			t.belongs_to :user
-			t.string :to
-			t.timestamps
+			t.belongs_to :email_address
+			t.datetime :created_at
+			t.datetime :last_send_attempt_at
+			t.datetime :sent_at
+			#t.timestamps
 		end
 		change_table :recipients do |t|
-			t.index [:email_message_id], :name=>'email_message'
-			t.index [:user_id, :created_at], :name=>'user'
+			t.index [:email_message_id, :email_address_id], :name=>'email_message',
+				:unique=>true
+			t.index [:email_address_id], :name=>'email_address'
+			t.index [:last_send_attempt_at], :name=>'last_send_attempt'
 		end
 		
 		create_table :attachments, :force=>true,

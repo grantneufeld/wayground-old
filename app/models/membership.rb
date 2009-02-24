@@ -19,9 +19,13 @@ class Membership < ActiveRecord::Base
 	belongs_to :blocker, :class_name=>"User"
 	
 	validates_presence_of :group
-	validates_presence_of :user
+	# requires either a User or EmailAddress
+	validates_presence_of :user, :if=> Proc.new {|m| m.email_address.nil?}
+	validates_presence_of :email_address, :if=> Proc.new {|m| m.user.nil?}
 	
-	validates_uniqueness_of :user_id, :scope=>:group_id
+	validates_uniqueness_of :email_address_id, :scope=>:group_id,
+		:unless=> Proc.new {|m| m.email_address.nil?}
+	#validates_uniqueness_of :user_id, :scope=>[:group_id, :email_address_id]
 	
 	
 	# CLASS METHODS
@@ -116,7 +120,7 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def active?
-		!(id.nil?) && (id > 0) && !(group.nil?) && !(user.nil?) && !(expired?) && !(invited?) && !(blocked?)
+		!(id.nil?) && (id > 0) && !(group.nil?) && !(expired?) && !(invited?) && !(blocked?) && !(user.nil? and email_address.nil?) 
 	end
 	
 	def make_active!

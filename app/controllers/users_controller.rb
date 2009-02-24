@@ -41,8 +41,8 @@ class UsersController < ApplicationController
 	def new
 		missing unless WAYGROUND['ALLOW_SIGNUP']
 		@user = User.new(params[:user])
-		@user.valid? if params[:user]
 		@user.time_zone = Time.zone.name unless params[:user]
+		@user.valid? if params[:user]
 		@page_title = 'New User Registration'
 	end
 	
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
 		self.current_user = @user
 		
 		# send email confirmation
-		if Notifier.deliver_signup_confirmation(@user)
+		if @user.email_addresses[0] and Notifier.deliver_signup_confirmation(@user.email_addresses[0])
 			flash[:notice] = "Thanks for signing up! A confirmation email has been sent to you at #{@user.email}. Please look for a message from #{(WAYGROUND['SENDER'].gsub(/[><]/){|x|{'>'=>'&gt;','<'=>'&lt;'}[x]})}."
 		else
 			flash[:error] = "Your new user account has been created, but there was an error when trying to send an email confirmation. Please contact the website administrator about this problem. #{WAYGROUND['EMAIL']}"
@@ -88,19 +88,27 @@ class UsersController < ApplicationController
 		if @user
 			if params[:activation_code].blank?
 				flash[:notice] = 'No activation code was supplied. Please confirm that you are using the complete activation link you were given.'
-			elsif @user.activated?
-				flash[:notice] = 'Your account has already been activated.'
-			elsif @user.activate(params[:activation_code])
-				flash[:notice] = 'Your user account has now been activated. Thank-you for confirming it.'
-				unless Notifier.deliver_activated(@user)
-					# don't bother notifying of email failure since it's not critical
-				end
+			elsif params[:encrypt_code].blank?
+				flash[:notice] = 'No email code was supplied. Please confirm that you are using the complete activation link you were given.'
 			else
-				flash[:notice] = 'The supplied activation code did not match the one in your user account. Please ensure you are logged in as the correct user, and that you used the complete activation web link.'
+				begin
+					@email_address = EmailAddress.activate!(current_user,
+						params[:activation_code], params[:encrypt_code])
+				rescue Exception
+					@email_address = nil
+				end
+				if @email_address
+					flash[:notice] = 'Your email address has now been activated. Thank-you for confirming it.'
+					unless Notifier.deliver_activated(@email_address)
+						# don't bother notifying of email failure since it's not critical
+					end
+				else
+					flash[:notice] = 'The supplied activation code did not match the one for your email address. Please ensure you are logged in as the correct user, and that you used the complete activation web link.'
+				end
 			end
 			redirect_to account_users_path
 		else
-			flash[:notice] = 'You must re-login first to activate your account.'
+			flash[:notice] = 'You must re-login first to activate your email address.'
 			store_location
 			redirect_to login_path
 		end

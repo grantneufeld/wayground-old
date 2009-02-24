@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class GroupTest < ActiveSupport::TestCase
-	fixtures :groups, :users, :memberships, :locations, :email_messages
+	fixtures :groups, :users, :memberships, :email_addresses, :locations, :email_messages
 	
 	def test_associations
 		assert check_associations
@@ -142,6 +142,37 @@ class GroupTest < ActiveSupport::TestCase
 		assert_equal 'one', groups(:one).to_param
 	end
 	
+	def test_membership_for_email_by_email_string
+		assert_equal(
+			memberships(:regular),
+			memberships(:regular).group.membership_for_email(
+				memberships(:regular).email_address.email
+			)
+		)
+	end
+	def test_membership_for_email_by_email_address
+		assert_equal(
+			memberships(:regular),
+			memberships(:regular).group.membership_for_email(
+				memberships(:regular).email_address
+			)
+		)
+	end
+	def test_membership_for_email_nil_with_nomatch_string
+		assert_nil(
+			memberships(:regular).group.membership_for_email(
+				'non-matching-email+test@wayground.ca'
+			)
+		)
+	end
+	def test_membership_for_email_nil_with_nonmember_email_address
+		assert_nil(
+			memberships(:regular).group.membership_for_email(
+				email_addresses(:nonmember)
+			)
+		)
+	end
+	
 	def test_group_user_membership
 		assert_equal memberships(:owner),
 			groups(:membered_group).user_membership(users(:login))
@@ -247,8 +278,13 @@ class GroupTest < ActiveSupport::TestCase
 	end
 	
 	def test_group_email_addresses
-		# TODO: implement this test and the email_addresses method
-		assert_equal([], groups(:one).email_addresses)
+		m = Membership.new()
+		m.user = users(:another)
+		m.position = 999
+		groups(:one).memberships << m
+		assert_equal([email_addresses(:login), email_addresses(:someone),
+			users(:another).email_addresses[0]],
+			groups(:one).email_addresses)
 	end
 	
 	def test_group_email_addresses_with_details
@@ -268,9 +304,9 @@ class GroupTest < ActiveSupport::TestCase
 				"nonmember-user@wayground.ca\n" + # users(:nonmember)
 				"Another Bulk <anotherbulk-test@wayground.ca>\n",
 				users(:login))
-			assert_equal 5, bulk_result[:memberships].size	
-			assert_equal 4, bulk_result[:added]
-			assert_equal 2, bulk_result[:blanks]
+			assert_equal 4, bulk_result[:memberships].size	
+			assert_equal 4, bulk_result[:add_count]
+			assert_equal 2, bulk_result[:blank_count]
 			assert_equal [[3, 'bad line'], [5, 'bad-address@wayground']],
 				bulk_result[:bad_lines]
 		#end
@@ -290,16 +326,16 @@ class GroupTest < ActiveSupport::TestCase
 				"bulk-test@wayground.ca\n" +
 				"\n" + "bad line\n" + "\n" + "bad-address@wayground\n" +
 				"non-existent@wayground.ca\n" +
-				"<login_test@wayground.ca>\n" + # memberships(:one_active_membership)
-				"regular-user@wayground.ca\n" + # memberships(:one_inactive_membership)
+				"<#{email_addresses(:login).email}>\n" + # :one_active_membership
+				"#{email_addresses(:regular).email}\n" + # :one_inactive_membership
 				"nonmember-user@wayground.ca\n" + # users(:nonmember)
 				"Another Bulk <anotherbulk-test@wayground.ca>\n")
-			assert_equal 4, bulk_result[:users_removed].size	
-			assert_equal ['non-existent@wayground.ca', 'regular-user@wayground.ca'],
-				bulk_result[:missing]
-			assert_equal 2, bulk_result[:blanks]
+			assert_equal 4, bulk_result[:removed].size
 			assert_equal [[3, 'bad line'], [5, 'bad-address@wayground']],
 				bulk_result[:bad_lines]
+			assert_equal ['non-existent@wayground.ca', 'regular-user@wayground.ca'],
+				bulk_result[:missing]
+			assert_equal 2, bulk_result[:blank_count]
 		#end
 		assert_equal old_count - 4, groups(:one).memberships.count
 	end

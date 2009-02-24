@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class NotifierTest < ActionMailer::TestCase
 	tests Notifier
-	fixtures :users, :petitions, :signatures
+	fixtures :users, :email_addresses, :recipients, :petitions, :signatures
 	
 	def test_signup_confirmation
 		# WAYGROUND['SENDER']
@@ -14,19 +14,19 @@ class NotifierTest < ActionMailer::TestCase
 		@expected.date    = Time.now
 
 		assert_equal @expected.encoded,
-			Notifier.create_signup_confirmation(users(:activate_this),
+			Notifier.create_signup_confirmation(email_addresses(:activate_this),
 				@expected.date).encoded
 	end
 
 	def test_activated
 		@expected.from = 'Wayground <wayground@wayground.ca>'
 		@expected.to = '"Login User" <login_test@wayground.ca>'
-		@expected.subject = '[WG] Your account has been activated!'
+		@expected.subject = '[WG] Your account has been activated'
 		@expected.body    = read_fixture('activated')
 		@expected.date    = Time.now
 
 		assert_equal @expected.encoded,
-			Notifier.create_activated(users(:login), @expected.date).encoded
+			Notifier.create_activated(email_addresses(:login), @expected.date).encoded
 	end
 	
 	def test_signature_confirmation
@@ -40,5 +40,78 @@ class NotifierTest < ActionMailer::TestCase
 			Notifier.create_signature_confirmation(petitions(:update_petition),
 				signatures(:confirm_user), users(:admin),
 				@expected.date).encoded
+	end
+	
+	def test_email_message
+		recipient = recipients(:one)
+		from = 'Test From <from+test@wayground.ca>'
+		subject = 'Test Email Message Subject'
+		sent_at = Time.now
+		content = "This is a test message.\n\nI hope it works."
+		reply_to = 'Reply To <reply_to+test@wayground.ca>'
+		
+		@expected.to = recipient.to_s
+		@expected.from = from
+		@expected.subject = subject
+		@expected.date = sent_at
+		@expected.body = content
+		@expected.reply_to = reply_to
+		@expected['Errors-To'] = 'bounce@wayground.ca'
+		
+		assert_equal(@expected.encoded,
+			Notifier.create_email_message({
+				:recipient=>recipient, :from=>from, :reply_to=>reply_to,
+				:subject=>subject, :content=>content, :sent_at=>sent_at}
+			).encoded
+		)
+	end
+	
+	def test_email_message_from_nonlocal_domain
+		recipient = recipients(:one)
+		from = 'Test From <from+test@nonlocaldomain.tld>'
+		subject = 'Test Email Message Subject'
+		sent_at = Time.now
+		content = "This is a test message.\n\nI hope it works."
+		reply_to = 'Reply To <reply_to+test@wayground.ca>'
+		
+		@expected.to = recipient.to_s
+		@expected.from = from
+		@expected.subject = subject
+		@expected.date = sent_at
+		@expected.body = content
+		@expected.reply_to = reply_to
+		@expected['Return-Path'] = '<bounce@wayground.ca>'
+		@expected['Sender'] = '<bounce@wayground.ca>'
+		@expected['Errors-To'] = 'bounce@wayground.ca'
+		
+		assert_equal(@expected.encoded,
+			Notifier.create_email_message({
+				:recipient=>recipient, :from=>from, :reply_to=>reply_to,
+				:subject=>subject, :content=>content, :sent_at=>sent_at}
+			).encoded
+		)
+	end
+	
+	def test_email_message_from_bounce_address
+		recipient = recipients(:one)
+		from = 'Test Bounce <bounce@wayground.ca>'
+		subject = 'Test Email Message Subject'
+		sent_at = Time.now
+		content = "This is a test message.\n\nI hope it works."
+		reply_to = 'Reply To <reply_to+test@wayground.ca>'
+		
+		@expected.to = recipient.to_s
+		@expected.from = from
+		@expected.subject = subject
+		@expected.date = sent_at
+		@expected.body = content
+		@expected.reply_to = reply_to
+		
+		assert_equal(@expected.encoded,
+			Notifier.create_email_message({
+				:recipient=>recipient, :from=>from, :reply_to=>reply_to,
+				:subject=>subject, :content=>content, :sent_at=>sent_at}
+			).encoded
+		)
 	end
 end

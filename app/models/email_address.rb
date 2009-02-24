@@ -6,11 +6,15 @@ class EmailAddress < ActiveRecord::Base
 	#t.string :email
 	#t.string :activation_code, :limit=>40
 	#t.datetime :activated_at
+	#t.boolean :is_blocked
 	#t.string :name
 	#t.timestamps
 	
 	belongs_to :user
 	has_many :memberships
+	
+	
+	before_create :make_activation_code
 	
 	
 	# VALIDATION
@@ -20,10 +24,12 @@ class EmailAddress < ActiveRecord::Base
 		:with=>/\A(\w[\w_\.\+\-]*@(?:\w[\w\-]*\.)+[a-z]{2,})?\z/i,
 		:message=>"invalid email address"
 	validates_uniqueness_of :email,
-		:scope=>[:user_id],
-		:allow_blank=>true,
-		:case_sensitive=>false,
-		:unless=>Proc.new {|e| e.user.blank?}
+		:case_sensitive=>false
+	#validates_uniqueness_of :email,
+	#	:scope=>[:user_id],
+	#	:allow_blank=>true,
+	#	:case_sensitive=>false,
+	#	:unless=>Proc.new {|e| e.user.blank?}
 	validate :valid_email?
 	
 	include EmailHelper # email validation
@@ -53,48 +59,25 @@ class EmailAddress < ActiveRecord::Base
 		users
 	end
 	
-	
-	# INSTANCE METHODS
-	
-	def before_save
-		# if there is a user, and the email has not been activated,
-		# make sure the activation_code is set
-		if !(user.nil?)
-			if activated_at.blank? and activation_code.blank?
-				make_activation_code
-			end
-			if position.nil? or position == 0
-				# omit self from the find
-				if self.id and self.id > 0
-					conditions = ['email_addresses.id != ?', self.id]
-				else
-					conditions = 'email_addresses.id IS NOT NULL'
+	def self.activate!(user, code, e_code)
+		if !(user.nil?) and !(code.blank?) and !(e_code.blank?)
+			e = self.find_by_activation_code(code)
+			raise Wayground::ActivationCodeMismatch if e.nil?
+			if code == e.activation_code and e_code == e.encrypt_code
+				# strike the email from any other users that have it
+				users = User.find_all_by_email(e.email)
+				users.each do |u|
+					unless u == user
+						u.update_attribute('email',
+							(u.email_addresses[0] ? u.email_addresses[0].email : nil))
+					end
 				end
-				last_address = user.email_addresses.find(:first,
-					:conditions=>conditions,
-					:order=>'email_addresses.position DESC')
-				if last_address
-					position = last_address.position.to_i + 1
-				else
-					position = 1
-				end
-				write_attribute('position', position)
-			end
-		end
-	end
-	
-	def make_activation_code
-		self.activation_code = Digest::SHA1.hexdigest(
-			Time.current.to_s.split(//).sort_by {rand}.join )
-	end
-	
-	def activate!(code)
-		if !(code.blank?)
-			if code == (activation_code || read_attribute('activation_code'))
-				activated_at = Time.now
-				write_attribute('activated_at', activated_at)
-				activation_code = nil
-				write_attribute('activation_code', activation_code)
+				# activate the email address
+				e.activated_at = Time.now
+				e.activation_code = nil
+				e.user = user
+				e.save!
+				e
 			else
 				raise Wayground::ActivationCodeMismatch
 			end
@@ -103,45 +86,106 @@ class EmailAddress < ActiveRecord::Base
 		end
 	end
 	
+	
+	# INSTANCE METHODS
+	
+	def before_save
+		# if the email has not been activated, make sure the activation_code is set
+		#if self.activated_at.blank? and self.activation_code.blank?
+		#	debugger
+		#	make_activation_code
+		#end
+		# if there is a user, set the position
+		if !(self.user.nil?) and (self.position.nil? or self.position == 0)
+			# omit self from the find
+			if self.id and self.id > 0
+				conditions = ['email_addresses.id != ?', self.id]
+			else
+				conditions = 'email_addresses.id IS NOT NULL'
+			end
+			last_address = user.email_addresses.find(:first,
+				:conditions=>conditions,
+				:order=>'email_addresses.position DESC')
+			if last_address
+				self.position = last_address.position.to_i + 1
+			else
+				self.position = 1
+			end
+			#write_attribute('position', position)
+		end
+	end
+	
+	def make_activation_code
+		code = nil
+		while code == nil
+			code = Digest::SHA1.hexdigest(
+				Time.current.to_s.split(//).sort_by {rand}.join )
+			# ensure there isn't a matching code already
+			code = nil if self.class.find_by_activation_code(code)
+		end
+		self.activation_code = code
+	end
+	
+	def activated?
+		!(self.activated_at.blank?)
+	end
+	
+	def blocked?
+		(self.is_blocked and self.is_blocked != 0) ? true : false
+	end
+	
+	# Encrypts the email with the activation code as salt
+	def encrypt_code(e=nil)
+		User.encrypt((e || self.email), self.activation_code)
+	end
+	
+	def name
+		n = read_attribute(:name)
+		if n.blank?
+			if self.user
+				n = self.user.fullname
+			else
+				n = nil
+			end
+		end
+		n
+	end
+	
 	# assign this EmailAddress to a User (after both have already been created)
 	def assign_to_user!(u)
-		if u.email.blank?
-			# ensure activation check is in place if needed
-			if activated_at.blank? and activation_code.blank?
-				# this email has not been activated
-				make_activation_code
-			end
-			u.email = email
-			u.activation_code = activation_code
-			u.activated_at = activated_at
-			u.save!
-			# since the User now has this email address,
-			# we might as well get rid of this redundant record
-			move_memberships_to_user!
-			self.destroy
-		else
-			user = u
-			save!
-		end
+		self.user = u
+		self.assign_memberships_to_user!
+		save!
 		u
 	end
 	
 	# move any Memberships associated with this EmailAddress to the user
-	def move_memberships_to_user!
-		if user
-			memberships.each do |membership|
-				unless membership.user
-					membership.user = user
+	def assign_memberships_to_user!
+		if self.user
+			self.memberships.each do |membership|
+				unless membership.user == self.user
+					membership.user = nil
+					self.user.memberships << membership
 				end	
-				membership.email_address = nil
-				membership.save!
 			end
 		end
 	end
 	
 	# an EmailAddress is considered confirmed only if there is a user, and no activation_code
 	def is_confirmed?
-		!(user.nil? or activated_at.blank?)
+		!(self.user.nil? or self.activated_at.blank?)
 	end
 	
+	def to_s
+		if blocked?
+			nil
+		elsif self.name.blank?
+			self.email
+		elsif self.name.match(/[^A-Za-z0-9_ ]/)
+			# name has to be wrapped in quotes if it includes anything but the most basic chars
+			"\"#{self.name}\" <#{self.email}>"
+		else
+			"#{self.name} <#{self.email}>"
+		end
+	end
 end

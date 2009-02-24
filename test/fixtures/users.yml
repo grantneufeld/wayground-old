@@ -3,7 +3,6 @@ minimal:
 
 login:
   email: login_test@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Login
@@ -15,7 +14,6 @@ login:
 
 admin:
   email: admin_test@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Administrator
@@ -27,7 +25,6 @@ admin:
 
 staff:
   email: staff_test@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Staffer
@@ -39,7 +36,6 @@ staff:
 
 activate_this:
   email: activatethis@wayground.ca
-  activation_code: abc
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Activate This
@@ -50,7 +46,6 @@ activate_this:
 
 activate_this_fail:
   email: activatethisfail@wayground.ca
-  activation_code: abc
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Activate This Fail
@@ -61,7 +56,6 @@ activate_this_fail:
 
 change_pass:
   email: changepass@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Change Pass
@@ -72,7 +66,6 @@ change_pass:
 
 plain:
   email: plain-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Plain
@@ -84,7 +77,6 @@ plain:
 
 regular:
   email: regular-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Regular
@@ -96,7 +88,6 @@ regular:
 
 another:
   email: another-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Another
@@ -108,7 +99,6 @@ another:
 
 someone:
   email: someone-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Someone
@@ -120,7 +110,6 @@ someone:
 
 adminmember:
   email: adminmember-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Admin Member
@@ -132,7 +121,6 @@ adminmember:
 
 nonmember:
   email: nonmember-user@wayground.ca
-  activated_at: <%= 1.day.ago.to_s(:db) %>
   crypted_password: 81c35bdfd7b6bc8878248ae59671c396aa519764
   salt: salt
   nickname: Non-member

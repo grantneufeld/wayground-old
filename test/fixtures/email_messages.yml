@@ -12,10 +12,10 @@ one:
 
 two:
   user: staff
-  item: 
+  item: one (Group)
   status: draft
   from: Wayground Staff <staff-test@wayground.ca>
   to: recipient-test@wayground.ca
-  subject: test email 2
+  subject: test email 2 with search keyword
   content_type: text/plain
-  content: Test email message 2.
+  content: Test email message 2. will show up on search for keyword

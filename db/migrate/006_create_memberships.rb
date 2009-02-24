@@ -22,7 +22,9 @@ class CreateMemberships < ActiveRecord::Migration
 			t.timestamps
 		end
 		change_table :memberships do |t|
-			t.index [:group_id, :user_id], :name=>'membership_group',
+			t.index [:group_id, :user_id, :email_address_id], :name=>'group_user_email',
+				:unique=>true
+			t.index [:email_address_id, :group_id], :name=>'email_group',
 				:unique=>true
 			t.index [:group_id, :position, :user_id], :name=>'membership_position'
 			t.index [:user_id, :group_id], :name=>'membership_user'

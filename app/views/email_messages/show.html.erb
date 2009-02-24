@@ -1,0 +1,46 @@
+<%
+subsection ||= @subsection
+
+unless @group.nil?
+%><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
+<% end
+
+%>
+<h2><img src="/icon/email_24.png" alt=" " width="24" height="24" class="icon" />
+Email Message</h2>
+
+<table cellspacing="0" class="layout">
+<tbody>
+<tr><th>Date:</th> <td><%= h @email_message.updated_at.to_s(:event_date) %></td></tr>
+<tr><th>From:</th> <td><%= h @email_message.from %></td></tr>
+<tr><th>To:</th> <td><%
+separator = nil
+@email_message.recipients.each do |recipient|
+	%><%= separator %><%= h recipient.email_address.to_s %><%
+	separator ||= ",\n"
+end
+%></td></tr>
+<tr><th>Subject:</th> <td><%= h @email_message.subject %></td></tr>
+<%
+if @email_message.attachments.size > 0
+	%><tr><th>Attachments:</th> <td><%
+	@email_message.attachments.each do |attachment|
+		%><%= link_to h(attachment.document.filename), attachment.document,
+			{:class=>attachment.document.css_class} %>
+<%	end %></td></tr>
+<%
+end
+%></tbody></table>
+<p><br /></p>
+<%= format_content(@email_message.content, @email_message.content_type, false) %>
+
+<%
+if @group.nil?
+	%><%= render :partial=>'standard'%>
+<%
+else
+	%>
+<%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'groups/standard'%><%
+end
+%>

@@ -14,7 +14,15 @@ unless @group.nil?
 
 <%
 if @group.nil?
-	%><%= render :partial=>'standard'%>
+	%><p><%=
+	# Send Message
+	link_to(
+		'<img src="/icon/email.png" width="16" height="16" alt=" " class="icon" /> Send Message',
+		new_email_message_path(),
+		{:class=>'button', :title=>"Send an email message"})
+		%><span class="separator">.</span></p>
+
+<%= render :partial=>'standard'%>
 <%
 else
 	%>

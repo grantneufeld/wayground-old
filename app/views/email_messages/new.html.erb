@@ -1,0 +1,38 @@
+<%
+subsection ||= @subsection
+
+unless @group.nil?
+%><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
+<% end
+
+%>
+<div class="steps">
+<h2><img src="/icon/email_24.png" alt=" " width="24" height="24" class="icon" />
+Send Email Message</h2>
+<%= error_messages_for :email_message %>
+<div class="step_form">
+<%
+
+if @email_message.id and @email_message.id > 0
+	options = {:url=>(@group.nil? ? email_message_path(@email_message) :
+		group_email_path(@group, @email_message)), :html=>{:method=>:put}}
+else
+	options = {:url=>(@group.nil? ? email_messages_path() : group_emails_path(@group))}
+end
+form_for(@email_message, options) do |f|
+	%><%= render :partial=>'form' %>
+<% end
+
+%></div>
+</div>
+
+<%
+if @group.nil?
+	%><%= render :partial=>'standard'%>
+<%
+else
+	%>
+<%= render :partial=>'groups/footer', :locals=>{:subsection=>subsection} %>
+<%= render :partial=>'groups/standard'%><%
+end
+%>

@@ -2,10 +2,14 @@
 
 one:
   email_message: one
-  user: login
-  to: A Person <person-test@wayground.ca>
+  email_address: one
+  created_at: <%= 1.week.from_now.to_s(:db) %>
+  last_send_attempt_at: 
+  sent_at: 
 
 two:
   email_message: one
-  user: regular
-  to: Second Person <second-test@wayground.ca>
+  email_address: two
+  created_at: <%= 1.week.from_now.to_s(:db) %>
+  last_send_attempt_at: 
+  sent_at: 

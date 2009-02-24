@@ -673,7 +673,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert flash[:notice]
 		assert_nil flash[:report]
 		assert_nil flash[:error]
-		assert_equal 2, assigns(:users_removed).size
+		assert_equal 2, assigns(:removed).size
 		assert_response :redirect
 		assert_redirected_to group_memberships_path(groups(:membered_group))
 	end
@@ -691,7 +691,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_nil flash[:notice]
 		assert flash[:report]
 		assert flash[:error]
-		assert_equal 2, assigns(:users_removed).size
+		assert_equal 2, assigns(:removed).size
 		assert_response :redirect
 		assert_redirected_to group_memberships_path(groups(:membered_group))
 	end

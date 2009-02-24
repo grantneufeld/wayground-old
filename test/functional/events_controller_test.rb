@@ -164,10 +164,9 @@ class EventsControllerTest < ActionController::TestCase
 					:info=>'schedule for controller creation test'}},
 				{:user=>users(:staff).id}
 		end
-		assert_response :redirect
-		assert assigns(:event)
-		assert assigns(:event).is_a?(Event)
+		assert_kind_of Event, assigns(:event)
 		assert flash[:notice]
+		assert_response :redirect
 		assert_redirected_to({:action=>'show', :id=>assigns(:event)})
 		# cleanup
 		assigns(:event).destroy

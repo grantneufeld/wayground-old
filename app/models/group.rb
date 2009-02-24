@@ -137,6 +137,20 @@ class Group < ActiveRecord::Base
 		subpath
 	end
 	
+	# Return the membership for the email address, if there is one
+	def membership_for_email(email)
+		m = nil
+		if email.is_a? String
+			addrs = EmailAddress.find_all_by_email(email)
+		else
+			addrs = [email]
+		end
+		addrs.each do |e|
+			m = self.memberships.find_by_email_address_id(e.id) rescue nil
+			break if m
+		end
+		m
+	end
 	# Return the membership for the user, if there is one
 	def user_membership(u)
 		memberships.find_by_user_id(u.id) rescue nil
@@ -209,7 +223,20 @@ class Group < ActiveRecord::Base
 	
 	# Returns an Array of email address Strings for members of the group.
 	def email_addresses(only_validated = false)
-		[]
+		addrs = []
+		memberships.each do |m|
+			if !(m.active?)
+				# skip this member
+			elsif m.email_address.nil?
+				addrs << m.user.email_addresses[0]
+			else
+				addrs << m.email_address
+			end
+		end
+		children.each do |g|
+			addrs += g.email_addresses
+		end
+		addrs.uniq
 	end
 	# Returns a Hash of email addresses with details for members of the group.
 	def email_addresses_with_details(only_validated = false)
@@ -223,91 +250,102 @@ class Group < ActiveRecord::Base
 	# Returns a hash:
 	# :memberships - list of 
 	def bulk_add(bulk, admin_user=nil)
-		memberships = []
-		added = 0
-		blanks = 0
+		new_memberships = []
 		bad_lines = []
+		add_count = 0
+		blank_count = 0
+		
 		lines = bulk.scan(/^.*$/)
 		line_count = 0
 		lines.each do |line|
 			line_count += 1
 			if line.blank?
-				blanks += 1
+				blank_count += 1
 			else
 				email, name = Group.line_to_email(line)
 				if email.blank?
 					bad_lines << [line_count, line]
 				else
-					user = User.find_matching_email({:email=>email, :name=>name})
-					if user.nil?
-						# no user matched, so create new one
-						if name.blank?
-							# use the first part of the email address as the user name
-							# (User model requires fullname to be set)
-							fullname = email.sub(/@.+$/, '').gsub(/[^A-Za-z0-9 \-]/, ' ')
-						else
-							fullname = name
-						end
-						user = User.create(:fullname=>fullname, :email=>email)
-					else
-						# check if there is already a membership for the user
-						membership = user_membership(user)
+					membership = nil
+					addrs = EmailAddress.find_all_by_email(email)
+					addrs.each do |e|
+						# check if there is already a membership for the email address
+						membership = self.membership_for_email(e)
 						# if there is, make sure the membership is active
-						if membership and !(membership.active?)
-							membership.make_active!
-							added += 1
+						if membership
+							if !(membership.active?)
+								membership.make_active!
+								add_count += 1
+								new_memberships << membership
+							end
+							break
 						end
 					end
 					if membership.nil?
+						e = addrs[0]
+						if e.nil?
+							# no user matched, so create new one
+							if name.blank?
+								# use the first part of the email address as the user name
+								# (User model requires fullname to be set)
+								name = email.sub(/@.+$/, '').gsub(/[^A-Za-z0-9 \-]/, ' ')
+							end
+							e = EmailAddress.create(:name=>name, :email=>email)
+						end
 						# create a Membership if the user doesn’t have one
 						membership = Membership.new()
-						membership.group = self
-						membership.user = user
+						membership.email_address = e
+						membership.user = e.user
 						membership.inviter = admin_user
-						membership.save!
-						added += 1
+						self.memberships << membership
+						add_count += 1
+						new_memberships << membership
 					end
-					memberships << membership
 				end
 			end
 		end
-		{:memberships=>memberships, :added=>added, :blanks=>blanks, :bad_lines=>bad_lines}
+		
+		{:memberships=>new_memberships, :bad_lines=>bad_lines,
+			:add_count=>add_count, :blank_count=>blank_count}
 	end
 	
 	def bulk_remove(bulk)
-		missing = []       # email addresses with no membership
-		users_removed = [] # the users who had their memberships removed
-		blanks = 0         # number of blank lines in bulk
-		bad_lines = []     # number of unparsable lines in bulk
+		removed = []    # email addresses removed from membership in the group
+		bad_lines = []  # unparsable lines in bulk
+		missing = []    # lines not matching a membership
+		blank_count = 0 # number of blank lines in bulk
+		
 		lines = bulk.scan(/^.*$/)
 		line_count = 0
 		lines.each do |line|
 			line_count += 1
 			if line.blank?
-				blanks += 1
+				blank_count += 1
 			else
 				email, name = Group.line_to_email(line)
 				if email.blank?
 					bad_lines << [line_count, line]
 				else
-					removed_this_one = false
-					users = User.find_all_matching_email(email)
-					users.each do |user|
-						membership = user_membership(user)
-						unless membership.nil? || !(membership.active?)
+					addrs = EmailAddress.find_all_by_email(email)
+					membership = nil
+					addrs.each do |e|
+						membership = self.memberships.find_by_email_address_id(e.id)
+						if !(membership.nil?) and membership.active?
 							membership.destroy
-							users_removed << user
-							removed_this_one = true
+							removed << e
+							break
 						end
+						membership = nil
 					end
-					unless removed_this_one
+					unless membership
 						missing << line
 					end
 				end
 			end
 		end
-		{:users_removed=>users_removed, :missing=>missing, :blanks=>blanks,
-			:bad_lines=>bad_lines}
+		
+		{:removed=>removed, :bad_lines=>bad_lines,
+			:missing=>missing, :blank_count=>blank_count}
 	end
 	
 	# standard Wayground instance methods for displayable items

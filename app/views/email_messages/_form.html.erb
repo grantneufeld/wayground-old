@@ -1,0 +1,29 @@
+<%
+fields_for :email_message do |f|
+%><table cellspacing="0">
+<tbody>
+<tr><th><label for="email_message_from">From:</label></th>
+<td><%= f.text_field :from %>
+<br /><input type="checkbox" name="email_message[self_copy]" id="email_message_self_copy" value="1" /><label for="email_message_self_copy">Send copy to me</label> (<%= h current_user.email # ••• sender email
+	%>)</td></tr>
+<tr class="alternate"><th><label for="email_message_to">To:</label></th>
+<td><%
+if @group.nil?
+	# TODO: ••• selector for “To:” when not emailing a group
+	%><%= f.text_field :to %><%
+else
+	# show the group being emailed
+	%><img src="/icon/group.png" alt="Group:" width="16" height="16" />
+<%= link_to @group.title, @group %><%
+end	%></td></tr>
+<tr><th><label for="email_message_subject">Subject:</label></th>
+<td><%= f.text_field :subject %></td></tr>
+<tr class="alternate"><th><label for="email_message_content">Message:</label></th>
+<td><%= f.text_area :content %></td></tr>
+
+</tbody>
+<tfoot><tr><td></td>
+<td><input type="submit" name="process" value="Save Draft" />
+	<input type="submit" name="process" value="Send Email Now" /></td></tr></tfoot>
+</table>
+<% end %>
