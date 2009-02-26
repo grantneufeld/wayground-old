@@ -143,7 +143,15 @@ class MembershipsController < ApplicationController
 	
 	
 	def member_name(membership)
-		h(membership.user.display_name_for_admin(membership.group.has_access_to?(:admin, current_user)))
+		name = "member #{membership.id}"
+		if membership.user
+			name = h(membership.user.display_name_for_admin(
+				membership.group.has_access_to?(:admin, current_user)
+			))
+		elsif membership.group.has_access_to?(:admin, current_user) and !(membership.email_address.name.blank?)
+			name = h(membership.email_address.name)
+		end
+		name
 	end
 	
 	

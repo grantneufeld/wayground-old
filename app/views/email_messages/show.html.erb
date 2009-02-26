@@ -16,7 +16,7 @@ Email Message</h2>
 <tr><th>To:</th> <td><%
 separator = nil
 @email_message.recipients.each do |recipient|
-	%><%= separator %><%= h recipient.email_address.to_s %><%
+	%><%= separator %><span class="recipient nowrap"><%= h recipient.email_address.to_s %></span><%
 	separator ||= ",\n"
 end
 %></td></tr>
