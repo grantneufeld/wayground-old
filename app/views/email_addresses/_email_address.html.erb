@@ -1,0 +1,43 @@
+<%
+email_address ||= @email_address
+row_id ||= "email_address_#{email_address.id}"
+
+%><tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><img src="/icon/email_address.png" alt="Email Address:" width="16" height="16" class="icon" title="Email Address" /></td>
+<td><%= h email_address.name %></td>
+<td><%= link_to email_address.email,
+	(@user.nil? ? email_address_path(email_address) :
+	user_email_address_path(@user, email_address)) %></td>
+<td><%
+if current_user && (current_user.admin or current_user.staff)
+		%><%=
+	link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" ' +
+			'class="diricon" />',
+		(@user.nil? ? edit_email_address_path(email_address) :
+			edit_user_email_address_path(@user, email_address)),
+		{:title=>"Edit this email address"})
+		%><span class="separator">.</span><%=
+	link_to_remote '<img src="/icon/delete.png" width="16" height="16"' +
+			' alt="Delete" class="diricon" />',
+		{:url=>(@user.nil? ? email_address_path(email_address) :
+			user_email_address_path(@user, email_address)),
+		:method=>'delete',
+		:loading=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/images/indicator.gif\" width=\"16\" height=\"16\"" +
+			" alt=\"Processing…\" class=\"diricon\" />');",
+		:loaded=>"Element.update('#{row_id}_delete'," +
+			"'<img src=\"/icon/delete.png\" width=\"16\" height=\"16\"" +
+			" alt=\"Delete\" class=\"diricon\" />');",
+		#:success=>"Element.replace('#{row_id}_delete','');",
+		:confirm=>
+			"Are you sure you want to permanently delete the email address “#{email_address.title}”?"
+		},
+		{:href=>url_for(
+			{:controller=>'email_addresses', :action=>'destroy', :id=>email_address}),
+		:title=>"Permanently delete this email address", :method=>'delete',
+		:id=>"#{row_id}_delete"
+		} %>
+<%
+end
+
+%></td>
+</tr>

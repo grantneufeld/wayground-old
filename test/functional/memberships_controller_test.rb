@@ -95,7 +95,10 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_equal 'groups', assigns(:section)
 		assert_equal groups(:membered_group), assigns(:group)
 		assert assigns(:membership)
-		assert_equal("#{assigns(:group).name} Membership for #{assigns(:membership).user.nickname}", assigns(:page_title))
+		assert_equal(
+			"#{assigns(:group).name} Membership for member #{assigns(:membership).id}",
+			assigns(:page_title)
+		)
 		assert_nil flash[:notice]
 		# view result
 		assert_template 'show'
@@ -400,7 +403,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.fullname}"
+			assert_select 'h2', "Edit Membership for member #{assigns(:membership).id}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
 				assert_select 'input#membership_user_id', false,
 					'Edit form should not contain the user id'
@@ -528,7 +531,7 @@ class MembershipsControllerTest < ActionController::TestCase
 		assert_select 'div#flash:empty'
 		assert_select 'div#content' do
 			assert_select 'h1', assigns(:group).name
-			assert_select 'h2', "Edit Membership for #{assigns(:membership).user.fullname}"
+			assert_select 'h2', "Edit Membership for member #{assigns(:membership).id}"
 			assert_select "form[action='#{group_membership_path(assigns(:group), assigns(:membership))}']" do
 				assert_select 'input#membership_user_id', false,
 					'Edit form should not contain the user id'

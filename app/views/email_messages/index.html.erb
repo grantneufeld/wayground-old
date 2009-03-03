@@ -10,7 +10,7 @@ unless @group.nil?
 <%= render :partial=>'email_message', :collection=>@email_messages %>
 </tbody></table>
 
-<%= will_paginate @events, :params=>params %>
+<%= will_paginate @email_messages, :params=>params %>
 
 <%
 if @group.nil?

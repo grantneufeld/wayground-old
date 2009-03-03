@@ -8,14 +8,31 @@ one:
   name: Extra Address For Login
 
 two:
-  user: admin
+  user: 
   position: 2
   email: extra-regular+test@wayground.ca
   activation_code: 
   activated_at: 2009-02-04 14:59:26
   is_blocked: false
-  name: Extra Address For Regular
+  name: 
 
+searchable_email:
+  user: 
+  position: 0
+  email: keyword+test@wayground.ca
+  activation_code: 
+  activated_at: 2009-02-04 14:59:26
+  is_blocked: false
+  name: 
+
+searchable_name:
+  user: 
+  position: 0
+  email: searchable+test@wayground.ca
+  activation_code: 
+  activated_at: 2009-02-04 14:59:26
+  is_blocked: false
+  name: Address has keyword
 
 login:
   user: login
@@ -87,7 +104,7 @@ regular:
   activation_code: 
   activated_at: <%= 1.day.ago.to_s(:db) %>
   is_blocked: false
-  name:
+  name: Regular
 
 another:
   user: another

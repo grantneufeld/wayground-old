@@ -124,8 +124,8 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def make_active!
-		invited_at = nil
-		expires_at = nil if expired?
+		self.invited_at = nil
+		self.expires_at = nil if expired?
 		clear_block! # saves
 	end
 	
@@ -168,11 +168,11 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def expired?
-		!(expires_at.nil?) && (expires_at <= Time.current)
+		!(self.expires_at.nil?) && (self.expires_at <= Time.current)
 	end
 	
 	def invited?
-		!(invited_at.nil?)
+		!(self.invited_at.nil?)
 	end
 	
 	# s - a symbol or an array of symbols (which any of which matching will return true)
@@ -180,18 +180,18 @@ class Membership < ActiveRecord::Base
 		if s.is_a? Symbol
 			s = [s]
 		end
-		has_access = (is_admin or user == group.owner)
+		has_access = (self.is_admin or self.user == self.group.owner)
 		unless has_access
 			s.each do |sym|
 				case sym
 				when :self_join
 					has_access ||= (!(active?) and (invited? or !(group.is_invite_only)))
 				when :member_list
-					has_access ||= (active? and (can_manage_members or group.is_members_visible))
+					has_access ||= (active? and (self.can_manage_members or self.group.is_members_visible))
 				when :manage_members
-					has_access ||= (active? and can_manage_members)
+					has_access ||= (active? and self.can_manage_members)
 				when :inviting
-					has_access ||= (active? and can_invite)
+					has_access ||= (active? and self.can_invite)
 				when :admin
 					# covered by default has_access set when user is_admin or group.owner
 				else
@@ -203,10 +203,40 @@ class Membership < ActiveRecord::Base
 	end
 	
 	def email
-		if email_address
-			email_address.email
+		if self.email_address
+			self.email_address.email
 		else
-			user.email
+			self.user.email
+		end
+	end
+	
+	def name
+		if self.user
+			self.user.nickname
+		else
+			self.email_address.name
+		end
+	end
+	
+	def member_name(user=nil)
+		name = "member #{self.id}"
+		unless user.nil?
+			if self.user
+				name = self.user.display_name_for_admin(
+					self.group.has_access_to?(:admin, user)
+				)
+			elsif self.group.has_access_to?(:admin, user) and !(self.email_address.name.blank?)
+				name = self.email_address.name
+			end
+		end
+		name
+	end
+	
+	def link
+		if self.user
+			self.user.link
+		else
+			self.email_address.link
 		end
 	end
 end

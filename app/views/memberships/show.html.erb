@@ -4,7 +4,7 @@ subsection ||= @subsection || 'member'
 %><%= render :partial=>'groups/header', :locals=>{:subsection=>subsection} %>
 
 <div><img src="/icon/contact.png" alt=" " width="16" height="16" class="icon" align="left" />
-<div style="float:left"><h2><%= link_to @membership.user.nickname, @membership.user.link %></h2>
+<div style="float:left"><h2><%= link_to @membership.name, @membership.link %></h2>
 <%
 titles = []
 titles << 'Group Owner' if @membership.user == @group.owner
@@ -23,7 +23,7 @@ link_to('<img src="/icon/edit.png" width="16" height="16" alt=" " class="diricon
 			' alt=" " class="diricon" /> Remove Member',
 		group_membership_path(@membership.group, @membership),
 		{:method=>'delete',
-		:confirm=>"Are you sure you want to remove this member, #{@membership.user.nickname}, from the group “#{@membership.group.name}”?",
+		:confirm=>"Are you sure you want to remove this member, #{@membership.name}, from the group “#{@membership.group.name}”?",
 		:href=>group_membership_path(@membership.group, @membership),
 		:class=>'button', :title=>"remove this member from the group"
 		} %><span class="separator">.</span><%
@@ -34,6 +34,8 @@ User is blocked from accessing the group.</p>
 <% elsif @membership.invited?
 	%><p style="clear:left"><img src="/icon/warning.png" alt=" " width="16" height="16" class="icon" />
 User has been invited to, but has not yet joined, the group.</p>
+<% else
+	%><p><br /></p>
 <% end
 %></div>
 

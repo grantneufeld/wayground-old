@@ -1,7 +1,7 @@
 <%
 membership ||= @membership
 row_id ||= "membership_#{membership.id}"
-member_name = controller.member_name(membership)
+member_name = h membership.member_name(current_user)
 
 -%>
 <tr id="<%= row_id%>"<%= cycle '', ' class="alternate"' %>><td><%
@@ -11,7 +11,11 @@ else
 	%><img src="/icon/contact.png" alt="Member:" width="16" height="16" class="icon" title="Group Member" /><%
 end
 %></td>
-<td><%= link_to member_name, group_membership_path(membership.group, membership) %></td>
+<td><%= link_to member_name, group_membership_path(membership.group, membership) %><%
+unless membership.title.blank? %>
+(<%= h membership.title %>)<%
+end
+%></td>
 <td><%=
 link_to('<img src="/icon/edit.png" width="16" height="16" alt="Edit" class="diricon" />',
 	edit_group_membership_path(membership.group, membership),

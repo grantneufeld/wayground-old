@@ -18,7 +18,7 @@ class MembershipsController < ApplicationController
 	
 	def show
 		@membership = @group.memberships.find(params[:id])
-		@page_title = "#{@group.name} Membership for #{member_name(@membership)}"
+		@page_title = "#{@group.name} Membership for #{h(@membership.member_name(current_user))}"
 	rescue ActiveRecord::RecordNotFound
 		missing
 	end
@@ -51,7 +51,7 @@ class MembershipsController < ApplicationController
 	
 	def edit
 		@membership = Membership.find(params[:id])
-		@page_title = "Edit Membership for #{member_name(@membership)}"
+		@page_title = "Edit Membership for #{h(@membership.member_name(current_user))}"
 	rescue ActiveRecord::RecordNotFound
 		missing
 	end
@@ -62,7 +62,7 @@ class MembershipsController < ApplicationController
 			# can’t update - was caught in edit
 		else
 			if params[:membership] && params[:membership].size > 0 && @membership.update_attributes(params[:membership])
-				flash[:notice] = "Updated membership information for #{member_name(@membership)}."
+				flash[:notice] = "Updated membership information for #{h(@membership.member_name(current_user))}."
 				redirect_to group_membership_path(@group, @membership)
 			else
 				# failed to save, back to edit form
@@ -74,7 +74,7 @@ class MembershipsController < ApplicationController
 	def destroy
 		@membership = Membership.find(params[:id], :include=>:user)
 		@membership.destroy
-		flash[:notice] = "The membership for ‘#{member_name(@membership)}’ has been permanently removed."
+		flash[:notice] = "The membership for ‘#{h(@membership.member_name(current_user))}’ has been permanently removed."
 		redirect_to group_memberships_path(@group)
 	rescue ActiveRecord::RecordNotFound
 		missing
@@ -140,20 +140,7 @@ class MembershipsController < ApplicationController
 			render :action=>:bulk
 		end
 	end
-	
-	
-	def member_name(membership)
-		name = "member #{membership.id}"
-		if membership.user
-			name = h(membership.user.display_name_for_admin(
-				membership.group.has_access_to?(:admin, current_user)
-			))
-		elsif membership.group.has_access_to?(:admin, current_user) and !(membership.email_address.name.blank?)
-			name = h(membership.email_address.name)
-		end
-		name
-	end
-	
+		
 	
 	protected
 	

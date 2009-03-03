@@ -86,6 +86,33 @@ class EmailAddress < ActiveRecord::Base
 		end
 	end
 	
+	# standard Wayground class methods for displayable items
+	def self.default_include
+		[:user]
+	end
+	def self.default_order(p={})
+		(p[:recent].blank? ? '' : 'email_addresses.updated_at DESC, ') +
+			'email_addresses.email'
+	end
+	# Returns a conditions array for find.
+	# p is a hash of parameters:
+	# - :key is a search restriction key
+	# - :u is the current_user to use to determine access to private items.
+	# - :item is the Item the message is attached to
+	# strs is a list of condition strings (with ‘?’ for params) to be joined by “AND”
+	# vals is a list of condition values to be appended to the result array (matching ‘?’ in the strs)
+	def self.search_conditions(p={}, strs=[], vals=[])
+		unless p[:item].nil?
+			strs << 'email_addresses.user_id = ?'
+			vals << p[:item].id
+		end
+		unless p[:key].blank?
+			strs << '(email_addresses.email like ? OR email_addresses.name like ?)'
+			vals += ["%#{p[:key]}%"] * 2
+		end
+		strs.size > 0 ? [strs.join(' AND ')] + vals : nil
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -187,5 +214,26 @@ class EmailAddress < ActiveRecord::Base
 		else
 			"#{self.name} <#{self.email}>"
 		end
+	end
+	
+	# standard Wayground instance methods for displayable items
+	def css_class(prefix='')
+		"#{prefix}contact"
+	end
+	def description
+		nil
+	end
+	def link
+		"/email_addresses/#{self.id}"
+	end
+	def title
+		if self.name.blank?
+			"Contact #{self.id}"
+		else
+			self.name
+		end
+	end
+	def title_prefix
+		nil
 	end
 end

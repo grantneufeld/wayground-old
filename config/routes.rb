@@ -47,6 +47,7 @@ ActionController::Routing::Routes.draw do |map|
 	map.resources :users, :collection=>{:activate=>:get, :account=>:get} do |users|
 		users.resources :email_addresses
 	end
+	map.resources :email_addresses
 	
 	# PAGES
 	# special path: the home page

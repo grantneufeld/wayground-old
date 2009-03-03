@@ -89,6 +89,43 @@ class EmailAddressTest < ActiveSupport::TestCase
 		assert_nil u.email
 	end
 	
+	test "default include" do
+		assert_equal [:user], EmailAddress.default_include
+	end
+	
+	test "default order" do
+		assert_equal 'email_addresses.email', EmailAddress.default_order
+	end
+	test "default order with recent" do
+		assert_equal 'email_addresses.updated_at DESC, email_addresses.email',
+			EmailAddress.default_order({:recent=>true})
+	end
+	
+	test "search conditions" do
+		assert_nil EmailAddress.search_conditions
+	end
+	test "search conditions with custom params" do
+		assert_equal ['a AND b',1,2], EmailMessage.search_conditions({}, ['a','b'], [1,2])
+	end
+	test "search conditions with item" do
+		assert_equal(['email_addresses.user_id = ?', users(:login).id],
+			EmailAddress.search_conditions({:item=>users(:login)})
+		)
+	end
+	test "search conditions with key" do
+		assert_equal(['(email_addresses.email like ? OR email_addresses.name like ?)',
+				'%keyword%', '%keyword%'],
+			EmailAddress.search_conditions({:key=>'keyword'})
+		)
+	end
+	test "search conditions with all params" do
+		assert_equal ['a AND b AND email_addresses.user_id = ?' +
+			' AND (email_addresses.email like ? OR email_addresses.name like ?)',
+			1, 2, users(:login).id, '%keyword%', '%keyword%'],
+		EmailAddress.search_conditions(
+			{:item=>users(:login), :key=>'keyword'}, ['a','b'], [1,2])
+	end
+	
 	
 	# INSTANCE METHODS
 	
@@ -264,5 +301,33 @@ class EmailAddressTest < ActiveSupport::TestCase
 		name = 'Test-This A. Name'
 		e = EmailAddress.new(:email=>email, :name=>name)
 		assert_equal "\"#{name}\" <#{email}>", e.to_s
+	end
+	
+	test "css class" do
+		assert_equal 'contact', email_addresses(:login).css_class
+	end
+	test "css class with prefix" do
+		assert_equal 'dir-contact', email_addresses(:login).css_class('dir-')
+	end
+	
+	test "description" do
+		assert_nil email_addresses(:login).description
+	end
+	
+	test "link" do
+		assert_equal "/email_addresses/#{email_addresses(:login).id}",
+			email_addresses(:login).link
+	end
+	
+	test "title with name" do
+		assert_equal email_addresses(:one).name, email_addresses(:one).title
+	end
+	test "title with no name" do
+		assert_equal "Contact #{email_addresses(:two).id}",
+			email_addresses(:two).title
+	end
+	
+	test "title prefix" do
+		assert_nil email_addresses(:login).title_prefix
 	end
 end

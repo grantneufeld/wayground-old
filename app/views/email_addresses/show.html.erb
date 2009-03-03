@@ -1,0 +1,29 @@
+<%
+unless @user.nil?
+%><%= render :partial=>'users/header' %>
+<% end
+
+%>
+<h2><img src="/icon/email_address_24.png" alt=" " width="24" height="24" class="icon" />
+Email Address</h2>
+
+<% if @user.nil? and @email_address.user
+	%><p><img src="/icon/contact.png" alt="User:" width="16" height="16" class="icon" /> <%= link_to h(@email_address.user.title), profile_path(@email_address.user) %></p>
+<% end -%>
+<p><%= h @email_address.to_s %></p>
+
+<h3><%= pluralize(@email_address.memberships.count, 'Membership') %></h3>
+<table cellspacing="0" class="layout"><tbody>
+<%= render :partial=>'memberships/membership', :collection=>@email_address.memberships %>
+</tbody></table>
+
+<%
+if @user.nil?
+	%><%= render :partial=>'standard'%>
+<%
+else
+	%>
+<%= render :partial=>'users/footer' %>
+<%= render :partial=>'users/standard'%><%
+end
+%>

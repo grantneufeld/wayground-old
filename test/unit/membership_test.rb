@@ -8,7 +8,7 @@ class Membership < ActiveRecord::Base
 end
 
 class MembershipTest < ActiveSupport::TestCase
-	fixtures :memberships, :groups, :users, :locations
+	fixtures :memberships, :groups, :users, :email_addresses, :locations
 	
 	def test_membership_associations
 		assert check_associations
@@ -224,4 +224,37 @@ class MembershipTest < ActiveSupport::TestCase
 		membership.email_address = addr
 		assert_equal 'location-test@wayground.ca', membership.email
 	end
+	
+	def test_membership_name
+		assert_equal 'Regular', memberships(:regular).name
+	end
+	def test_membership_name_with_no_user
+		m = Membership.new
+		m.email_address = email_addresses(:regular)
+		assert_equal 'Regular', m.name
+	end
+	
+	def test_membership_member_name
+		assert_equal "member #{memberships(:regular).id}", memberships(:regular).member_name
+	end
+	def test_membership_member_name_with_admin
+		assert_equal users(:regular).fullname,
+			memberships(:regular).member_name(users(:admin))
+	end
+	def test_membership_member_name_with_admin_and_no_user
+		m = Membership.new
+		m.group = groups(:one)
+		m.email_address = email_addresses(:regular)
+		assert_equal 'Regular', m.member_name(users(:admin))
+	end
+	
+	def test_membership_link
+		m = Membership.new
+		m.email_address = email_addresses(:regular)
+		assert_equal email_addresses(:regular).link, m.link
+	end
+	def test_membership_link_with_user
+		assert_equal users(:regular).link, memberships(:regular).link
+	end
+	
 end

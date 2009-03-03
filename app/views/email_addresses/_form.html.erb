@@ -1,0 +1,13 @@
+<%
+fields_for :email_address do |f|
+%><table cellspacing="0">
+<tbody>
+<tr><th><label for="email_address_name">Name:</label></th>
+<td><%= f.text_field :name %></td></tr>
+<tr class="alternate"><th><label for="email_address_email">Email:</label></th>
+<td><%= f.text_field :email %></td></tr>
+</tbody>
+<tfoot><tr><td></td>
+<td><input type="submit" name="process" value="Save Email Address" /></td></tr></tfoot>
+</table>
+<% end %>

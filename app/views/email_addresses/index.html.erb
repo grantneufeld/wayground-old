@@ -1,0 +1,41 @@
+<%
+unless @user.nil?
+%><%= render :partial=>'users/header' %>
+<% end
+
+%><h2>Email Addresses<%
+if @key
+	%> matching ‘<%= h @key %>’<%
+end
+%></h2>
+<table cellspacing="0" class="layout"><tbody>
+<%= render :partial=>'email_address', :collection=>@email_addresses %>
+</tbody></table>
+
+<%= will_paginate @email_addresses, :params=>params %>
+
+<%
+if @user.nil?
+	%><p><%=
+	# Add Email Address
+	link_to(
+		'<img src="/icon/email_address.png" width="16" height="16" alt=" " class="icon" /> Add Email Address',
+		new_email_address_path(),
+		{:class=>'button', :title=>"Add an email address"})
+		%><span class="separator">.</span></p>
+
+<%= render :partial=>'standard'%>
+<%
+else
+	%>
+<p><%=
+	# Add Email Address
+	link_to('<img src="/icon/email_address.png" width="16" height="16" alt=" " class="icon" /> Add Email Address',
+		new_user_email_address_path(@user),
+		{:class=>'button', :title=>"Add an email address for this user"})
+		%><span class="separator">.</span></p>
+
+<%= render :partial=>'users/footer' %>
+<%= render :partial=>'users/standard'%><%
+end
+%>

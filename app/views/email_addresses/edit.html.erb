@@ -1,0 +1,33 @@
+<%
+unless @user.nil?
+%><%= render :partial=>'users/header' %>
+<% end
+
+%>
+<div class="steps">
+<h2><img src="/icon/edit_24.png" alt=" " width="24" height="24" class="icon" />
+Edit Email Address</h2>
+<%= error_messages_for :email_address %>
+<div class="step_form">
+<%
+
+form_for(@email_address,
+	{:url=>(@user.nil? ? email_address_path(@email_address) :
+		user_email_address_path(@user, @email_address)), :html=>{:method=>:put}}
+) do |f|
+	%><%= render :partial=>'form' %>
+<% end
+
+%></div>
+</div>
+
+<%
+if @user.nil?
+	%><%= render :partial=>'standard'%>
+<%
+else
+	%>
+<%= render :partial=>'users/footer' %>
+<%= render :partial=>'users/standard'%><%
+end
+%>
