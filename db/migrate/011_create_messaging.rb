@@ -19,9 +19,9 @@ class CreateMessaging < ActiveRecord::Migration
 		
 		create_table :phone_messages, :force=>true,
 		:options=>'COMMENT="Message recorded by one User for another." ENGINE=InnoDB CHARSET=utf8' do |t|
-			t.belongs_to :user
-			t.belongs_to :owner
-			t.belongs_to :contact
+			t.belongs_to :posted_by # User
+			t.belongs_to :recipient # User
+			t.belongs_to :contact, :polymorphic=>true # contactable item (User, EmailAddress, Location)
 			t.string :status # %w(open read closed)
 			t.string :source # %w(phone email fax walk-in)
 			t.string :category
@@ -30,8 +30,8 @@ class CreateMessaging < ActiveRecord::Migration
 			t.timestamps
 		end
 		change_table :phone_messages do |t|
-			t.index [:user_id, :created_at], :name=>'user'
-			t.index [:owner_id, :status, :category, :created_at], :name=>'owner'
+			t.index [:posted_by_id, :created_at], :name=>'posted_by'
+			t.index [:recipient_id, :status, :category, :created_at], :name=>'recipient'
 			t.index [:contact_id, :source, :status, :created_at], :name=>'contact'
 			t.index [:status, :category, :created_at], :name=>'status'
 			t.index [:category, :status, :created_at], :name=>'category'

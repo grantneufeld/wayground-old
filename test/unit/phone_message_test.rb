@@ -11,12 +11,20 @@ class PhoneMessageTest < ActiveSupport::TestCase
 	
 	# VALIDATIONS
 	
+	test "validation with minimum attributes" do
+		m = PhoneMessage.new(:source=>'phone')
+		m.posted_by = users(:staff)
+		m.recipient = users(:login)
+		assert_valid m
+	end
+	
+	# TODO: Validation unit tests for PhoneMessage
 	
 	
 	# CLASS METHODS
 	
 	test "default include" do
-		assert_equal [:owner, :contact], PhoneMessage.default_include
+		assert_equal [:recipient, :contact], PhoneMessage.default_include
 	end
 	
 	test "default order" do
@@ -33,9 +41,9 @@ class PhoneMessageTest < ActiveSupport::TestCase
 	test "search conditions with custom params" do
 		assert_equal ['a AND b',1,2], PhoneMessage.search_conditions({}, ['a','b'], [1,2])
 	end
-	test "search conditions with owner" do
-		assert_equal ['phone_messages.owner_id = ?', users(:login).id],
-			PhoneMessage.search_conditions({:owner=>users(:login)})
+	test "search conditions with recipient" do
+		assert_equal ['phone_messages.recipient_id = ?', users(:login).id],
+			PhoneMessage.search_conditions({:recipient=>users(:login)})
 	end
 	test "search conditions with contact" do
 		assert_equal ['phone_messages.contact_id = ?', users(:login).id],
@@ -59,14 +67,14 @@ class PhoneMessageTest < ActiveSupport::TestCase
 			PhoneMessage.search_conditions({:key=>'keyword'})
 	end
 	test "search conditions with all params" do
-		assert_equal ['a AND b AND phone_messages.owner_id = ?' +
+		assert_equal ['a AND b AND phone_messages.recipient_id = ?' +
 			' AND phone_messages.contact_id = ? AND phone_messages.status = ?' +
 			' AND phone_messages.source = ? AND phone_messages.category = ?' +
 			' AND (phone_messages.category like ? OR phone_messages.phone like ? OR phone_messages.content like ?)',
 			1, 2, users(:login).id, users(:login).id, 'open', 'phone', 'test',
 			'%keyword%', '%keyword%', '%keyword%'],
 		PhoneMessage.search_conditions(
-			{:owner=>users(:login), :contact=>users(:login), :status=>'open', :source=>'phone', :category=>'test', :key=>'keyword'}, ['a','b'], [1,2])
+			{:recipient=>users(:login), :contact=>users(:login), :status=>'open', :source=>'phone', :category=>'test', :key=>'keyword'}, ['a','b'], [1,2])
 	end
 	
 	

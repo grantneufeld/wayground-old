@@ -1,0 +1,17 @@
+Link: <%= WAYGROUND['ROOT'] %>/phonelog/<%= @message_id %>
+Date: <%= @created_at.strftime("%A, %B %d, %Y %I:%M %p") %>
+From: <%= @from_name %>
+<% @locations.each do |location| -%>
+<%= location.phone1_type + ": " + location.phone1 + "\n" unless location.phone1.blank? -%>
+<%= location.phone2_type + ": " + location.phone2 + "\n" unless location.phone2.blank? -%>
+<%= location.phone3_type + ": " + location.phone3 + "\n" unless location.phone3.blank? -%>
+<% end -%>
+<% @email_addresses.each do |addr| -%>
+<%= "#{addr.email}\n" unless addr.is_blocked -%>
+<% end -%>
+
+<%= @description %>
+<% unless @posted_by_name.blank? %>
+
+Posted by: <%= @posted_by_name %>
+<% end %>

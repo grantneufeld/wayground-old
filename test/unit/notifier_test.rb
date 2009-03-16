@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class NotifierTest < ActionMailer::TestCase
 	tests Notifier
-	fixtures :users, :email_addresses, :recipients, :petitions, :signatures
+	fixtures :users, :email_addresses, :recipients, :petitions, :signatures, :phone_messages
 	
 	def test_signup_confirmation
 		# WAYGROUND['SENDER']
@@ -112,6 +112,24 @@ class NotifierTest < ActionMailer::TestCase
 				:recipient=>recipient, :from=>from, :reply_to=>reply_to,
 				:subject=>subject, :content=>content, :sent_at=>sent_at}
 			).encoded
+		)
+	end
+	
+	test "phone message with contact" do
+		# Because the date gets printed in the body of the message,
+		# need to set the time zone here so it doesn’t vary based on how other tests
+		# have set it.
+		Time.zone = 'UTC'
+		message = phone_messages(:two)
+		
+		@expected.to = message.recipient.email
+		@expected.from = message.posted_by.email
+		@expected.subject = "Wayground Phone Message from #{message.contact.name}"
+		@expected.date = message.created_at
+		@expected.body = read_fixture('phone_message_with_contact')
+		
+		assert_equal(@expected.encoded,
+			Notifier.create_phone_message(message, message.created_at).encoded
 		)
 	end
 end

@@ -68,6 +68,27 @@ class Notifier < ActionMailer::Base
 		end
 	end
 	
+	# message - PhoneMessage (required)
+	def phone_message(message, # notes,
+		sent_at = Time.now)
+
+		from_name = message.contact.name if message.contact
+		@subject = WAYGROUND['TITLE_PREFIX'] + " Phone Message" +
+			(from_name ? " from #{from_name}" : '')
+		@body['from_name'] = from_name
+		@body['locations'] = message.contact.nil? ? [] : message.contact.locations
+		@body['email_addresses'] = message.contact.nil? ? [] : message.contact.email_addresses
+		@body['created_at'] = message.created_at
+		@body['description'] = message.content
+		#@body['notes'] = notes
+		@body['message_id'] = message.id
+		@body['posted_by_name'] = message.posted_by.name
+		@recipients = message.recipient.email
+		@from = message.posted_by.email
+		@sent_on = sent_at
+		@headers = {}
+	end
+	
 	
 	protected
 	
