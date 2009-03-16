@@ -11,6 +11,9 @@ class Event < ActiveRecord::Base
 		:with=>/\A[\w\-]+(\.[\w\-]+)*\z/,
 		:message=>'must be letters, numbers, dashes or underscores, with an optional extension'
 	validates_uniqueness_of :subpath
+	validates_presence_of :status, :allow_blank=>true
+	validates_inclusion_of :status, :allow_blank=>true, :in=>%w(submitted blocked),
+		:message=>'must be blank, ‘submitted’ or ‘blocked’'
 	validates_presence_of :title
 	validates_presence_of :content_type, :unless=>Proc.new {|p| p.content.blank?}
 	validates_inclusion_of :content_type, :allow_nil=>true,

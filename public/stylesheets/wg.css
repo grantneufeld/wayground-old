@@ -111,7 +111,7 @@ input[name=key]{background:white url('/icon/search.png') no-repeat 2px 2px; padd
 
 /* anti-spam */
 #schedule_info + *, #schedule_info + * + *{display:none;;}
-#event_subpath + br + *, #event_subpath + br + * + *{display:none;}
+#event_url_label, #event_url{display:none;}
 table#user_private_info > tbody:first-child > tr:first-child + tr{display:none;}
 table#user_public_info > tbody:first-child > tr:first-child{display:none;}
 
