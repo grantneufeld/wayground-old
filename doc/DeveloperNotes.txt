@@ -25,11 +25,6 @@ For functional tests:
 • use test+*@wayground.ca for email addresses in test cases (where ‘*’ is some phrase relevant to the tests you are using the address in).
 
 
-EMAIL
-
-• Mailer classes inherit from ActionMailer::ARMailer (not ActionMailer::Base).
-
-
 VERSION CONTROL
 
 To save changes to the repository:
@@ -43,3 +38,26 @@ instead of `git add .`
 
 To update the GitHub repository (if you’ve setup the correct access for this):
  git push origin master
+
+
+--------------------------------------------------------------
+ABOUT THE CODE
+
+
+EMAIL
+
+• Mailer classes inherit from ActionMailer::ARMailer (not ActionMailer::Base).
+
+
+CONTACTABLE MODELS
+
+Contactable models share a common set of methods when used polymorphicly.
+
+Contactable classes:
+EmailAddress, Group, Location, Membership, Recipient, User.
+
+Methods:
+email: Main email address for the contact.
+email_addresses: Array of email_addresses associated with the contact.
+locations: Array of Locations associated with the contact.
+name: The name of the contact.

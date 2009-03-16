@@ -257,4 +257,36 @@ class MembershipTest < ActiveSupport::TestCase
 		assert_equal users(:regular).link, memberships(:regular).link
 	end
 	
+	test "email addresses with email address" do
+		m = Membership.new
+		m.email_address = email_addresses(:login)
+		assert_equal [email_addresses(:login)], m.email_addresses
+	end
+	test "email addresses with user with email address" do
+		m = Membership.new
+		m.user = users(:login)
+		assert_equal [email_addresses(:login)], m.email_addresses
+	end
+	test "email addresses with user has no email address" do
+		m = Membership.new
+		m.user = users(:minimal)
+		assert_equal [], m.email_addresses
+	end
+	
+	test "locations with location" do
+		m = Membership.new
+		m.location = locations(:one)
+		assert_equal [locations(:one)], m.locations
+	end
+	test "locations with user with location" do
+		m = Membership.new
+		m.user = users(:login)
+		assert_equal [locations(:one)], m.locations
+	end
+	test "locations with user with no location" do
+		m = Membership.new
+		m.user = users(:minimal)
+		assert_equal [], m.locations
+	end
+	
 end

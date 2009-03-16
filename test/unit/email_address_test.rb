@@ -330,4 +330,13 @@ class EmailAddressTest < ActiveSupport::TestCase
 	test "title prefix" do
 		assert_nil email_addresses(:login).title_prefix
 	end
+	
+	test "email_addresses" do
+		assert_equal [email_addresses(:login)], email_addresses(:login).email_addresses
+	end
+	
+	test "locations" do
+		assert_equal [], email_addresses(:login).locations
+	end
+	
 end

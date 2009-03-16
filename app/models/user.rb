@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
 	# prevents a user from submitting a crafted form that bypasses activation
 	# anything else you want your user to be able to set should be added here.
 	attr_accessible :password, :password_confirmation, :email,
-		:nickname, :fullname, :subpath, :time_zone, :location, :about,
+		:nickname, :fullname, :subpath, :time_zone, :about, # :location,
 		# anti-spam fake-fields:
 		:login, :url
 	
@@ -344,15 +344,6 @@ class User < ActiveRecord::Base
 		save(false)
 	end
 	
-	def email
-		e = read_attribute('email')
-		if e.blank?
-			if email_addresses[0]
-				e = email_addresses[0].email
-			end
-		end
-		e
-	end
 	
 	# standard Wayground instance methods for displayable items
 	def css_class(name_prefix='')
@@ -373,5 +364,21 @@ class User < ActiveRecord::Base
 	end
 	def title_prefix
 		nil
+	end
+	
+	# required instance methods for Contactable items
+	def email
+		e = read_attribute('email')
+		if e.blank?
+			if email_addresses[0]
+				e = email_addresses[0].email
+			end
+		end
+		e
+	end
+	# email_addresses returned by has_many relationship
+	# locations returned by has_many relationship
+	def name
+		self.title
 	end
 end

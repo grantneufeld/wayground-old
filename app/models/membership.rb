@@ -202,22 +202,6 @@ class Membership < ActiveRecord::Base
 		has_access
 	end
 	
-	def email
-		if self.email_address
-			self.email_address.email
-		else
-			self.user.email
-		end
-	end
-	
-	def name
-		if self.user
-			self.user.nickname
-		else
-			self.email_address.name
-		end
-	end
-	
 	def member_name(user=nil)
 		name = "member #{self.id}"
 		unless user.nil?
@@ -237,6 +221,42 @@ class Membership < ActiveRecord::Base
 			self.user.link
 		else
 			self.email_address.link
+		end
+	end
+	
+	# required instance methods for Contactable items
+	def email
+		if self.email_address
+			self.email_address.email
+		else
+			self.user.email
+		end
+	end
+	def email_addresses
+		if !(self.email_address.nil?)
+			return [self.email_address]
+		elsif !(self.user.nil?) and !(self.user.email_addresses[0].nil?)
+			return [self.user.email_addresses[0]]
+		else
+			return []
+		end
+	end
+	def locations
+		if !(self.location.nil?)
+			return [self.location]
+		#elsif !(self.user.nil?) and !(self.user.location.nil?)
+		#	return [self.user.location]
+		elsif !(self.user.nil?) and !(self.user.locations[0].nil?)
+			return [self.user.locations[0]]
+		else
+			return []
+		end
+	end
+	def name
+		if self.user
+			self.user.nickname
+		else
+			self.email_address.name
 		end
 	end
 end

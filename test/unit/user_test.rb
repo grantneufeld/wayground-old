@@ -343,6 +343,9 @@ class UserTest < ActiveSupport::TestCase
 		assert_nil users(:login).title_prefix
 	end
 	
+	def test_user_name
+		assert_equal 'Login', users(:login).name
+	end
 	
 	# •••••••••••  TESTS TO BE WRITTEN  •••••••••••••••••••••••••••••
 	

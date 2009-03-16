@@ -1,5 +1,5 @@
 class Recipient < ActiveRecord::Base
-	attr_accessible :email_message_id, :email_address_id, :email, :name #, :field
+	attr_accessible :email_message_id, :email_address_id #, :email, :name #, :field
 	
 	belongs_to :email_message
 	belongs_to :email_address
@@ -14,6 +14,23 @@ class Recipient < ActiveRecord::Base
 	#validates_uniqueness_of :email, :scope=>:email_message_id
 	
 	def to_s
-		email_address.to_s
+		self.email_address.to_s
+	end
+	
+	
+	# required instance methods for Contactable items
+	# email returned by attribute
+	def email
+		return self.email_address.email
+	end
+	def email_addresses
+		return [self.email_address]
+	end
+	def locations
+		return []
+	end
+	# name returned by attribute
+	def name
+		return self.email_address.name
 	end
 end

@@ -64,4 +64,19 @@ class RecipientTest < ActiveSupport::TestCase
 		assert_equal "\"#{name}\" <#{email}>", r.to_s
 	end
 		
+	test "email" do
+		assert_equal email_addresses(:one).email, recipients(:one).email
+	end
+	
+	test "email addresses" do
+		assert_equal [email_addresses(:one)], recipients(:one).email_addresses
+	end
+	
+	test "locations" do
+		assert_equal [], recipients(:one).locations
+	end
+	
+	test "name" do
+		assert_equal email_addresses(:one).name, recipients(:one).name
+	end
 end

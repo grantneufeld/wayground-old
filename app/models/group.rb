@@ -221,23 +221,7 @@ class Group < ActiveRecord::Base
 		end
 	end
 	
-	# Returns an Array of email address Strings for members of the group.
-	def email_addresses(only_validated = false)
-		addrs = []
-		memberships.each do |m|
-			if !(m.active?)
-				# skip this member
-			elsif m.email_address.nil?
-				addrs << m.user.email_addresses[0]
-			else
-				addrs << m.email_address
-			end
-		end
-		children.each do |g|
-			addrs += g.email_addresses
-		end
-		addrs.uniq
-	end
+	# TODO: Group#email_addresses_with_details
 	# Returns a Hash of email addresses with details for members of the group.
 	def email_addresses_with_details(only_validated = false)
 		# {'email@address'=>{:name=>'member name'},...}
@@ -364,4 +348,30 @@ class Group < ActiveRecord::Base
 	def title_prefix
 		nil
 	end
+	
+	# required instance methods for Contactable items
+	def email
+		nil
+	end
+	def email_addresses
+		addrs = []
+		memberships.each do |m|
+			if !(m.active?)
+				# skip this member
+			elsif m.email_address.nil?
+				addrs << m.user.email_addresses[0]
+			else
+				addrs << m.email_address
+			end
+		end
+		children.each do |g|
+			addrs += g.email_addresses
+		end
+		addrs.uniq
+	end
+	# locations returned by has_many relationship
+	def locations
+		[]
+	end
+	# name returned by attribute
 end

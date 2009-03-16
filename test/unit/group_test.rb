@@ -277,16 +277,6 @@ class GroupTest < ActiveSupport::TestCase
 			memberships(:private_admin).user)
 	end
 	
-	def test_group_email_addresses
-		m = Membership.new()
-		m.user = users(:another)
-		m.position = 999
-		groups(:one).memberships << m
-		assert_equal([email_addresses(:login), email_addresses(:someone),
-			users(:another).email_addresses[0]],
-			groups(:one).email_addresses)
-	end
-	
 	def test_group_email_addresses_with_details
 		# TODO: implement this test and the email_addresses_with_details method
 		assert_equal({}, groups(:one).email_addresses_with_details)
@@ -364,4 +354,26 @@ class GroupTest < ActiveSupport::TestCase
 		assert_nil groups(:one).title_prefix
 	end
 	
+	
+	def test_group_email
+		assert_nil groups(:one).email
+	end
+	
+	def test_group_email_addresses
+		m = Membership.new()
+		m.user = users(:another)
+		m.position = 999
+		groups(:one).memberships << m
+		assert_equal([email_addresses(:login), email_addresses(:someone),
+			users(:another).email_addresses[0]],
+			groups(:one).email_addresses)
+	end
+	
+	def test_group_locations
+		assert_equal [], groups(:one).locations
+	end
+	
+	def test_group_name
+		assert_equal 'Group One', groups(:one).name
+	end
 end

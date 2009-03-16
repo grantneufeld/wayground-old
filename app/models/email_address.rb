@@ -236,4 +236,14 @@ class EmailAddress < ActiveRecord::Base
 	def title_prefix
 		nil
 	end
+	
+	# required instance methods for Contactable items
+	# email returned by attribute
+	def email_addresses
+		return [self]
+	end
+	def locations
+		return []
+	end
+	# name returned by attribute
 end
