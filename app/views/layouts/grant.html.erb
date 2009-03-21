@@ -32,8 +32,8 @@ if request.request_uri == "/"
 	end
 	# ••• SPECIAL CONTENT FOR FRONT PAGE FEATURES •••
 	# ••• SHOULD EMBED THIS IN THE ACTUAL PAGE CONTENT INSTEAD OF THE LAYOUT •••
-	@body_attrs ||= ''
-	@body_attrs += ' onload="set_feature(\'feature1\');"'
+	#@body_attrs ||= ''
+	#@body_attrs += ' onload="set_feature(\'feature1\');"'
 	content_for :head do
 		%><script type="text/javascript" language="javascript">
 var current_feature = '';
@@ -209,6 +209,11 @@ unless @content_for_keywords.blank?
 </div>
 
 </div>
+<script type="text/javascript" language="javascript">
+// <![CDATA[
+set_feature('feature1');
+// ]]>
+</script>
 <% end # /if request.request_uri == "/"
 -%>
 
