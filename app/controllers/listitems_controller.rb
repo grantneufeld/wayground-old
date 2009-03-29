@@ -1,6 +1,7 @@
 class ListitemsController < ApplicationController
 	before_filter :activation_required,
 		:only=>[:new, :create, :edit, :update, :destroy]
+	before_filter :setup
 	
 	def new
 		pre_new
@@ -13,7 +14,7 @@ class ListitemsController < ApplicationController
 		pre_new
 		@success = @listitem.save
 		if @success
-			message = "The #{@listitem.item.class.name} was added to your “#{@listitem.title}” list."
+			message = "The #{@listitem.item.class.name} was added to your “#{@list.title}” list."
 			respond_to do |format|
 				format.html do
 					flash[:notice] = message
@@ -23,7 +24,7 @@ class ListitemsController < ApplicationController
 				format.xml { render :xml=>@listitem.to_xml }
 			end
 		else
-			flash.now[:error] = "Unable to add the #{@listitem.item.class.name} to your “#{@listitem.title}” list."
+			flash.now[:error] = "Unable to add the #{@listitem.item.class.name} to your “#{@list.title}” list."
 			respond_to do |format|
 				format.html { render :action=>'new' }
 				format.js {}
@@ -45,14 +46,14 @@ class ListitemsController < ApplicationController
 	
 	def destroy
 		@listitem = Listitem.find(params[:id])
-		if @listitem.user == current_user or current_user.admin?
+		if @listitem.list.user == current_user or current_user.admin?
 			@listitem.destroy
 			@success = true
 		end
 		respond_to do |format|
 			format.html do
 				if @success
-					flash[:notice] = "The #{@listitem.item.class.name} has been removed from your “#{@listitem.title}” list."
+					flash[:notice] = "The #{@listitem.item.class.name} has been removed from your “#{@list.title}” list."
 					redirect_to lists_path
 				else
 					flash[:error] = 'That is not a list you have access to modify.'
@@ -61,8 +62,8 @@ class ListitemsController < ApplicationController
 			end
 			format.js do
 				if @success
-					@listitem_count = Listitem.count_user_list(current_user, @listitem.title)
-					flash.now[:notice] = "The #{@listitem.item.class.name} has been removed from your “#{@listitem.title}” list."
+					@listitem_count = @list.listitems.count
+					flash.now[:notice] = "The #{@listitem.item.class.name} has been removed from your “#{@list.title}” list."
 				else
 					flash.now[:error] = 'That is not a list you have access to modify.'
 				end
@@ -73,15 +74,28 @@ class ListitemsController < ApplicationController
 		missing
 	end
 	
+	
 	protected
 	
+	def setup
+		if params[:list_id].blank?
+			@list = List.find_default_list_for_user(current_user)
+		else
+			@list = List.find(params[:list_id]) rescue ActiveRecord::RecordNotFound
+		end
+		if @list.nil?
+			@list = List.new(:title=>'')
+			@list.user = current_user
+		end
+		@section = 'lists'
+		@page_title = @list.nil? ? '' : "#{@list.title}: "
+	end
+	
 	def pre_new
-		@listitem = Listitem.new(params[:listitem])
+		@listitem = @list.listitems.new(params[:listitem])
 		@listitem.item_type ||= params[:item_type]
 		@listitem.item_id ||= params[:item_id]
-		@listitem.title ||= params[:title]
-		@listitem.user = current_user
-		@page_title = 'Add item to your list'
+		@page_title += 'Add item to your list'
 		if @listitem.item.nil?
 			@err_msg = 'No item was specified — nothing to add to a list.'
 			raise Wayground::NilObject

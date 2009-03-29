@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class ListitemsControllerTest < ActionController::TestCase
-	fixtures :listitems, :users, :events, :pages, :weblinks
+	fixtures :lists, :listitems, :users, :events, :pages, :weblinks
 
 	def setup
 		@controller = ListitemsController.new
@@ -21,14 +21,12 @@ class ListitemsControllerTest < ActionController::TestCase
 	
 	test "create" do
 		assert_difference(Listitem, :count, 1) do
-			post :create, {:listitem=>{:title=>'Test List',
-				:item_type=>'Weblink', :item_id=>weblinks(:one).id}},
-				{:user=>users(:regular).id}
+			post :create, {:list_id=>lists(:one).id,
+				:listitem=>{:item_type=>'Weblink', :item_id=>weblinks(:one).id}},
+				{:user=>users(:login).id}
 		end
-		assert assigns(:listitem)
 		assert assigns(:listitem).is_a?(Listitem)
 		assert_equal weblinks(:one), assigns(:listitem).item
-		assert_equal users(:regular), assigns(:listitem).user
 		assert flash[:notice]
 		assert_response :redirect
 		assert_redirected_to({:controller=>'weblinks', :action=>'show', :id=>weblinks(:one)})
@@ -37,7 +35,7 @@ class ListitemsControllerTest < ActionController::TestCase
 	end
 	test "create no params" do
 		assert_difference(Listitem, :count, 0) do
-			post :create, {:listitem=>{}}, {:user=>users(:regular).id}
+			post :create, {:list_id=>lists(:one).id, :listitem=>{}}, {:user=>users(:login).id}
 		end
 		assert assigns(:listitem)
 		assert assigns(:listitem).is_a?(Listitem)
@@ -50,15 +48,14 @@ class ListitemsControllerTest < ActionController::TestCase
 		# create a listitem to be destroyed
 		listitem = nil
 		assert_difference(Listitem, :count, 1) do
-			listitem = Listitem.new({:title=>'Delete This',
-				:item_type=>'Page', :item_id=>pages(:one).id})
-			listitem.user = users(:regular)
+			listitem = lists(:one).listitems.new
+			listitem.item = pages(:three)
 			listitem.save!
 		end
 		# destroy the listitem
 		assert_difference(Listitem, :count, -1) do
 			@request.accept = "text/html"
-			delete :destroy, {:id=>listitem.id}, {:user=>users(:regular).id}
+			delete :destroy, {:id=>listitem.id}, {:user=>users(:login).id}
 		end
 		assert flash[:notice]
 		assert_response :redirect
@@ -68,9 +65,8 @@ class ListitemsControllerTest < ActionController::TestCase
 		# create a listitem to be destroyed
 		listitem = nil
 		assert_difference(Listitem, :count, 1) do
-			listitem = Listitem.new({:title=>'Delete This',
-				:item_type=>'Page', :item_id=>pages(:one).id})
-			listitem.user = users(:regular)
+			listitem = lists(:one).listitems.new
+			listitem.item = pages(:three)
 			listitem.save!
 		end
 		# destroy the listitem
@@ -115,15 +111,14 @@ class ListitemsControllerTest < ActionController::TestCase
 		# create a listitem to be destroyed
 		listitem = nil
 		assert_difference(Listitem, :count, 1) do
-			listitem = Listitem.new({:title=>'Delete This',
-				:item_type=>'Page', :item_id=>pages(:one).id})
-			listitem.user = users(:regular)
+			listitem = lists(:one).listitems.new
+			listitem.item = pages(:three)
 			listitem.save!
 		end
 		# destroy the listitem
 		assert_difference(Listitem, :count, -1) do
 			@request.accept = "text/javascript"
-			delete :destroy, {:id=>listitem.id}, {:user=>users(:regular).id}
+			delete :destroy, {:id=>listitem.id}, {:user=>users(:login).id}
 		end
 		assert flash[:notice]
 		assert_response :success

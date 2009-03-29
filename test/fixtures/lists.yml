@@ -1,0 +1,16 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user: login
+  title: List One
+  is_public: true
+
+two:
+  user: login
+  title: List Two
+  is_public: false
+
+regular_default:
+  user: regular
+  title: ''
+  is_public: false

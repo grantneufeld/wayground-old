@@ -3,17 +3,18 @@ class ListsController < ApplicationController
 	
 	def index
 		@page_title = 'Your Lists'
-		@lists = Listitem.find_lists_for_user(current_user)
+		@lists = List.find(:all, :conditions=>List.search_conditions(:user=>current_user),
+			:order=>List.default_order, :include=>List.default_include)
 	end
 
 	def show
-		@page_title = "Your List: #{h(params[:id])}"
-		@listitems = Listitem.find(:all, :order=>Listitem.default_order,
-			:conditions=>Listitem.search_conditions(:title=>params[:id]),
-			:include=>Listitem.default_include)
-		if !@listitems or @listitems.size < 1
+		@list = List.find(params[:id], :conditions=>List.search_conditions({:u=>current_user}))
+		@page_title = (@list.user == current_user ? 'Your' : "#{@list.user.title}’s") + " List: #{@list.title}"
+		if @list.listitems.size < 1
 			flash.now[:notice] = 'The list is empty.'
 		end
+	rescue ActiveRecord::RecordNotFound
+		missing
 	end
 	
 	# deletes all the rows in the listitems table that match the current_user and the list title (id)
